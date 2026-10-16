@@ -1,0 +1,131 @@
+[
+  {
+    "id": "ct-001",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "syllogisms",
+    "difficulty": "medium",
+    "prompt": "All senior engineers review code. Some people who review code are interns.\n\nWhich statement **must** be true?",
+    "options": [
+      "Some interns are senior engineers.",
+      "All people who review code are senior engineers.",
+      "No intern is a senior engineer.",
+      "None of the above must be true."
+    ],
+    "answer": 3,
+    "explanation": "The premises say senior engineers are a subset of code reviewers, and interns overlap with code reviewers. They say nothing about whether interns and senior engineers overlap, so neither 'some are' nor 'none are' follows."
+  },
+  {
+    "id": "ct-002",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "conditional logic",
+    "difficulty": "easy",
+    "prompt": "If a deployment succeeds, then all tests passed. The tests did not all pass.\n\nWhat can you conclude?",
+    "options": [
+      "The deployment succeeded.",
+      "The deployment did not succeed.",
+      "Nothing can be concluded about the deployment.",
+      "The tests will pass on the next run."
+    ],
+    "answer": 1,
+    "explanation": "This is modus tollens: if A then B; not B; therefore not A. Since the tests did not pass, the deployment cannot have succeeded."
+  },
+  {
+    "id": "ct-003",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "conditional logic",
+    "difficulty": "medium",
+    "prompt": "If the build is green, the team releases. The team released today.\n\nWhat can you conclude?",
+    "options": [
+      "The build was green.",
+      "The build was not green.",
+      "Whether the build was green cannot be determined.",
+      "The team releases every day."
+    ],
+    "answer": 2,
+    "explanation": "This is the 'affirming the consequent' fallacy. The rule says a green build leads to a release, but not that a release only happens after a green build. The team may have released for another reason."
+  },
+  {
+    "id": "ct-004",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "ordering puzzles",
+    "difficulty": "medium",
+    "prompt": "Five tasks, A, B, C, D and E, are done one after another.\n\n- C is done first.\n- E is done last.\n- A is done after C.\n- D is done immediately after A.\n- B is done before D.\n\nWhich task is done third?",
+    "options": ["A", "B", "C", "D"],
+    "answer": 0,
+    "explanation": "Positions 2-4 hold A, B and D. D comes directly after A, and B comes before D, so B cannot follow the A-D pair. The order is C, B, A, D, E, so A is third."
+  },
+  {
+    "id": "ct-005",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "evaluating arguments",
+    "difficulty": "medium",
+    "prompt": "\"Since we introduced mandatory code reviews, production bugs have fallen by 30%. Therefore, code reviews caused the drop.\"\n\nWhich statement, if true, most **weakens** this argument?",
+    "options": [
+      "Most developers say they enjoy code reviews.",
+      "In the same month, the team doubled its automated test coverage.",
+      "Code reviews add about a day to each feature's delivery time.",
+      "Many other companies also use mandatory code reviews."
+    ],
+    "answer": 1,
+    "explanation": "The argument assumes nothing else changed. A simultaneous large increase in test coverage is an alternative cause that could explain the drop, which weakens the causal claim."
+  },
+  {
+    "id": "ct-006",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "identifying assumptions",
+    "difficulty": "easy",
+    "prompt": "\"Our app is slow, so we should buy faster servers.\"\n\nWhich assumption does this argument rely on?",
+    "options": [
+      "Faster servers are cheap.",
+      "The slowness is caused by limited server hardware capacity.",
+      "Users will pay more for a faster app.",
+      "The app was fast in the past."
+    ],
+    "answer": 1,
+    "explanation": "Buying faster servers only fixes the problem if the hardware is the bottleneck. If the cause is a slow database query or a network issue, faster servers would not help."
+  },
+  {
+    "id": "ct-007",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "inference",
+    "difficulty": "hard",
+    "prompt": "In a survey of 200 developers at a company, 70% said they prefer remote work. 50 of the people surveyed were managers.\n\nWhich statement **must** be true?",
+    "options": [
+      "At least 90 of the non-managers surveyed prefer remote work.",
+      "Most of the managers surveyed prefer remote work.",
+      "70% of all developers at the company prefer remote work.",
+      "Managers prefer working in the office."
+    ],
+    "answer": 0,
+    "explanation": "140 people (70% of 200) prefer remote work. At most 50 of them can be managers, so at least 140 - 50 = 90 must be non-managers. The other options cannot be inferred: we don't know the managers' split, and a survey sample doesn't prove anything about the whole company."
+  },
+  {
+    "id": "ct-008",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "coding and patterns",
+    "difficulty": "easy",
+    "prompt": "In a code, **CODE** is written as **DPEF**. How is **TEST** written in the same code?",
+    "options": ["UFTU", "UFSU", "SDRS", "UGTU"],
+    "answer": 0,
+    "explanation": "Each letter shifts forward by one: C->D, O->P, D->E, E->F. So T->U, E->F, S->T, T->U gives UFTU."
+  },
+  {
+    "id": "ct-009",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "cycles and modular reasoning",
+    "difficulty": "medium",
+    "prompt": "An on-call rotation cycles through Ana, Ben, Chi and Dan in that order, one person per day, every day including weekends. Ana is on call today.\n\nWho will be on call 30 days from today?",
+    "options": ["Ana", "Ben", "Chi", "Dan"],
+    "answer": 2,
+    "explanation": "The cycle has length 4. 30 mod 4 = 2, so we move two places forward from Ana: Ben (1), Chi (2)."
+  }
+]

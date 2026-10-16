@@ -1,0 +1,130 @@
+[
+  {
+    "id": "job-readiness",
+    "title": "Job Readiness Assessment",
+    "description": "A full mixed assessment modelled on employer screening batteries: cognitive ability, software engineering, Python, AI, coding, workplace judgement and written communication.",
+    "skill_area": "Full assessment",
+    "time_limit_minutes": 60,
+    "instructions": [
+      "This is a timed, mixed assessment like a real employer screening test.",
+      "Questions appear one at a time. Once you move on, you cannot go back.",
+      "The timer keeps running even if you close the tab. When it runs out, your answers are submitted automatically.",
+      "You can run your code against the example tests. Hidden tests are used for scoring.",
+      "Work alone without looking things up, as you would on the real test."
+    ],
+    "sections": [
+      {"category": "numerical_reasoning", "count": 4},
+      {"category": "critical_thinking", "count": 4},
+      {"category": "attention_to_detail", "count": 3},
+      {"category": "software_engineering", "count": 6},
+      {"category": "python", "count": 3},
+      {"category": "ai_fundamentals", "count": 3},
+      {"category": "situational_judgement", "count": 3},
+      {"category": "coding", "count": 1, "difficulties": ["easy", "medium"]},
+      {"category": "communication", "count": 1}
+    ]
+  },
+  {
+    "id": "numerical-reasoning",
+    "title": "Numerical Reasoning",
+    "description": "Percentages, ratios, rates and reading data from tables, under time pressure.",
+    "skill_area": "Cognitive ability",
+    "time_limit_minutes": 12,
+    "instructions": [
+      "You may use a calculator and scratch paper.",
+      "Read every table carefully. Many wrong answers come from using the wrong base value."
+    ],
+    "sections": [{"category": "numerical_reasoning", "count": 8}]
+  },
+  {
+    "id": "critical-thinking",
+    "title": "Critical Thinking",
+    "description": "Deductive logic, evaluating arguments, spotting assumptions, and ordering puzzles.",
+    "skill_area": "Cognitive ability",
+    "time_limit_minutes": 10,
+    "instructions": [
+      "Use only the information given. Don't bring in outside assumptions.",
+      "Watch for 'must be true' versus 'could be true'."
+    ],
+    "sections": [{"category": "critical_thinking", "count": 8}]
+  },
+  {
+    "id": "attention-to-detail",
+    "title": "Attention to Detail",
+    "description": "Spot small differences in codes, records, configurations and calculations.",
+    "skill_area": "Cognitive ability",
+    "time_limit_minutes": 6,
+    "instructions": ["Accuracy matters more than speed, but the time is tight."],
+    "sections": [{"category": "attention_to_detail", "count": 6}]
+  },
+  {
+    "id": "software-engineering",
+    "title": "Software Engineering Fundamentals",
+    "description": "Git, HTTP and APIs, SQL, data structures, complexity, testing, security and design principles.",
+    "skill_area": "Technical knowledge",
+    "time_limit_minutes": 12,
+    "instructions": ["Questions cover the breadth expected of a junior engineer."],
+    "sections": [{"category": "software_engineering", "count": 12}]
+  },
+  {
+    "id": "python-knowledge",
+    "title": "Python Knowledge",
+    "description": "Predict outputs and spot gotchas: references, mutability, closures, generators, exceptions.",
+    "skill_area": "Technical knowledge",
+    "time_limit_minutes": 10,
+    "instructions": ["Work out the code in your head. Don't run it."],
+    "sections": [{"category": "python", "count": 10}]
+  },
+  {
+    "id": "ai-fundamentals",
+    "title": "AI & ML Fundamentals",
+    "description": "LLM concepts, RAG, embeddings, evaluation metrics, overfitting and AI safety.",
+    "skill_area": "Technical knowledge",
+    "time_limit_minutes": 10,
+    "instructions": ["Covers the AI concepts an entry-level AI engineer is expected to know."],
+    "sections": [{"category": "ai_fundamentals", "count": 8}]
+  },
+  {
+    "id": "python-coding",
+    "title": "Python Coding Challenge",
+    "description": "Two timed coding problems graded by hidden test cases, like a real coding screen.",
+    "skill_area": "Coding",
+    "time_limit_minutes": 40,
+    "instructions": [
+      "Implement the function using the exact name from the starter code.",
+      "Use Run to check your code against the example tests. Your score comes from all tests, including hidden edge cases.",
+      "Think about edge cases (empty input, duplicates, ties) before you submit.",
+      "Partial credit is given per test case passed."
+    ],
+    "sections": [
+      {"category": "coding", "count": 1, "difficulties": ["easy"]},
+      {"category": "coding", "count": 1, "difficulties": ["medium", "hard"]}
+    ],
+    "shuffle": false
+  },
+  {
+    "id": "situational-judgement",
+    "title": "Workplace Situational Judgement",
+    "description": "Realistic engineering workplace scenarios: teamwork, escalation, communication and professionalism.",
+    "skill_area": "Soft skills",
+    "time_limit_minutes": 10,
+    "instructions": [
+      "Choose the MOST effective response. Several options may be reasonable.",
+      "Partial credit is given for acceptable but less effective responses."
+    ],
+    "sections": [{"category": "situational_judgement", "count": 6}]
+  },
+  {
+    "id": "written-communication",
+    "title": "Written Communication",
+    "description": "Write workplace messages: explaining tech to non-technical people, incident updates, pushback and code reviews. Graded by AI against a rubric.",
+    "skill_area": "Soft skills",
+    "time_limit_minutes": 20,
+    "instructions": [
+      "Stick to the word limits; going far over costs points, as it would with a real reader.",
+      "Write for the audience named in the question.",
+      "Answers are graded by AI against a hiring rubric after you submit."
+    ],
+    "sections": [{"category": "communication", "count": 2}]
+  }
+]

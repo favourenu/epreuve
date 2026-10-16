@@ -1,0 +1,103 @@
+[
+  {
+    "id": "wr-001",
+    "type": "written",
+    "category": "communication",
+    "topic": "explaining technical concepts",
+    "difficulty": "easy",
+    "prompt": "Your project manager, who is not technical, asks:\n\n> \"What is an API, and why does our app need one?\"\n\nWrite your reply (**80-200 words**).",
+    "min_words": 80,
+    "max_words": 200,
+    "rubric": [
+      "Explains what an API is accurately, in plain language and without unexplained jargon",
+      "Uses a relatable analogy or a concrete example connected to an app",
+      "Explains why the app needs an API (the benefit, e.g. connecting the frontend to data, or integrating payments or maps)",
+      "Concise, well-organised and professional, and friendly in tone",
+      "Stays within the word limit"
+    ],
+    "model_answer": "An API (Application Programming Interface) is a set of agreed rules that lets two pieces of software talk to each other, a bit like a waiter in a restaurant. You (the app) don't go into the kitchen (the database or another company's system); you give your order to the waiter, who brings back exactly what you asked for.\n\nOur app needs APIs for two reasons. First, our own API lets the mobile app and website safely fetch and update data such as user profiles and orders, without giving them direct access to the database. Second, we use other companies' APIs so we don't build everything ourselves: for example, a payment provider's API to take card payments securely, and a maps API to show delivery locations.\n\nThe benefit is speed and safety: we reuse proven services, and we control exactly what data goes in and out.",
+    "points": 10,
+    "explanation": "Strong answers pair an analogy with a concrete link to the app, and stay brief."
+  },
+  {
+    "id": "wr-002",
+    "type": "written",
+    "category": "communication",
+    "topic": "incident communication",
+    "difficulty": "medium",
+    "prompt": "This morning, checkout on your company's website was down for **40 minutes** because a database migration failed. It has been fixed.\n\nWrite a short email to the **whole company** (mostly non-engineers) summarising the incident (**100-220 words**). Include a subject line.",
+    "min_words": 100,
+    "max_words": 220,
+    "rubric": [
+      "Clear subject line and a structure that is easy to skim",
+      "States what happened, when, and the customer/business impact",
+      "Gives the cause in plain language without blaming individuals",
+      "Confirms the current status (resolved) and any customer follow-up",
+      "Describes concrete next steps to prevent it happening again",
+      "Tone is calm, accountable and professional"
+    ],
+    "model_answer": "Subject: Resolved: Checkout outage this morning (09:10-09:50)\n\nHi all,\n\nBetween 09:10 and 09:50 today, customers could not complete purchases on our website. Browsing worked, but checkout showed an error. We estimate around 300 orders were affected.\n\nWhat happened: a planned update to our database did not complete correctly, which stopped the checkout service from saving orders. The engineering team rolled back the update and checkout has worked normally since 09:50.\n\nCustomers: support is contacting customers whose checkout failed, with a discount code. If a customer contacts you about this, please direct them to support@.\n\nNext steps: we will (1) test database updates against a full copy of production data before release, (2) add an automatic alert for checkout errors so we react within minutes, and (3) schedule risky updates outside peak hours. A full write-up will be shared on Friday.\n\nSorry for the disruption, and thanks for your patience.\n\nEngineering team",
+    "points": 10,
+    "explanation": "Good incident communication covers what, impact, cause, status and prevention, without jargon or blame."
+  },
+  {
+    "id": "wr-003",
+    "type": "written",
+    "category": "communication",
+    "topic": "managing expectations",
+    "difficulty": "medium",
+    "prompt": "Your manager asks you to deliver a large new reporting feature by **Friday** (3 days away). From your analysis, it will take about **two weeks** to build properly.\n\nWrite your message to your manager (**80-200 words**).",
+    "min_words": 80,
+    "max_words": 200,
+    "rubric": [
+      "Acknowledges the request and the goal behind it positively",
+      "Explains the two-week estimate with brief, concrete reasoning",
+      "Proposes realistic options (e.g. a smaller version by Friday, more time, reprioritising other work, extra help)",
+      "Asks a clear question or for a decision to move forward",
+      "Constructive, confident and professional tone: neither defensive nor overpromising"
+    ],
+    "model_answer": "Hi Sam, thanks for flagging the reporting feature. I understand it matters for the client demo.\n\nI've broken it down, and building it properly will take about two weeks: the data aggregation queries need new indexes to run fast enough, we need export to both PDF and CSV, and it needs proper testing because finance will rely on the numbers.\n\nA few options for Friday:\n1. A smaller version: a single dashboard of the three key metrics, view-only, with no exports. I'm confident I can deliver and test this by Friday.\n2. The full feature in two weeks, if I pause the search improvements.\n3. Full feature sooner if Ada can pair with me on the export work.\n\nWhich would work best for the demo? Happy to talk through it today.",
+    "points": 10,
+    "explanation": "The best answers push back with reasoning and offer options instead of just saying no or overpromising."
+  },
+  {
+    "id": "wr-004",
+    "type": "written",
+    "category": "communication",
+    "topic": "describing your work",
+    "difficulty": "medium",
+    "prompt": "Describe a project you built (or would build) that uses AI. Cover: the **problem** it solves, your **technical approach**, one **challenge** you faced and how you handled it, and the **result** or what you learned (**120-250 words**).",
+    "min_words": 120,
+    "max_words": 250,
+    "rubric": [
+      "Clearly states a real, specific problem and who it helps",
+      "Describes the technical approach concretely (tools, models, architecture), not vaguely",
+      "Describes a genuine challenge and specific actions taken to solve it",
+      "States a result, a measure of impact, or a reflective learning",
+      "Logical structure (e.g. situation, task, action, result) and professional writing"
+    ],
+    "model_answer": "",
+    "points": 10,
+    "explanation": "Interviewers look for specifics: tools, numbers, decisions and trade-offs. Vague, buzzword-heavy descriptions score poorly."
+  },
+  {
+    "id": "wr-005",
+    "type": "written",
+    "category": "communication",
+    "topic": "code review",
+    "difficulty": "medium",
+    "prompt": "A teammate opened a pull request with this function:\n\n```python\ndef get_user(id):\n    query = \"SELECT * FROM users WHERE id = \" + id\n    return db.execute(query)\n```\n\nWrite your code review comment (**60-180 words**).",
+    "min_words": 60,
+    "max_words": 180,
+    "rubric": [
+      "Identifies the SQL injection vulnerability and explains why it matters",
+      "Suggests a concrete fix: a parameterized query, ideally with a short example",
+      "Optionally notes secondary issues (shadowing the built-in `id`, `SELECT *`, missing type handling or not-found handling)",
+      "Tone is constructive, respectful and specific; it critiques the code, not the person",
+      "Clear and easy to act on"
+    ],
+    "model_answer": "Thanks for this! One blocking issue: building the SQL by concatenating `id` makes this vulnerable to SQL injection. If `id` comes from a request, a value like `1 OR 1=1` would return every user, and worse payloads could modify data.\n\nCould you switch to a parameterized query? For example:\n\n```python\ndef get_user(user_id: int):\n    return db.execute(\"SELECT id, name, email FROM users WHERE id = ?\", (user_id,))\n```\n\nA couple of smaller suggestions: renaming the parameter to `user_id` avoids shadowing Python's built-in `id`, and selecting explicit columns instead of `*` avoids accidentally returning sensitive fields such as password hashes. It may also be worth deciding what we return when no user is found.\n\nHappy to pair on it if useful!",
+    "points": 10,
+    "explanation": "Strong reviews explain the risk, show the fix, and stay friendly."
+  }
+]

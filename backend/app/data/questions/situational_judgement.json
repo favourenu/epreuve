@@ -1,0 +1,138 @@
+[
+  {
+    "id": "sj-001",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "risk and escalation",
+    "difficulty": "medium",
+    "prompt": "The night before a release, you find that a feature you built can corrupt some user data in a rare case. The release is tomorrow morning and your manager is offline. What is the **most effective** response?",
+    "options": [
+      "Say nothing. It's a rare case, so fix it in the next release.",
+      "Push a fix straight to the release branch tonight without review.",
+      "Mention it in the team channel tomorrow morning at standup.",
+      "Message your manager and the release owner now, describing the bug, its impact, and options (fix, disable via feature flag, or delay)."
+    ],
+    "answer": 3,
+    "option_scores": [0, 0, 1, 2],
+    "explanation": "Data corruption is a serious risk, so escalate quickly and clearly, with enough detail and options for others to decide. Staying silent or making unreviewed changes adds risk. Waiting until standup may be too late."
+  },
+  {
+    "id": "sj-002",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "teamwork",
+    "difficulty": "easy",
+    "prompt": "A teammate has missed several standups, and their unfinished part of the project is now blocking your work. What is the **most effective** first step?",
+    "options": [
+      "Talk to them privately: ask if something is getting in the way, explain how you're blocked, and agree on a plan or timeline together.",
+      "Report them to your manager straight away.",
+      "Quietly do their part yourself without telling anyone.",
+      "Point out in the team channel that they keep missing standups."
+    ],
+    "answer": 0,
+    "option_scores": [2, 1, 0, 0],
+    "explanation": "Start with a direct, respectful conversation. It solves most issues and builds trust. Escalate to the manager if it doesn't. Doing their work silently hides the problem, and calling them out publicly damages the team."
+  },
+  {
+    "id": "sj-003",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "ambiguity",
+    "difficulty": "easy",
+    "prompt": "You're assigned a task with unclear requirements and a 2-day deadline. What is the **most effective** approach?",
+    "options": [
+      "Wait until someone clarifies the requirements.",
+      "Build every possible interpretation so one of them is right.",
+      "Ask the stakeholder targeted clarifying questions early, write down your assumptions, and confirm them before building much.",
+      "Start building from your best guess and adjust later if needed."
+    ],
+    "answer": 2,
+    "option_scores": [0, 0, 2, 1],
+    "explanation": "Clearing up ambiguity early is cheap; rework late is expensive. Writing down assumptions creates a shared understanding. Starting from a best guess is reasonable only if you also check in early."
+  },
+  {
+    "id": "sj-004",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "feedback and disagreement",
+    "difficulty": "medium",
+    "prompt": "In code review, a senior engineer asks you to change an approach. You believe your approach is better. What is the **most effective** response?",
+    "options": [
+      "Ignore the comment and merge.",
+      "Reply respectfully with your reasoning and evidence (benchmarks, docs, trade-offs), ask for their perspective, and be open to being wrong.",
+      "Make the change to avoid conflict, even though you think it's worse.",
+      "Escalate to your manager."
+    ],
+    "answer": 1,
+    "option_scores": [0, 2, 1, 0],
+    "explanation": "Healthy teams settle technical disagreements with evidence and open discussion. Giving in silently is acceptable but loses a learning opportunity. Ignoring feedback or escalating first damages trust."
+  },
+  {
+    "id": "sj-005",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "estimates and transparency",
+    "difficulty": "medium",
+    "prompt": "You estimated a task at 3 days. On day 2 you realise it will take about 6. What is the **most effective** action?",
+    "options": [
+      "Keep quiet and deliver whatever is done on day 3, even if it's not fully tested.",
+      "Work extra hours and only say something if you're still behind on day 3.",
+      "Wait for your manager to ask how it's going.",
+      "Tell the stakeholders now: the new estimate, why it changed, and options such as reducing scope or reprioritising."
+    ],
+    "answer": 3,
+    "option_scores": [0, 1, 0, 2],
+    "explanation": "Raising slippage early, with reasons and options, lets others plan. Hiding it, or shipping untested code, creates bigger problems later."
+  },
+  {
+    "id": "sj-006",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "stakeholder communication",
+    "difficulty": "easy",
+    "prompt": "A non-technical product manager asks why a feature is delayed. What is the **most effective** response?",
+    "options": [
+      "\"It's complicated, there were technical issues.\"",
+      "A detailed technical explanation of the database migration bug.",
+      "A plain-language explanation of what caused the delay, its impact, the new expected date, and what you're doing to stay on track.",
+      "Explain that another team's API caused it, so it isn't your team's fault."
+    ],
+    "answer": 2,
+    "option_scores": [0, 1, 2, 0],
+    "explanation": "Match the explanation to your audience: cause, impact, new date and plan, without jargon. Too much technical detail is accurate but unhelpful, and vague answers or blame erode trust."
+  },
+  {
+    "id": "sj-007",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "responsible ai use",
+    "difficulty": "medium",
+    "prompt": "An AI coding assistant generated a function you don't fully understand, but the tests pass. What is the **most effective** action?",
+    "options": [
+      "Merge it, since the tests pass.",
+      "Rewrite the whole thing from scratch by hand.",
+      "Ask a teammate to approve it without mentioning you don't understand it.",
+      "Read it until you understand it, add tests for edge cases, and only merge once you could explain and maintain it."
+    ],
+    "answer": 3,
+    "option_scores": [0, 1, 0, 2],
+    "explanation": "You own every line you merge, however it was written. Understanding the code and testing edge cases is the professional standard. Rewriting from scratch is safe but usually wasteful."
+  },
+  {
+    "id": "sj-008",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "security incidents",
+    "difficulty": "medium",
+    "prompt": "You realise you accidentally pushed a production API key to a public GitHub repository an hour ago. What should you do **first**?",
+    "options": [
+      "Delete the file in a new commit.",
+      "Revoke and rotate the key immediately, then remove it from the Git history and tell your lead.",
+      "Rewrite the Git history with a force-push to remove the key.",
+      "Do nothing if no unusual usage shows up on the dashboard."
+    ],
+    "answer": 1,
+    "option_scores": [0, 2, 1, 0],
+    "explanation": "Once a secret is public, assume it has been compromised. Bots scan GitHub for keys within minutes. Rotating the key is the only real fix. Cleaning the history is good hygiene but doesn't make a leaked key safe, and a new commit leaves the key in the history."
+  }
+]

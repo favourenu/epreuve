@@ -1,0 +1,277 @@
+[
+  {
+    "id": "se-001",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "git",
+    "difficulty": "medium",
+    "prompt": "You made a commit on your local `main` branch but have **not pushed** it. You want to undo the commit and keep its changes staged so you can recommit them. Which command do you use?",
+    "options": ["`git revert HEAD`", "`git reset --hard HEAD~1`", "`git reset --soft HEAD~1`", "`git checkout HEAD~1`"],
+    "answer": 2,
+    "explanation": "`reset --soft` moves the branch back one commit but leaves the changes staged. `--hard` throws the changes away. `revert` adds a new commit that undoes the old one, which is used for commits that are already pushed. `checkout HEAD~1` detaches HEAD."
+  },
+  {
+    "id": "se-002",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "A `POST /orders` request successfully creates a new order. Which HTTP status code is most appropriate to return?",
+    "options": ["200 OK", "201 Created", "204 No Content", "302 Found"],
+    "answer": 1,
+    "explanation": "201 Created means a new resource was created, usually with a Location header or the created resource in the body."
+  },
+  {
+    "id": "se-003",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "According to the HTTP specification, which method is **not** idempotent?",
+    "options": ["GET", "PUT", "DELETE", "POST"],
+    "answer": 3,
+    "explanation": "Idempotent means repeating the same request has the same effect as sending it once. PUT replaces, DELETE removes and GET reads, so all three are idempotent. Repeating a POST typically creates duplicates."
+  },
+  {
+    "id": "se-004",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "sql",
+    "difficulty": "medium",
+    "prompt": "Table `users(id, name, country)`. Which query lists each country with its number of users, **only for countries with more than 10 users**?",
+    "options": [
+      "`SELECT country, COUNT(*) FROM users WHERE COUNT(*) > 10 GROUP BY country;`",
+      "`SELECT country, COUNT(*) FROM users GROUP BY country HAVING COUNT(*) > 10;`",
+      "`SELECT country, COUNT(*) FROM users GROUP BY country WHERE COUNT(*) > 10;`",
+      "`SELECT country, COUNT(*) > 10 FROM users GROUP BY country;`"
+    ],
+    "answer": 1,
+    "explanation": "WHERE filters rows before grouping and cannot use aggregates. HAVING filters groups after aggregation. Option D returns a true/false column instead of filtering."
+  },
+  {
+    "id": "se-005",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "sql",
+    "difficulty": "easy",
+    "prompt": "What does `SELECT * FROM customers c LEFT JOIN orders o ON o.customer_id = c.id` return?",
+    "options": [
+      "Only customers who have at least one order.",
+      "Every customer, with their orders where they exist and NULLs for customers without orders.",
+      "Every order, with NULLs where the customer does not exist.",
+      "Every combination of customer and order."
+    ],
+    "answer": 1,
+    "explanation": "A LEFT JOIN keeps every row from the left table (customers). Customers without matching orders appear once with NULL order columns. Option A describes an INNER JOIN and option D a CROSS JOIN."
+  },
+  {
+    "id": "se-006",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "complexity",
+    "difficulty": "easy",
+    "prompt": "What is the time complexity of binary search on a sorted array of n elements?",
+    "options": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+    "answer": 1,
+    "explanation": "Each step halves the search range, so at most about log2(n) steps are needed."
+  },
+  {
+    "id": "se-007",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "complexity",
+    "difficulty": "medium",
+    "prompt": "What is the time complexity of this function?\n\n```python\ndef pairs(items):\n    n = len(items)\n    count = 0\n    for i in range(n):\n        for j in range(i, n):\n            count += 1\n    return count\n```",
+    "options": ["O(n)", "O(n log n)", "O(n^2)", "O(2^n)"],
+    "answer": 2,
+    "explanation": "The inner loop runs n + (n-1) + ... + 1 = n(n+1)/2 times. Constant factors are dropped, so this is O(n^2)."
+  },
+  {
+    "id": "se-008",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "data structures",
+    "difficulty": "easy",
+    "prompt": "You need to look up user records by email address as fast as possible, with average O(1) lookups. Which data structure fits best?",
+    "options": ["A sorted array", "A linked list", "A hash map (dictionary)", "A stack"],
+    "answer": 2,
+    "explanation": "Hash maps give average constant-time lookup by key. A sorted array gives O(log n) with binary search, and a linked list O(n)."
+  },
+  {
+    "id": "se-009",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "oop and design principles",
+    "difficulty": "easy",
+    "prompt": "\"A class should have only one reason to change.\" Which SOLID principle is this?",
+    "options": ["Single Responsibility Principle", "Open/Closed Principle", "Liskov Substitution Principle", "Dependency Inversion Principle"],
+    "answer": 0,
+    "explanation": "The Single Responsibility Principle keeps each class focused on one concern, so changes in one area don't ripple into unrelated code."
+  },
+  {
+    "id": "se-010",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "testing",
+    "difficulty": "easy",
+    "prompt": "In a unit test, why would you use a **mock** for a payment gateway client?",
+    "options": [
+      "To make the test run against the real payment API.",
+      "To replace the real dependency with a controlled stand-in, so you test only your own code, quickly and predictably.",
+      "To increase code coverage numbers without testing anything.",
+      "To make the payment gateway respond faster in production."
+    ],
+    "answer": 1,
+    "explanation": "Mocks isolate the unit under test from slow, costly or unpredictable dependencies, and let you simulate cases like declined payments or timeouts."
+  },
+  {
+    "id": "se-011",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "security",
+    "difficulty": "easy",
+    "prompt": "What is the most effective way to prevent SQL injection?",
+    "options": [
+      "Escape single quotes in user input by hand.",
+      "Use parameterized queries (prepared statements).",
+      "Hide database error messages from users.",
+      "Only allow POST requests."
+    ],
+    "answer": 1,
+    "explanation": "Parameterized queries send data separately from the SQL text, so user input can never be read as SQL. Escaping by hand is easy to get wrong, and hiding errors does not fix the vulnerability."
+  },
+  {
+    "id": "se-012",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "api design",
+    "difficulty": "easy",
+    "prompt": "Following REST conventions, which endpoint best retrieves all orders belonging to user 42?",
+    "options": ["`POST /getOrders?user=42`", "`GET /users/42/orders`", "`GET /orders/getAllForUser/42`", "`DELETE /users/42/orders`"],
+    "answer": 1,
+    "explanation": "REST uses nouns for resources and HTTP methods for actions. Orders nested under the user resource, fetched with GET, is the conventional design."
+  },
+  {
+    "id": "se-013",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "git",
+    "difficulty": "easy",
+    "prompt": "When does a merge conflict occur in Git?",
+    "options": [
+      "When two branches have different commit messages.",
+      "When both branches changed the same lines of the same file in different ways.",
+      "Whenever two people work on the same repository.",
+      "When a branch is more than 10 commits behind main."
+    ],
+    "answer": 1,
+    "explanation": "Git merges changes to different parts of a file automatically. It only needs a human when both sides changed the same region and it can't tell which version is correct."
+  },
+  {
+    "id": "se-014",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "concurrency",
+    "difficulty": "medium",
+    "prompt": "Two web requests run at the same time. Each one reads a product's `stock` (10), subtracts 1 in application code, and writes the result back. Afterwards, stock is 9 instead of 8. What is this problem and how do you fix it?",
+    "options": [
+      "A memory leak; restart the server more often.",
+      "A race condition (lost update); use an atomic update such as `UPDATE products SET stock = stock - 1 WHERE id = ?`, or a transaction with row locking.",
+      "A deadlock; add more database connections.",
+      "Caching; disable the browser cache."
+    ],
+    "answer": 1,
+    "explanation": "Both requests read the same old value before either writes, so one update is lost. Doing the read-modify-write atomically in the database, or locking the row, makes the updates happen one after the other."
+  },
+  {
+    "id": "se-015",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "caching",
+    "difficulty": "easy",
+    "prompt": "You cache an API's product-price response for 10 minutes. What is the main trade-off?",
+    "options": [
+      "Responses become slower.",
+      "Users may see out-of-date (stale) prices for up to 10 minutes.",
+      "The database load increases.",
+      "The API can no longer be called."
+    ],
+    "answer": 1,
+    "explanation": "Caching trades freshness for speed and lower load. For data like prices, you must decide whether staleness is acceptable or add invalidation when prices change."
+  },
+  {
+    "id": "se-016",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "containers",
+    "difficulty": "easy",
+    "prompt": "In Docker, what is the relationship between an image and a container?",
+    "options": [
+      "They are the same thing.",
+      "A container is a running (or stopped) instance created from an image.",
+      "An image is a running instance of a container.",
+      "Images are for Linux and containers are for Windows."
+    ],
+    "answer": 1,
+    "explanation": "An image is a read-only template: the filesystem plus config. A container is an instance of that image with its own writable layer and process."
+  },
+  {
+    "id": "se-017",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "data structures",
+    "difficulty": "easy",
+    "prompt": "Which data structure is the natural fit for implementing \"undo\" in a text editor?",
+    "options": ["Queue (FIFO)", "Stack (LIFO)", "Binary search tree", "Hash set"],
+    "answer": 1,
+    "explanation": "Undo reverses the most recent action first, which is last-in, first-out: a stack."
+  },
+  {
+    "id": "se-018",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "security",
+    "difficulty": "medium",
+    "prompt": "How should user passwords be stored in a database?",
+    "options": [
+      "In plain text, in a column only admins can read.",
+      "Encrypted with AES, with the key stored in the app config.",
+      "Hashed with a slow, salted password-hashing algorithm such as bcrypt or Argon2.",
+      "Hashed with plain MD5 for speed."
+    ],
+    "answer": 2,
+    "explanation": "Password hashing should be one-way, salted (so identical passwords hash differently) and deliberately slow to resist brute force. Encryption can be reversed by anyone with the key, and MD5 is far too fast to resist cracking."
+  },
+  {
+    "id": "se-019",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "databases",
+    "difficulty": "medium",
+    "prompt": "What is the main trade-off of adding an index to a database column?",
+    "options": [
+      "Faster reads that filter on that column, but slower writes and extra storage.",
+      "Faster writes, but slower reads.",
+      "No trade-off; you should index every column.",
+      "It deletes duplicate rows."
+    ],
+    "answer": 0,
+    "explanation": "Indexes speed up lookups and sorts on the indexed column, but every INSERT/UPDATE/DELETE must also update the index, and the index uses disk space."
+  },
+  {
+    "id": "se-020",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "Your client calls an AI API and receives **HTTP 429**. What does it mean and what should the client do?",
+    "options": [
+      "The server crashed; give up immediately.",
+      "Too Many Requests: you hit a rate limit. Back off and retry later (respect `Retry-After` if present).",
+      "Unauthorized: the API key is wrong.",
+      "The resource was not found; check the URL."
+    ],
+    "answer": 1,
+    "explanation": "429 is rate limiting. The correct client behaviour is to retry with exponential backoff, honouring the Retry-After header. 401/403 are authentication errors and 404 means not found."
+  }
+]

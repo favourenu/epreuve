@@ -1,0 +1,134 @@
+[
+  {
+    "id": "nr-001",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "percentage change",
+    "difficulty": "easy",
+    "prompt": "A startup's quarterly revenue is shown below.\n\n| Quarter | Revenue |\n|---|---|\n| Q1 | $120,000 |\n| Q2 | $150,000 |\n| Q3 | $135,000 |\n| Q4 | $180,000 |\n\nWhat was the percentage increase in revenue from Q3 to Q4?",
+    "options": ["20%", "25%", "33.3%", "45%"],
+    "answer": 2,
+    "explanation": "Change = 180,000 - 135,000 = 45,000. Percentage change is always relative to the starting value: 45,000 / 135,000 = 0.333 = 33.3%. A common mistake is dividing by the new value (45/180 = 25%)."
+  },
+  {
+    "id": "nr-002",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "averages",
+    "difficulty": "easy",
+    "prompt": "A startup's quarterly revenue is shown below.\n\n| Quarter | Revenue |\n|---|---|\n| Q1 | $120,000 |\n| Q2 | $150,000 |\n| Q3 | $135,000 |\n| Q4 | $180,000 |\n\nWhat was the average quarterly revenue for the year?",
+    "options": ["$140,000", "$146,250", "$150,000", "$152,500"],
+    "answer": 1,
+    "explanation": "Total = 120 + 150 + 135 + 180 = 585 thousand. 585,000 / 4 = 146,250."
+  },
+  {
+    "id": "nr-003",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "reverse percentages",
+    "difficulty": "easy",
+    "prompt": "A laptop is sold for $800 after a 20% discount. What was the original price?",
+    "options": ["$960", "$1,000", "$1,040", "$1,100"],
+    "answer": 1,
+    "explanation": "$800 is 80% of the original price, so original = 800 / 0.8 = $1,000. Adding 20% to $800 ($960) is the classic trap: the 20% was taken off the original, not the sale price."
+  },
+  {
+    "id": "nr-004",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "rates and work",
+    "difficulty": "medium",
+    "prompt": "A team of 4 developers closes 60 tickets in 5 days. Working at the same rate per developer, how many days would 6 developers need to close 108 tickets?",
+    "options": ["5 days", "6 days", "7 days", "9 days"],
+    "answer": 1,
+    "explanation": "Rate per developer per day = 60 / (4 x 5) = 3 tickets. 6 developers close 18 tickets/day. 108 / 18 = 6 days."
+  },
+  {
+    "id": "nr-005",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "percentages",
+    "difficulty": "medium",
+    "prompt": "A service promises 99.9% uptime over a 30-day month. What is the maximum downtime allowed in that month?",
+    "options": ["4.3 minutes", "43.2 minutes", "72 minutes", "432 minutes"],
+    "answer": 1,
+    "explanation": "30 days x 24 h x 60 min = 43,200 minutes. Allowed downtime = 0.1% = 0.001 x 43,200 = 43.2 minutes."
+  },
+  {
+    "id": "nr-006",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "ratios",
+    "difficulty": "medium",
+    "prompt": "The ratio of frontend to backend engineers in a 40-person team is 3:5. How many additional frontend engineers must be hired (with no other changes) for the ratio to become 1:1?",
+    "options": ["5", "8", "10", "15"],
+    "answer": 2,
+    "explanation": "3 + 5 = 8 parts; 40 / 8 = 5 per part. Frontend = 15, backend = 25. To reach 1:1, frontend must equal 25, so hire 10."
+  },
+  {
+    "id": "nr-007",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "unit costs",
+    "difficulty": "medium",
+    "prompt": "Cloud storage costs $0.023 per GB per month. How much does it cost to store 2.5 TB for 6 months? (Use 1 TB = 1,000 GB.)",
+    "options": ["$57.50", "$138.00", "$345.00", "$3,450.00"],
+    "answer": 2,
+    "explanation": "2.5 TB = 2,500 GB. Monthly cost = 2,500 x 0.023 = $57.50. Over 6 months = $345.00."
+  },
+  {
+    "id": "nr-008",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "medium",
+    "prompt": "Units sold by region:\n\n| Region | 2024 | 2025 |\n|---|---|---|\n| North | 240 | 300 |\n| South | 200 | 190 |\n| East | 160 | 216 |\n| West | 400 | 410 |\n\nWhich region had the largest percentage growth from 2024 to 2025?",
+    "options": ["North", "South", "East", "West"],
+    "answer": 2,
+    "explanation": "North: 60/240 = 25%. South: -10/200 = -5%. East: 56/160 = 35%. West: 10/400 = 2.5%. North had the largest absolute increase (60 units), but East had the largest percentage growth."
+  },
+  {
+    "id": "nr-009",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "hard",
+    "prompt": "Units sold by region:\n\n| Region | 2024 | 2025 |\n|---|---|---|\n| North | 240 | 300 |\n| South | 200 | 190 |\n| East | 160 | 216 |\n| West | 400 | 410 |\n\nBy what percentage did total units sold grow from 2024 to 2025?",
+    "options": ["10.6%", "11.6%", "12.0%", "16.0%"],
+    "answer": 1,
+    "explanation": "2024 total = 240 + 200 + 160 + 400 = 1,000. 2025 total = 300 + 190 + 216 + 410 = 1,116. Growth = 116 / 1,000 = 11.6%. Averaging the regional percentages would be wrong because the regions are different sizes."
+  },
+  {
+    "id": "nr-010",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "compound growth",
+    "difficulty": "medium",
+    "prompt": "An app has 5,000 users and grows by 10% each month (compounding). Approximately how many users will it have after 3 months?",
+    "options": ["6,500", "6,600", "6,655", "7,320"],
+    "answer": 2,
+    "explanation": "5,000 x 1.1 x 1.1 x 1.1 = 5,000 x 1.331 = 6,655. Simple growth (3 x 10% = 30%) gives 6,500, which ignores compounding."
+  },
+  {
+    "id": "nr-011",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "number series",
+    "difficulty": "easy",
+    "prompt": "What number comes next in the series?\n\n**3, 7, 15, 31, 63, ?**",
+    "options": ["95", "125", "127", "131"],
+    "answer": 2,
+    "explanation": "Each term is double the previous term plus 1: 63 x 2 + 1 = 127. (The differences 4, 8, 16, 32, 64 also double.)"
+  },
+  {
+    "id": "nr-012",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "capacity estimation",
+    "difficulty": "hard",
+    "prompt": "An API receives 1,200 requests per minute. Each request uses 250 ms of CPU time on one core. On average, how many CPU cores are kept fully busy?",
+    "options": ["3", "5", "20", "300"],
+    "answer": 1,
+    "explanation": "1,200 requests/min = 20 requests/second. Each needs 0.25 core-seconds, so 20 x 0.25 = 5 core-seconds of work per second = 5 cores fully busy."
+  }
+]

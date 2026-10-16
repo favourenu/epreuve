@@ -1,0 +1,78 @@
+[
+  {
+    "id": "ad-001",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "string comparison",
+    "difficulty": "easy",
+    "prompt": "Which pair contains two **exactly identical** values?",
+    "options": [
+      "`usr_8812_LM`  -  `usr_8821_LM`",
+      "`api.v2.prod-eu`  -  `api.v2.prod-eu`",
+      "`0x7F3A9C`  -  `0x7F3A9G`",
+      "`Ledger#00419`  -  `Ledger#00491`"
+    ],
+    "answer": 1,
+    "explanation": "The others differ subtly: 8812 vs 8821 (swapped digits), 9C vs 9G, and 00419 vs 00491."
+  },
+  {
+    "id": "ad-002",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "comparing records",
+    "difficulty": "medium",
+    "prompt": "Compare the original configuration with the copy. How many lines differ?\n\n**Original**\n```\nhost=db.internal\nport=5432\nuser=svc_reports\npool_size=20\ntimeout=30s\nssl=true\n```\n**Copy**\n```\nhost=db.internal\nport=5423\nuser=svc_report\npool_size=20\ntimeout=30s\nssl=ture\n```",
+    "options": ["1", "2", "3", "4"],
+    "answer": 2,
+    "explanation": "port 5432 vs 5423, user svc_reports vs svc_report (missing 's'), and ssl true vs ture. That's 3 lines."
+  },
+  {
+    "id": "ad-003",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "checking calculations",
+    "difficulty": "medium",
+    "prompt": "Review this invoice.\n\n| Line | Item | Qty | Unit price | Line total |\n|---|---|---|---|---|\n| 1 | Notebook | 3 | $12.50 | $37.50 |\n| 2 | Pen pack | 2 | $8.00 | $16.00 |\n| 3 | Folder | 4 | $5.25 | $20.00 |\n| | **Subtotal** | | | **$73.50** |\n\nWhich line contains an error?",
+    "options": ["Line 1", "Line 2", "Line 3", "There is no error"],
+    "answer": 2,
+    "explanation": "4 x $5.25 = $21.00, not $20.00. The subtotal adds up the listed line totals correctly, so the error is easy to miss if you only check the sum."
+  },
+  {
+    "id": "ad-004",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "ordering",
+    "difficulty": "easy",
+    "prompt": "Which list is in correct **ascending alphabetical** order?",
+    "options": [
+      "apple, apricot, avocado, banana",
+      "apple, avocado, apricot, banana",
+      "apricot, apple, avocado, banana",
+      "apple, apricot, banana, avocado"
+    ],
+    "answer": 0,
+    "explanation": "Comparing letter by letter: 'apple' < 'apricot' (l < r), 'apricot' < 'avocado' (p < v), and all 'a' words come before 'banana'."
+  },
+  {
+    "id": "ad-005",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "matching identifiers",
+    "difficulty": "easy",
+    "prompt": "A support ticket refers to the ID **TKT-40917-B**. Which entry matches it exactly?",
+    "options": ["TKT-40917-8", "TKT-4097-B", "TKT-40917-B", "TKT_40917-B"],
+    "answer": 2,
+    "explanation": "The others have an 8 instead of B, a missing 1, or an underscore instead of a hyphen."
+  },
+  {
+    "id": "ad-006",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "data entry verification",
+    "difficulty": "medium",
+    "prompt": "**Source record**\n\nName: Adaeze Okafor | Date of birth: 1998-04-12 | Phone: +234 803 551 2290 | Employee ID: EMP-30815\n\n**Entered into system**\n\nName: Adaeze Okafor | Date of birth: 1998-04-21 | Phone: +234 803 551 2290 | Employee ID: EMP-30815\n\nWhich field was entered incorrectly?",
+    "options": ["Name", "Date of birth", "Phone", "Employee ID"],
+    "answer": 1,
+    "explanation": "The day and month digits were transposed: 04-12 became 04-21."
+  }
+]
