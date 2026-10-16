@@ -3,8 +3,8 @@ import { Link, useParams } from 'react-router-dom'
 import { api } from '../api'
 import { CodeEditor } from '../components/LazyCodeEditor'
 import { Markdown } from '../components/Markdown'
-import { Card, CategoryBars, DifficultyTag, ErrorBox, Spinner } from '../components/ui'
-import { categoryLabel, formatDate, formatDuration, formatValue, scoreTone } from '../format'
+import { Card, CategoryBars, DifficultyTag, EmptyState, ErrorBox, ScoreRing, Spinner } from '../components/ui'
+import { categoryLabel, formatDate, formatDuration, formatValue } from '../format'
 import { useAsync } from '../hooks'
 import type { AttemptReview, ReviewItem } from '../types'
 
@@ -51,9 +51,7 @@ export function Results() {
 
       <Card className="result-hero">
         <div className="result-hero-main">
-          <div className={`score-ring score-${scoreTone(attempt.percent)}`}>
-            <span className="score-ring-value">{attempt.percent == null ? '-' : `${Math.round(attempt.percent)}%`}</span>
-          </div>
+          <ScoreRing percent={attempt.percent} />
           <div>
             <p className="eyebrow">{formatDate(attempt.started_at)}</p>
             <h1>{attempt.test_title}</h1>
@@ -74,7 +72,7 @@ export function Results() {
         </div>
       </Card>
 
-      <div className="two-col">
+      <div className="results-grid">
         <Card title="Score by skill">
           <CategoryBars rows={review.categories} />
         </Card>
@@ -98,7 +96,11 @@ export function Results() {
           {items.map((item) => (
             <ReviewEntry key={item.position} item={item} />
           ))}
-          {items.length === 0 && <p className="muted">Nothing missed. Well done.</p>}
+          {items.length === 0 && (
+            <EmptyState icon="✓" title="Nothing missed">
+              Every question earned full marks. Try a harder test, or the full assessment.
+            </EmptyState>
+          )}
         </div>
       </Card>
     </div>
@@ -131,7 +133,7 @@ function FeedbackCard({ review, onRetry, retrying }: { review: AttemptReview; on
       )}
       {status === 'ready' && fb && (
         <div className="report">
-          <p>{fb.summary}</p>
+          <p className="report-summary">{fb.summary}</p>
           {fb.strengths.length > 0 && (
             <>
               <h3>Strengths</h3>
@@ -217,7 +219,11 @@ function ReviewEntry({ item }: { item: ReviewItem }) {
                     {correct && <span className="badge badge-good">Best answer</span>}
                     {chosen && !correct && <span className="badge badge-bad">Your answer</span>}
                     {chosen && correct && <span className="badge badge-good">Your answer</span>}
-                    {q.option_scores && <span className="muted small">{q.option_scores[i]} pts</span>}
+                    {q.option_scores && (
+                      <span className="muted small">
+                        {q.option_scores[i]} {q.option_scores[i] === 1 ? 'pt' : 'pts'}
+                      </span>
+                    )}
                   </li>
                 )
               })}

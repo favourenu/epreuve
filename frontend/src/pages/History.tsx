@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { api } from '../api'
-import { Card, ErrorBox, ScoreBadge, Spinner } from '../components/ui'
+import { Card, EmptyState, ErrorBox, ScoreBadge, Spinner } from '../components/ui'
 import { formatDate, formatDuration } from '../format'
 import { useAsync } from '../hooks'
 
@@ -13,12 +13,25 @@ export function History() {
 
   return (
     <div className="stack">
-      <h1>History</h1>
+      <div className="page-head">
+        <div>
+          <p className="eyebrow">Every attempt</p>
+          <h1>History</h1>
+        </div>
+      </div>
       <Card>
         {data.length === 0 ? (
-          <p className="muted">
-            No attempts yet. <Link to="/dashboard">Pick a test</Link> to get started.
-          </p>
+          <EmptyState
+            icon="⏱"
+            title="No attempts yet"
+            action={
+              <Link to="/dashboard" className="btn btn-primary">
+                Choose a test
+              </Link>
+            }
+          >
+            Every test you take is saved here with its score, so you can review your answers and see your progress.
+          </EmptyState>
         ) : (
           <div className="table-wrap">
             <table className="history-table">
@@ -44,7 +57,11 @@ export function History() {
                     </td>
                     <td>{a.status === 'completed' ? <ScoreBadge percent={a.percent} /> : <span className="chip">In progress</span>}</td>
                     <td className="right">
-                      <Link to={a.status === 'completed' ? `/attempts/${a.id}/results` : `/attempts/${a.id}`}>
+                      <Link
+                        className="btn btn-sm"
+                        to={a.status === 'completed' ? `/attempts/${a.id}/results` : `/attempts/${a.id}`}
+                        aria-label={`${a.status === 'completed' ? 'Review' : 'Resume'} ${a.test_title}, ${formatDate(a.started_at)}`}
+                      >
                         {a.status === 'completed' ? 'Review' : 'Resume'}
                       </Link>
                     </td>

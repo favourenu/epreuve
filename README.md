@@ -15,6 +15,10 @@ Built for preparing for the Learn2Earn job-readiness assessment, covering techni
 - **Accounts.** Email and password sign-up with Argon2 password hashing and server-side sessions in an httpOnly cookie. Every attempt, score and stat belongs to its user, and the API enforces it: another user's attempt simply returns 404.
 - **Progress tracking.** Score trend, per-skill accuracy across all attempts, a "recommended next" test, and full question review with explanations and reference solutions.
 
+## Design
+
+An exam-paper look: warm paper tones, an ink-green brand colour and a marigold "highlighter" accent. Headings use Fraunces and body text uses Atkinson Hyperlegible, a typeface designed for legibility (its slashed zero tells 0 from O apart in detail questions). Fonts are bundled, so the app works offline. Light and dark modes both meet WCAG AA contrast for text and 3:1 for form controls. Every page works from 390px phones up, with no horizontal scrolling and tap targets of at least 40px. See [docs/screenshots](docs/screenshots) for before and after images.
+
 ## Architecture
 
 ```

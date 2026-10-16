@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { categoryLabel, scoreTone } from '../format'
 
 export function ScoreBadge({ percent }: { percent: number | null | undefined }) {
@@ -6,10 +6,17 @@ export function ScoreBadge({ percent }: { percent: number | null | undefined }) 
   return <span className={`badge badge-${tone}`}>{percent == null ? '-' : `${Math.round(percent)}%`}</span>
 }
 
-export function ProgressBar({ value, tone }: { value: number; tone?: string }) {
+export function ProgressBar({ value, tone, label, className = '' }: { value: number; tone?: string; label?: string; className?: string }) {
   const pct = Math.max(0, Math.min(100, value))
   return (
-    <div className="bar" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
+    <div
+      className={`bar ${className}`}
+      role="progressbar"
+      aria-label={label}
+      aria-valuenow={Math.round(pct)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+    >
       <div className={`bar-fill ${tone ? `bar-${tone}` : ''}`} style={{ width: `${pct}%` }} />
     </div>
   )
@@ -30,7 +37,7 @@ export function CategoryBars({
               {r.pending ? 'awaiting AI grading' : `${r.points.toFixed(r.points % 1 ? 1 : 0)}/${r.max_points} · ${Math.round(r.percent)}%`}
             </span>
           </div>
-          <ProgressBar value={r.pending ? 0 : r.percent} tone={scoreTone(r.percent)} />
+          <ProgressBar value={r.pending ? 0 : r.percent} tone={scoreTone(r.percent)} label={categoryLabel(r.category)} />
         </li>
       ))}
     </ul>
@@ -69,6 +76,44 @@ export function Spinner({ label = 'Loading' }: { label?: string }) {
     <div className="spinner-row" role="status">
       <span className="spinner" aria-hidden="true" />
       <span className="muted">{label}...</span>
+    </div>
+  )
+}
+
+export function ScoreRing({ percent }: { percent: number | null }) {
+  return (
+    <div
+      className={`score-ring score-${scoreTone(percent)}`}
+      style={{ '--p': percent ?? 0 } as CSSProperties}
+      role="img"
+      aria-label={percent == null ? 'No score yet' : `Score ${Math.round(percent)} percent`}
+    >
+      <span className="score-ring-value" aria-hidden="true">
+        {percent == null ? '-' : `${Math.round(percent)}%`}
+      </span>
+    </div>
+  )
+}
+
+export function EmptyState({
+  icon = 'É',
+  title,
+  children,
+  action,
+}: {
+  icon?: string
+  title: string
+  children?: ReactNode
+  action?: ReactNode
+}) {
+  return (
+    <div className="empty">
+      <span className="empty-icon" aria-hidden="true">
+        {icon}
+      </span>
+      <h3>{title}</h3>
+      {children && <p>{children}</p>}
+      {action}
     </div>
   )
 }

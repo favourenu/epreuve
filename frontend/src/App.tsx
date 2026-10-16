@@ -4,6 +4,7 @@ import { AuthPage } from './pages/AuthPage'
 import { Dashboard } from './pages/Dashboard'
 import { Landing } from './pages/Landing'
 import { Logo } from './components/Logo'
+import { EmptyState } from './components/ui'
 import { History } from './pages/History'
 import { Results } from './pages/Results'
 import { TakeTest } from './pages/TakeTest'
@@ -44,9 +45,23 @@ function Layout({ children }: { children: React.ReactNode }) {
 
 function NotFound() {
   return (
-    <div className="card">
-      <h1>Page not found</h1>
-      <Link to="/">Back to the start</Link>
+    <div className="auth-page">
+      <Link to="/" className="brand" aria-label="Épreuve home">
+        <Logo />
+      </Link>
+      <div className="auth-card">
+        <EmptyState
+          icon="?"
+          title="This page doesn't exist"
+          action={
+            <Link to="/" className="btn btn-primary">
+              Go to the start
+            </Link>
+          }
+        >
+          The link may be mistyped, or the page may have moved.
+        </EmptyState>
+      </div>
     </div>
   )
 }

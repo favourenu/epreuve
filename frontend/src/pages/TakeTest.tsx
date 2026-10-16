@@ -214,18 +214,31 @@ export function TakeTest() {
             Question {attempt.position + 1} of {attempt.total_questions}
           </span>
         </div>
-        <div className={`timer ${lowTime ? 'timer-low' : ''}`} aria-live={lowTime ? 'polite' : 'off'}>
-          <span className="timer-label">Time left</span>
+        <div className={`timer ${lowTime ? 'timer-low' : ''}`} role="timer" aria-label="Time left">
+          <span className="timer-label" aria-hidden="true">Time left</span>
           <span className="timer-value tabular">{remaining == null ? '--:--' : formatDuration(remaining)}</span>
         </div>
-        <button className="btn btn-ghost btn-sm" onClick={() => setConfirmFinish(true)} disabled={submitting}>
-          Finish test
+        {/* Announce the one-minute warning once, rather than every tick. */}
+        <span className="visually-hidden" aria-live="assertive">
+          {lowTime ? 'One minute or less left' : ''}
+        </span>
+        <button className="btn btn-sm" onClick={() => setConfirmFinish(true)} disabled={submitting}>
+          <span>
+            Finish<span className="hide-phone"> test</span>
+          </span>
         </button>
       </header>
-      <ProgressBar value={(attempt.position / attempt.total_questions) * 100} />
+      <ProgressBar
+        className="test-progress"
+        label="Progress through the test"
+        value={(attempt.position / attempt.total_questions) * 100}
+      />
 
       <main className={`container test-body ${q.type === 'code' ? 'test-body-wide' : ''}`}>
         <div className="question-meta">
+          <span className="q-number">
+            <b>{String(attempt.position + 1).padStart(2, '0')}</b> / {String(attempt.total_questions).padStart(2, '0')}
+          </span>
           <span className="chip">{categoryLabel(q.category)}</span>
           <DifficultyTag level={q.difficulty} />
           <span className="muted">
