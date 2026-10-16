@@ -29,7 +29,7 @@ export function TestIntro() {
 
   return (
     <div className="narrow stack">
-      <Link to="/" className="back">
+      <Link to="/dashboard" className="back">
         ← Dashboard
       </Link>
       <Card>

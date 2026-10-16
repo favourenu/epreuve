@@ -44,21 +44,52 @@ class ConflictError(AttemptError):
     status_code = 409
 
 
-def get_attempt(db: Session, attempt_id: str) -> Attempt:
-    attempt = db.scalar(
-        select(Attempt).where(Attempt.id == attempt_id).options(selectinload(Attempt.items))
-    )
+def get_attempt(db: Session, attempt_id: str, user_id: str | None) -> Attempt:
+    """Load an attempt owned by `user_id`. Another user's attempt is reported as
+    not found, so its existence isn't revealed. `user_id=None` is for internal
+    callers (background jobs) that already hold a trusted attempt id."""
+    query = select(Attempt).where(Attempt.id == attempt_id).options(selectinload(Attempt.items))
+    if user_id is not None:
+        query = query.where(Attempt.user_id == user_id)
+    attempt = db.scalar(query)
     if attempt is None:
         raise NotFoundError("Attempt not found")
     return attempt
 
 
-def start_attempt(db: Session, bank: QuestionBank, test_id: str) -> Attempt:
+def close_expired(db: Session, user_id: str) -> list[Attempt]:
+    """Close the user's in-progress attempts whose time is up. Returns the ones closed,
+    so the caller can queue their feedback."""
+    running = db.scalars(
+        select(Attempt)
+        .where(Attempt.user_id == user_id, Attempt.status == AttemptStatus.IN_PROGRESS)
+        .options(selectinload(Attempt.items))
+    ).all()
+    return [a for a in running if enforce_deadline(db, a)]
+
+
+def active_attempt(db: Session, user_id: str, test_id: str) -> Attempt | None:
+    """The user's in-progress attempt at a test. Call close_expired first."""
+    return db.scalar(
+        select(Attempt)
+        .where(Attempt.user_id == user_id, Attempt.test_id == test_id, Attempt.status == AttemptStatus.IN_PROGRESS)
+        .order_by(Attempt.started_at.desc())
+        .options(selectinload(Attempt.items))
+    )
+
+
+def start_attempt(db: Session, bank: QuestionBank, test_id: str, user_id: str) -> tuple[Attempt, bool]:
+    """Start a test, or resume the one already running (as real platforms do).
+
+    Returns (attempt, created)."""
     test = bank.tests.get(test_id)
     if test is None:
         raise NotFoundError(f"Unknown test '{test_id}'")
+    if existing := active_attempt(db, user_id, test_id):
+        return existing, False
     now = utcnow()
     attempt = Attempt(
+        user_id=user_id,
         test_id=test.id,
         test_title=test.title,
         started_at=now,
@@ -76,7 +107,7 @@ def start_attempt(db: Session, bank: QuestionBank, test_id: str) -> Attempt:
         )
     db.add(attempt)
     db.commit()
-    return attempt
+    return attempt, True
 
 
 def is_expired(attempt: Attempt) -> bool:

@@ -2,13 +2,13 @@ import logging
 from collections import defaultdict
 from collections.abc import Callable
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.deps import get_ai_service, get_session_factory
-from app.models import Attempt, AttemptStatus, FeedbackStatus, utcnow
+from app.deps import get_ai_service, get_current_user, get_session_factory
+from app.models import Attempt, AttemptStatus, FeedbackStatus, User, utcnow
 from app.question_bank import QuestionBank, get_bank
 from app.schemas import (
     AnswerRequest,
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/api/attempts", tags=["attempts"])
 async def run_feedback(attempt_id: str, session_factory: Callable[[], Session], ai: AIService) -> None:
     db = session_factory()
     try:
-        attempt = svc.get_attempt(db, attempt_id)
+        attempt = svc.get_attempt(db, attempt_id, user_id=None)
         await svc.generate_feedback(db, attempt, ai)
     except Exception as exc:  # never leave feedback stuck in "pending"
         log.exception("Feedback task crashed for attempt %s", attempt_id)
@@ -45,20 +45,23 @@ async def run_feedback(attempt_id: str, session_factory: Callable[[], Session], 
 
 
 class _Ctx:
-    """Bundles what endpoints need to finish an attempt and queue its feedback."""
+    """Bundles what endpoints need: the signed-in user, the DB, and a way to queue
+    feedback for attempts that get finished during the request."""
 
     def __init__(
         self,
         background: BackgroundTasks,
+        user: User = Depends(get_current_user),
         db: Session = Depends(get_db),
         ai: AIService = Depends(get_ai_service),
         session_factory: Callable[[], Session] = Depends(get_session_factory),
     ):
-        self.background, self.db, self.ai, self.session_factory = background, db, ai, session_factory
+        self.background, self.user, self.db = background, user, db
+        self.ai, self.session_factory = ai, session_factory
 
     def attempt(self, attempt_id: str) -> Attempt:
         try:
-            return svc.get_attempt(self.db, attempt_id)
+            return svc.get_attempt(self.db, attempt_id, self.user.id)
         except svc.AttemptError as exc:
             raise HTTPException(exc.status_code, str(exc)) from exc
 
@@ -67,6 +70,10 @@ class _Ctx:
 
     def enforce_deadline(self, attempt: Attempt) -> None:
         if svc.enforce_deadline(self.db, attempt):
+            self.queue_feedback(attempt)
+
+    def close_expired(self) -> None:
+        for attempt in svc.close_expired(self.db, self.user.id):
             self.queue_feedback(attempt)
 
 
@@ -117,23 +124,29 @@ def _raise(exc: svc.AttemptError):
 
 
 @router.post("", response_model=AttemptState, status_code=201)
-def start(body: StartAttemptRequest, db: Session = Depends(get_db), bank: QuestionBank = Depends(get_bank)):
+def start(body: StartAttemptRequest, response: Response, ctx: _Ctx = Depends(), bank: QuestionBank = Depends(get_bank)):
+    """Start a test. If one is already running for this test, it is resumed (200)."""
+    ctx.close_expired()
     try:
-        return _state(svc.start_attempt(db, bank, body.test_id))
+        attempt, created = svc.start_attempt(ctx.db, bank, body.test_id, ctx.user.id)
     except svc.AttemptError as exc:
         _raise(exc)
+    if not created:
+        response.status_code = 200
+    return _state(attempt)
 
 
 @router.get("", response_model=list[AttemptListItem])
 def list_attempts(
     status: str | None = None,
     limit: int = Query(50, ge=1, le=500),
-    db: Session = Depends(get_db),
+    ctx: _Ctx = Depends(),
 ):
-    query = select(Attempt).order_by(Attempt.started_at.desc()).limit(limit)
+    ctx.close_expired()
+    query = select(Attempt).where(Attempt.user_id == ctx.user.id).order_by(Attempt.started_at.desc()).limit(limit)
     if status:
         query = query.where(Attempt.status == status)
-    return [_list_item(a) for a in db.scalars(query).all()]
+    return [_list_item(a) for a in ctx.db.scalars(query).all()]
 
 
 @router.get("/{attempt_id}", response_model=AttemptState)

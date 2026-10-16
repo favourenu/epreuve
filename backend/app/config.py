@@ -17,7 +17,20 @@ class Settings(BaseSettings):
     )
 
     database_url: str = f"sqlite:///{(BACKEND_DIR / 'epreuve.db').as_posix()}"
+    # Browser origins allowed to call the API. Also used as the CSRF allow-list:
+    # state-changing requests carrying any other Origin header are rejected.
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+    # Authentication. SECRET_KEY signs session tokens; set a long random value in .env
+    # (python -c "import secrets; print(secrets.token_urlsafe(48))").
+    secret_key: str = ""
+    session_cookie_name: str = "epreuve_session"
+    session_days: int = 30
+    # Set true when serving over HTTPS so the cookie is never sent in plain text.
+    session_cookie_secure: bool = False
+    # Failed logins allowed per email (and per client IP) within the window before throttling.
+    login_max_failures: int = 5
+    login_window_seconds: int = 900
 
     # Seconds of leeway after a test's deadline before answers are rejected,
     # to absorb network latency on the final submission.

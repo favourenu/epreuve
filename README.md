@@ -12,6 +12,7 @@ Built for preparing for the Learn2Earn job-readiness assessment, covering techni
 - **Situational judgement** scoring gives partial credit for acceptable-but-not-best answers, as real SJTs do.
 - **AI coach.** One AI request per attempt grades written answers against a hiring rubric and produces strengths, weaknesses, a prioritised study plan and test-taking tips.
 - **Provider fallback.** OpenRouter, then Gemini, then local Ollama. If one is rate-limited or down, the next is tried. If all fail, the attempt is still scored and the report can be retried later.
+- **Accounts.** Email and password sign-up with Argon2 password hashing and server-side sessions in an httpOnly cookie. Every attempt, score and stat belongs to its user, and the API enforces it: another user's attempt simply returns 404.
 - **Progress tracking.** Score trend, per-skill accuracy across all attempts, a "recommended next" test, and full question review with explanations and reference solutions.
 
 ## Architecture
@@ -29,6 +30,7 @@ backend/   FastAPI + SQLAlchemy (SQLite)
     services/grading.py     MCQ / SJT / code / written grading
     services/code_runner.py subprocess harness for candidate code
     services/feedback.py    the single AI prompt + response schema
+    services/auth.py        accounts, password hashing, sessions, login throttling
     services/ai/            provider clients + fallback chain
     routers/                HTTP API
   tests/                    pytest suite
@@ -39,6 +41,7 @@ Key design decisions:
 - **Questions are JSON, versioned with the code.** Each attempt stores a snapshot of the questions it served, so past reviews stay correct even after the bank is edited.
 - **One AI call per attempt** keeps usage well inside free tiers (OpenRouter's free tier is about 50 requests/day).
 - **AI output is validated** with Pydantic, scores are clamped to the maximum, and candidate text is fenced off in the prompt as data to resist prompt injection.
+- **Sessions are server-side.** The cookie holds a random token, and the database stores only an HMAC of it keyed with `SECRET_KEY`, so logging out really revokes the session and a leaked database can't be used to forge cookies. Failed logins are throttled per email and per IP, and writes from unknown origins are rejected (CSRF defence on top of `SameSite=Lax`).
 - **AI work runs in the background.** Results show immediately and the report fills in when ready. Jobs interrupted by a restart are marked failed so they can be retried.
 
 ## Setup
@@ -52,7 +55,7 @@ python -m venv .venv
 .venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
 pip install -r requirements-dev.txt
 copy .env.example .env          # macOS/Linux: cp .env.example .env
-# then edit .env and add your OpenRouter and/or Gemini key
+# then edit .env: set SECRET_KEY (see the comment there) and add your OpenRouter and/or Gemini key
 
 # Frontend
 cd ../frontend
@@ -82,7 +85,7 @@ Open http://localhost:5173. API docs are at http://localhost:8000/docs.
 .venv\Scripts\python -m pytest
 ```
 
-The suite checks that every coding question's reference solution passes all of its tests, that no question leaks its answer before submission, the timer and ordering rules, sandbox behaviour (timeouts, crashes, stray prints), AI fallback, and score clamping.
+The suite checks sign-up, login, wrong passwords, throttling, session revocation and that one user can never read or change another user's attempts. It also checks that every coding question's reference solution passes all of its tests, that no question leaks its answer before submission, the timer and ordering rules, sandbox behaviour (timeouts, crashes, stray prints), AI fallback, and score clamping.
 
 ## Adding questions
 

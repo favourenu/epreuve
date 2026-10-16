@@ -45,7 +45,7 @@ export function Results() {
 
   return (
     <div className="stack">
-      <Link to="/" className="back">
+      <Link to="/dashboard" className="back">
         ← Dashboard
       </Link>
 

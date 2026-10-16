@@ -17,7 +17,7 @@ export function History() {
       <Card>
         {data.length === 0 ? (
           <p className="muted">
-            No attempts yet. <Link to="/">Pick a test</Link> to get started.
+            No attempts yet. <Link to="/dashboard">Pick a test</Link> to get started.
           </p>
         ) : (
           <div className="table-wrap">

@@ -1,5 +1,6 @@
 import type {
   AIStatus,
+  User,
   AttemptListItem,
   AttemptReview,
   AttemptState,
@@ -16,6 +17,26 @@ export class ApiError extends Error {
   }
 }
 
+type ValidationIssue = { loc?: (string | number)[]; msg: string }
+
+/** Turn FastAPI's validation errors into one readable sentence. */
+function formatValidation(issues: ValidationIssue[]): string {
+  return issues
+    .map((d) => {
+      const field = d.loc?.[d.loc.length - 1]
+      const msg = d.msg.replace(/^Value error, /, '')
+      return typeof field === 'string' && field !== 'body' ? `${field[0].toUpperCase()}${field.slice(1)}: ${msg}` : msg
+    })
+    .join('. ')
+}
+
+let onUnauthorized: (() => void) | null = null
+
+/** Called when any request fails with 401 (e.g. the session expired). */
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  onUnauthorized = handler
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let res: Response
   try {
@@ -24,19 +45,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: { 'Content-Type': 'application/json', ...init?.headers },
     })
   } catch {
-    throw new ApiError(0, 'Cannot reach the server. Is the backend running on port 8000?')
+    throw new ApiError(0, "Can't reach the Épreuve server. Check that the backend is running, then try again.")
   }
   if (!res.ok) {
     let message = `Request failed (${res.status})`
     try {
       const body = await res.json()
       if (typeof body.detail === 'string') message = body.detail
-      else if (Array.isArray(body.detail)) message = body.detail.map((d: { msg: string }) => d.msg).join('; ')
+      else if (Array.isArray(body.detail)) message = formatValidation(body.detail)
     } catch {
       /* non-JSON error body */
     }
+    if (res.status === 401 && !path.startsWith('/api/auth/')) onUnauthorized?.()
     throw new ApiError(res.status, message)
   }
+  if (res.status === 204) return undefined as T
   return res.json() as Promise<T>
 }
 
@@ -44,6 +67,11 @@ const post = <T>(path: string, body?: unknown) =>
   request<T>(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) })
 
 export const api = {
+  me: () => request<User>('/api/auth/me'),
+  login: (email: string, password: string) => post<User>('/api/auth/login', { email, password }),
+  signup: (name: string, email: string, password: string) =>
+    post<User>('/api/auth/signup', { name, email, password }),
+  logout: () => post<void>('/api/auth/logout'),
   tests: () => request<TestSummary[]>('/api/tests'),
   test: (id: string) => request<TestSummary>(`/api/tests/${encodeURIComponent(id)}`),
   stats: () => request<Stats>('/api/stats'),

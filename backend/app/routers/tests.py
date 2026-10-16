@@ -3,7 +3,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models import Attempt, AttemptStatus
+from app.deps import get_current_user
+from app.models import Attempt, AttemptStatus, User
 from app.question_bank import QuestionBank, TestDefinition, get_bank
 from app.schemas import TestSummary
 
@@ -26,9 +27,11 @@ def _summary(test: TestDefinition, attempts: list[Attempt]) -> TestSummary:
     )
 
 
-def _completed(db: Session) -> dict[str, list[Attempt]]:
+def _completed(db: Session, user_id: str) -> dict[str, list[Attempt]]:
     rows = db.scalars(
-        select(Attempt).where(Attempt.status == AttemptStatus.COMPLETED).order_by(Attempt.started_at)
+        select(Attempt)
+        .where(Attempt.user_id == user_id, Attempt.status == AttemptStatus.COMPLETED)
+        .order_by(Attempt.started_at)
     ).all()
     grouped: dict[str, list[Attempt]] = {}
     for a in rows:
@@ -37,14 +40,23 @@ def _completed(db: Session) -> dict[str, list[Attempt]]:
 
 
 @router.get("", response_model=list[TestSummary])
-def list_tests(db: Session = Depends(get_db), bank: QuestionBank = Depends(get_bank)):
-    completed = _completed(db)
+def list_tests(
+    db: Session = Depends(get_db),
+    bank: QuestionBank = Depends(get_bank),
+    user: User = Depends(get_current_user),
+):
+    completed = _completed(db, user.id)
     return [_summary(t, completed.get(t.id, [])) for t in bank.tests.values()]
 
 
 @router.get("/{test_id}", response_model=TestSummary)
-def get_test(test_id: str, db: Session = Depends(get_db), bank: QuestionBank = Depends(get_bank)):
+def get_test(
+    test_id: str,
+    db: Session = Depends(get_db),
+    bank: QuestionBank = Depends(get_bank),
+    user: User = Depends(get_current_user),
+):
     test = bank.tests.get(test_id)
     if test is None:
         raise HTTPException(404, f"Unknown test '{test_id}'")
-    return _summary(test, _completed(db).get(test_id, []))
+    return _summary(test, _completed(db, user.id).get(test_id, []))

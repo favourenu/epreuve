@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
 from app.db import get_db
-from app.deps import get_ai_service
-from app.models import Attempt, AttemptStatus
+from app.deps import get_ai_service, get_current_user
+from app.models import Attempt, AttemptStatus, User
 from app.routers.attempts import _list_item
 from app.schemas import AIStatus, CategoryStat, StatsResponse
 from app.services.ai.service import AIService
@@ -15,10 +15,10 @@ router = APIRouter(prefix="/api", tags=["stats"])
 
 
 @router.get("/stats", response_model=StatsResponse)
-def stats(db: Session = Depends(get_db)):
+def stats(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     attempts = db.scalars(
         select(Attempt)
-        .where(Attempt.status == AttemptStatus.COMPLETED)
+        .where(Attempt.user_id == user.id, Attempt.status == AttemptStatus.COMPLETED)
         .order_by(Attempt.started_at)
         .options(selectinload(Attempt.items))
     ).all()
@@ -56,7 +56,7 @@ def stats(db: Session = Depends(get_db)):
 
 
 @router.get("/ai/status", response_model=AIStatus)
-def ai_status(ai: AIService = Depends(get_ai_service)):
+def ai_status(ai: AIService = Depends(get_ai_service), _user: User = Depends(get_current_user)):
     return AIStatus(
         providers=[{"name": p.name, "model": getattr(p, "model", "")} for p in ai.providers]
     )

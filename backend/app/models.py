@@ -31,6 +31,35 @@ class UTCDateTime(TypeDecorator):
         return value
 
 
+def new_id() -> str:
+    return str(uuid.uuid4())
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    # Stored lower-cased; uniqueness is case-insensitive in practice.
+    email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
+    name: Mapped[str] = mapped_column(String(100))
+    password_hash: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+
+
+class UserSession(Base):
+    """A logged-in browser. Only a keyed hash of the cookie token is stored."""
+
+    __tablename__ = "sessions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
+
+    user: Mapped[User] = relationship()
+
+
 class AttemptStatus:
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -45,7 +74,8 @@ class FeedbackStatus:
 class Attempt(Base):
     __tablename__ = "attempts"
 
-    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     test_id: Mapped[str] = mapped_column(String(100), index=True)
     test_title: Mapped[str] = mapped_column(String(200))
     status: Mapped[str] = mapped_column(String(20), default=AttemptStatus.IN_PROGRESS, index=True)
