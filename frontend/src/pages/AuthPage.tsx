@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { safeNext, useAuth } from '../auth'
+import { Logo } from '../components/Logo'
 import { ErrorBox } from '../components/ui'
 
 const MIN_PASSWORD = 8
@@ -41,6 +42,9 @@ export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
 
   return (
     <div className="auth-page">
+      <Link to="/" className="brand auth-brand" aria-label="Épreuve home">
+        <Logo />
+      </Link>
       <div className="auth-card">
         <h1>{isSignup ? 'Create your account' : 'Welcome back'}</h1>
         <p className="muted">

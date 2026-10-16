@@ -1,7 +1,9 @@
-import { Link, Navigate, NavLink, Route, Routes } from 'react-router-dom'
+import { Link, NavLink, Route, Routes } from 'react-router-dom'
 import { GuestOnly, RequireAuth, useAuth } from './auth'
 import { AuthPage } from './pages/AuthPage'
 import { Dashboard } from './pages/Dashboard'
+import { Landing } from './pages/Landing'
+import { Logo } from './components/Logo'
 import { History } from './pages/History'
 import { Results } from './pages/Results'
 import { TakeTest } from './pages/TakeTest'
@@ -27,8 +29,7 @@ function Layout({ children }: { children: React.ReactNode }) {
     <div className="app">
       <header className="topbar">
         <Link to="/dashboard" className="brand">
-          <span className="brand-mark" aria-hidden="true">É</span>
-          Épreuve
+          <Logo />
         </Link>
         <nav aria-label="Main">
           <NavLink to="/dashboard">Dashboard</NavLink>
@@ -50,12 +51,6 @@ function NotFound() {
   )
 }
 
-function Home() {
-  const { user } = useAuth()
-  if (user === undefined) return null
-  return <Navigate to={user ? '/dashboard' : '/login'} replace />
-}
-
 const authed = (page: React.ReactNode, withLayout = true) => (
   <RequireAuth>{withLayout ? <Layout>{page}</Layout> : page}</RequireAuth>
 )
@@ -63,7 +58,7 @@ const authed = (page: React.ReactNode, withLayout = true) => (
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<GuestOnly><Landing /></GuestOnly>} />
       <Route path="/login" element={<GuestOnly><AuthPage mode="login" /></GuestOnly>} />
       <Route path="/signup" element={<GuestOnly><AuthPage mode="signup" /></GuestOnly>} />
       {/* The test screen is full-focus, without navigation, like a real assessment. */}
