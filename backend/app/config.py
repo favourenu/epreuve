@@ -16,7 +16,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    database_url: str = f"sqlite:///{(BACKEND_DIR / 'assessment.db').as_posix()}"
+    database_url: str = f"sqlite:///{(BACKEND_DIR / 'epreuve.db').as_posix()}"
     cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
 
     # Seconds of leeway after a test's deadline before answers are rejected,

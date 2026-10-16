@@ -1,6 +1,6 @@
-# Assessment Practice Platform
+# Épreuve
 
-A practice platform for employer-style screening tests (TestGorilla, SkillLadder and similar): timed, one question at a time, no going back. AI grades written answers and writes a personalised study plan after every attempt.
+*Épreuve* (French for "test") is a practice platform for employer-style screening tests (TestGorilla, SkillLadder and similar): timed, one question at a time, no going back. AI grades written answers and writes a personalised study plan after every attempt.
 
 Built for preparing for the Learn2Earn job-readiness assessment, covering technical, cognitive and soft-skill tests.
 

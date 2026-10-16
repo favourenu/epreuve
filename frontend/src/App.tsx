@@ -10,8 +10,8 @@ function Layout({ children }: { children: React.ReactNode }) {
     <div className="app">
       <header className="topbar">
         <Link to="/" className="brand">
-          <span className="brand-mark" aria-hidden="true">A</span>
-          Assessment Practice
+          <span className="brand-mark" aria-hidden="true">É</span>
+          Épreuve
         </Link>
         <nav>
           <NavLink to="/" end>

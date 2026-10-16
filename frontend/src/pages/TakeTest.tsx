@@ -10,7 +10,7 @@ import type { AttemptState, PublicQuestion, RunResult } from '../types'
 type Draft = number | string | null
 
 function draftKey(attemptId: string, position: number) {
-  return `draft:${attemptId}:${position}`
+  return `epreuve:draft:${attemptId}:${position}`
 }
 
 function initialDraft(attemptId: string, position: number, q: PublicQuestion): Draft {
