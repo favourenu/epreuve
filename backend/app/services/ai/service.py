@@ -87,6 +87,7 @@ def build_providers(settings: Settings) -> list[LLMProvider]:
             # Not every free model supports response_format; we parse JSON from text instead.
             json_mode=False,
             extra_headers={"X-Title": "Epreuve"},
+            fallback_models=settings.openrouter_fallback_models,
         )
     if settings.gemini_api_key:
         available["gemini"] = OpenAICompatibleProvider(

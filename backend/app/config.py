@@ -45,11 +45,15 @@ class Settings(BaseSettings):
     ai_request_timeout_seconds: float = 120.0
 
     openrouter_api_key: str = ""
-    openrouter_model: str = "meta-llama/llama-3.3-70b-instruct:free"
+    # Free models come and go and are often rate-limited upstream, so OpenRouter is
+    # given backups to try in order. Current list: https://openrouter.ai/models?q=free
+    openrouter_model: str = "nvidia/nemotron-3-super-120b-a12b:free"
+    openrouter_fallback_models: list[str] = ["google/gemma-4-31b-it:free", "nvidia/nemotron-3.5-lightning:free"]
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
 
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    # An alias that always points at Google's current Flash model.
+    gemini_model: str = "gemini-flash-latest"
     gemini_base_url: str = "https://generativelanguage.googleapis.com/v1beta/openai"
 
     ollama_enabled: bool = True

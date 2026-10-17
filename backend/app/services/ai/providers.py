@@ -31,6 +31,8 @@ class OpenAICompatibleProvider:
     timeout: float
     json_mode: bool = True
     extra_headers: dict[str, str] = field(default_factory=dict)
+    # OpenRouter only: models to try, in order, if the main one is unavailable.
+    fallback_models: list[str] = field(default_factory=list)
 
     async def complete(self, system: str, user: str) -> str:
         payload: dict = {
@@ -43,6 +45,8 @@ class OpenAICompatibleProvider:
         }
         if self.json_mode:
             payload["response_format"] = {"type": "json_object"}
+        if self.fallback_models:
+            payload["models"] = [self.model, *self.fallback_models]
         headers = {"Authorization": f"Bearer {self.api_key}", **self.extra_headers}
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
