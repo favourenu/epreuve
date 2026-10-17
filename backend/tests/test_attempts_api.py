@@ -190,3 +190,17 @@ def test_unknown_ids_return_404(client):
     assert client.post("/api/attempts", json={"test_id": "nope"}).status_code == 404
     assert client.get("/api/attempts/nope").status_code == 404
     assert client.get("/api/tests/nope").status_code == 404
+
+
+def test_retake_serves_questions_not_seen_before(client):
+    first = start(client, "critical-thinking")
+    client.post(f"/api/attempts/{first['id']}/finish")
+    first_ids = {i["question"]["id"] for i in client.get(f"/api/attempts/{first['id']}/review").json()["items"]}
+
+    second = start(client, "critical-thinking")
+    client.post(f"/api/attempts/{second['id']}/finish")
+    second_ids = {i["question"]["id"] for i in client.get(f"/api/attempts/{second['id']}/review").json()["items"]}
+
+    pool = sum(q.category == "critical_thinking" for q in bank.questions.values())
+    expected_overlap = max(0, 2 * len(first_ids) - pool)
+    assert len(first_ids & second_ids) == expected_overlap

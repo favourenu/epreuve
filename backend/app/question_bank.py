@@ -134,11 +134,28 @@ class QuestionBank:
                         f"questions but the bank has {available}"
                     )
 
-    def pick_questions(self, test: TestDefinition, rng: random.Random | None = None) -> list[Question]:
+    def pick_questions(
+        self,
+        test: TestDefinition,
+        rng: random.Random | None = None,
+        times_seen: dict[str, int] | None = None,
+    ) -> list[Question]:
+        """Choose a test's questions, least-seen first.
+
+        `times_seen` maps question id -> how often this user has been served it.
+        Unseen questions always come first, then the least repeated, with random
+        order among equals, so a retake shows fresh questions until the pool runs out.
+        """
         rng = rng or random.Random()
+        times_seen = times_seen or {}
         picked: list[Question] = []
+        taken: set[str] = set()
         for section in test.sections:
-            picked.extend(rng.sample(self._pool(section), section.count))
+            pool = [q for q in self._pool(section) if q.id not in taken]
+            pool.sort(key=lambda q: (times_seen.get(q.id, 0), rng.random()))
+            chosen = pool[: section.count]
+            picked.extend(chosen)
+            taken.update(q.id for q in chosen)
         if test.shuffle:
             rng.shuffle(picked)
         return picked

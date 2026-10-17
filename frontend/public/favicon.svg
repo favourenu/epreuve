@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Same artwork as the in-app logo mark (src/components/Logo.tsx), with fixed brand colours. -->
+  <rect width="32" height="32" rx="8" fill="#145c4a"/>
+  <path d="M10 11h12v3h-8.6v2.6H20v3h-6.6V22H22v3H10z" fill="#fffdf8"/>
+  <path d="M15.5 8.2 20.5 5" stroke="#f2b53a" stroke-width="3" stroke-linecap="round"/>
+</svg>

@@ -58,3 +58,22 @@ def test_bank_rejects_unsatisfiable_tests():
     )
     with pytest.raises(ValueError, match="needs 2"):
         QuestionBank([q], [test])
+
+
+def test_unseen_questions_are_served_before_repeats():
+    test = bank.tests["critical-thinking"]
+    pool = [q.id for q in bank.questions.values() if q.category == "critical_thinking"]
+    seen = {qid: 1 for qid in pool[: len(pool) - test.question_count]}
+    picked = {q.id for q in bank.pick_questions(test, random.Random(1), times_seen=seen)}
+    assert picked == set(pool) - set(seen)
+
+
+def test_least_seen_questions_come_first_once_all_are_seen():
+    test = bank.tests["critical-thinking"]
+    pool = [q.id for q in bank.questions.values() if q.category == "critical_thinking"]
+    seen = {qid: 3 for qid in pool}
+    fresh = pool[: test.question_count]
+    for qid in fresh:
+        seen[qid] = 1
+    picked = {q.id for q in bank.pick_questions(test, random.Random(2), times_seen=seen)}
+    assert picked == set(fresh)

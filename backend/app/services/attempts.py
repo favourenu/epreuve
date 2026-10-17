@@ -11,7 +11,7 @@ import logging
 from datetime import timedelta
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import get_settings
@@ -95,7 +95,15 @@ def start_attempt(db: Session, bank: QuestionBank, test_id: str, user_id: str) -
         started_at=now,
         deadline=now + timedelta(minutes=test.time_limit_minutes),
     )
-    for position, q in enumerate(bank.pick_questions(test)):
+    seen = dict(
+        db.execute(
+            select(AttemptItem.question_id, func.count())
+            .join(Attempt, Attempt.id == AttemptItem.attempt_id)
+            .where(Attempt.user_id == user_id)
+            .group_by(AttemptItem.question_id)
+        ).all()
+    )
+    for position, q in enumerate(bank.pick_questions(test, times_seen=seen)):
         attempt.items.append(
             AttemptItem(
                 position=position,
