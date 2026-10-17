@@ -1,6 +1,6 @@
 # Épreuve
 
-*Épreuve* (French for "test") is a practice platform for employer-style screening tests (TestGorilla, SkillLadder and similar): timed, one question at a time, no going back. AI grades written answers and writes a personalised study plan after every attempt.
+*Épreuve* (French for "test") is a job-readiness assessment and certification platform: timed, proctored tests of cognitive, technical, coding and workplace skills. AI grades written answers and writes a personalised study plan after every attempt, high scores earn verifiable certificates, and companies can invite candidates to take assessments.
 
 Built for preparing for the Learn2Earn job-readiness assessment, covering technical, cognitive and soft-skill tests.
 
@@ -8,7 +8,7 @@ Built for preparing for the Learn2Earn job-readiness assessment, covering techni
 
 - **10 tests, nearly 300 questions** across numerical reasoning, critical thinking, attention to detail, software engineering, Python, AI/ML fundamentals, coding, situational judgement and written communication, plus a 60-minute mixed **Job Readiness Assessment**.
 - **Fresh questions on every retake.** Tests serve the questions you've seen least, so you practise the skill rather than memorising answers.
-- **Real test conditions, enforced by the server.** The deadline is held by the API, not the browser. Questions must be answered in order and can't be revisited. Answers are never sent to the browser until the attempt is completed.
+- **Strict test conditions, enforced by the server.** The deadline is held by the API, not the browser. Questions must be answered in order and can't be revisited. Answers are never sent to the browser until the attempt is completed.
 - **Coding questions** run your Python in a locked-down process (see [Code runner security](#code-runner-security)) against visible example tests (with a Run button) and hidden tests (for scoring), with a time limit and partial credit per test passed.
 - **Situational judgement** scoring gives partial credit for acceptable-but-not-best answers, as real SJTs do.
 - **AI coach.** One AI request per attempt grades written answers against a hiring rubric and produces strengths, weaknesses, a prioritised study plan and test-taking tips.

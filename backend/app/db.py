@@ -82,8 +82,34 @@ def migrate(bind: Engine | None = None) -> None:
 init_db = migrate
 
 
+def _baseline_metadata():
+    """users and sessions exactly as at revision 0001 (frozen: never use the current models
+    here, or later migrations would try to add columns that already exist)."""
+    from sqlalchemy import Column, DateTime, ForeignKey, Integer, MetaData, String, Table
+
+    md = MetaData()
+    Table(
+        "users", md,
+        Column("id", String(36), primary_key=True),
+        Column("email", String(320), nullable=False, unique=True, index=True),
+        Column("name", String(100), nullable=False),
+        Column("password_hash", String(255), nullable=False),
+        Column("created_at", DateTime(timezone=True), nullable=False),
+    )
+    Table(
+        "sessions", md,
+        Column("id", Integer, primary_key=True, autoincrement=True),
+        Column("user_id", String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True),
+        Column("token_hash", String(64), nullable=False, unique=True, index=True),
+        Column("created_at", DateTime(timezone=True), nullable=False),
+        Column("expires_at", DateTime(timezone=True), nullable=False),
+    )
+    return md
+
+
 def _upgrade_pre_migration_db(conn: Connection) -> None:
-    Base.metadata.create_all(conn, tables=[Base.metadata.tables[t] for t in BASELINE_TABLES])
+    # Databases from before accounts existed have attempts tables but no users/sessions.
+    _baseline_metadata().create_all(conn)
     _migrate_attempt_owner(conn)
 
 

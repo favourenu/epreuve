@@ -79,7 +79,7 @@ def active_attempt(db: Session, user_id: str, test_id: str) -> Attempt | None:
 
 
 def start_attempt(db: Session, bank: QuestionBank, test_id: str, user_id: str) -> tuple[Attempt, bool]:
-    """Start a test, or resume the one already running (as real platforms do).
+    """Start a test, or resume the one already running.
 
     Returns (attempt, created)."""
     test = bank.tests.get(test_id)

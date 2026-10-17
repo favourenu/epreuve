@@ -74,7 +74,7 @@ export function Dashboard() {
           <p className="muted">
             {isNew
               ? 'Start with the full assessment to get a baseline, then drill the areas it flags.'
-              : 'Timed, one question at a time, no going back, just like the real thing.'}
+              : 'Timed, one question at a time, no going back.'}
           </p>
         </div>
         <span

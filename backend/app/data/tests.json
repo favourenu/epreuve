@@ -10,7 +10,7 @@
       "Questions appear one at a time. Once you move on, you cannot go back.",
       "The timer keeps running even if you close the tab. When it runs out, your answers are submitted automatically.",
       "You can run your code against the example tests. Hidden tests are used for scoring.",
-      "Work alone without looking things up, as you would on the real test."
+      "Work alone and don't look anything up."
     ],
     "sections": [
       {"category": "numerical_reasoning", "count": 4},

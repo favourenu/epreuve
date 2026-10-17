@@ -4,7 +4,7 @@ import { Logo } from '../components/Logo'
 const TEST_TYPES = [
   {
     name: 'Cognitive ability',
-    detail: 'Numerical reasoning, critical thinking and attention to detail, at the pace real screening tests demand.',
+    detail: 'Numerical reasoning, critical thinking and attention to detail, under strict time limits.',
     tags: ['Numerical', 'Logic', 'Detail'],
   },
   {
@@ -25,10 +25,10 @@ const TEST_TYPES = [
 ]
 
 const STEPS = [
-  { title: 'Take a test', body: 'Timed, one question at a time, no going back, just like the real thing.' },
+  { title: 'Take an assessment', body: 'Timed, one question at a time, no going back.' },
   { title: 'Get scored', body: 'Instant results by skill, with an explanation for every question.' },
-  { title: 'Get a study plan', body: 'An AI coach reviews your answers and tells you exactly what to study next.' },
-  { title: 'Improve', body: 'Retake, track your scores by skill over time, and close the gaps.' },
+  { title: 'Get a study plan', body: 'An AI coach reviews your answers and tells you exactly what to work on.' },
+  { title: 'Get certified', body: 'Score highly under proctored conditions and earn a certificate employers can verify.' },
 ]
 
 function QuestionPreview() {
@@ -79,13 +79,14 @@ export function Landing() {
       <main>
         <section className="hero">
           <div className="hero-copy">
-            <p className="eyebrow">Practice for job-readiness assessments</p>
+            <p className="eyebrow">Job-readiness assessments and certification</p>
             <h1>
-              Walk into your assessment <em>already knowing</em> what it feels like.
+              Prove what you can do, <em>and show it.</em>
             </h1>
             <p className="lead">
-              Épreuve gives you realistic, timed practice tests in the formats employers use. After each one, an AI
-              coach shows you what went wrong and what to study next.
+              Épreuve assesses the cognitive, technical, coding and workplace skills employers hire for. Every attempt
+              is timed and scored, an AI coach shows you what to work on, and high scores earn a certificate anyone
+              can verify.
             </p>
             <div className="hero-actions">
               <Link to="/signup" className="btn btn-primary btn-lg">
@@ -100,8 +101,8 @@ export function Landing() {
         </section>
 
         <section className="landing-section" aria-labelledby="types-title">
-          <p className="eyebrow">What you can practise</p>
-          <h2 id="types-title">Four kinds of test, one place to prepare</h2>
+          <p className="eyebrow">What we assess</p>
+          <h2 id="types-title">Four kinds of assessment, one platform</h2>
           <div className="type-grid">
             {TEST_TYPES.map((t, i) => (
               <article key={t.name} className="type-card">
@@ -120,7 +121,7 @@ export function Landing() {
 
         <section className="landing-section" aria-labelledby="how-title">
           <p className="eyebrow">How it works</p>
-          <h2 id="how-title">A loop that turns mistakes into a plan</h2>
+          <h2 id="how-title">From first attempt to certified</h2>
           <ol className="steps">
             {STEPS.map((s, i) => (
               <li key={s.title}>
@@ -134,8 +135,8 @@ export function Landing() {
 
         <section className="landing-section realism" aria-labelledby="real-title">
           <div>
-            <p className="eyebrow">Built like the real thing</p>
-            <h2 id="real-title">Practice only helps if it feels real</h2>
+            <p className="eyebrow">Built for integrity</p>
+            <h2 id="real-title">Scores you, and employers, can trust</h2>
           </div>
           <ul className="realism-list">
             <li>
@@ -148,13 +149,17 @@ export function Landing() {
               <strong>Hidden test cases</strong> decide your coding score, not just the examples you can see.
             </li>
             <li>
-              <strong>Original questions</strong> modelled on common screening formats, not copied from any vendor.
+              <strong>Proctored certification.</strong> Full screen, tab-switch and second-screen detection, with every
+              attempt's integrity report reviewed before a certificate is issued.
+            </li>
+            <li>
+              <strong>Verifiable certificates.</strong> Each one has a public link employers can check.
             </li>
           </ul>
         </section>
 
         <section className="cta-band">
-          <h2>Your next assessment is a test. This is the rehearsal.</h2>
+          <h2>Your skills, measured properly.</h2>
           <Link to="/signup" className="btn btn-primary btn-lg">
             Create your free account
           </Link>

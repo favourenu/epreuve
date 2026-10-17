@@ -63,21 +63,29 @@ def test_migrate_is_safe_to_run_on_every_startup():
     migrate(engine)
     migrate(engine)
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0002"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0003"
 
 
 def test_database_from_before_migrations_keeps_its_data():
     """A database made by the old create_all() startup (accounts era, no alembic_version)."""
-    from app.db import BASELINE_TABLES, Base
+    from alembic import command
+    from alembic.config import Config
+
+    from app.db import MIGRATIONS_DIR
 
     engine = _fresh_sqlite()
-    Base.metadata.create_all(engine, tables=[Base.metadata.tables[t] for t in BASELINE_TABLES])
-    with sessionmaker(bind=engine)() as db:
-        user = auth.signup(db, "old@example.com", "a-good-password", "Old")
-        uid = user.id
+    with engine.begin() as conn:  # build the 0001 schema, then forget it was migrated
+        cfg = Config()
+        cfg.set_main_option("script_location", str(MIGRATIONS_DIR))
+        cfg.attributes["connection"] = conn
+        command.upgrade(cfg, "0001")
+        conn.execute(text("DROP TABLE alembic_version"))
+        conn.execute(text("INSERT INTO users (id, email, name, password_hash, created_at) "
+                          "VALUES ('u1', 'old@example.com', 'Old', 'x', '2026-01-01')"))
+    uid = "u1"
     migrate(engine)
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0002"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0003"
         assert conn.execute(text("SELECT id FROM users")).scalar() == uid
     assert _schema_diff(engine) == []
 

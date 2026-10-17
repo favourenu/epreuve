@@ -44,6 +44,13 @@ class User(Base):
     name: Mapped[str] = mapped_column(String(100))
     password_hash: Mapped[str] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    role: Mapped[str] = mapped_column(String(20), default="user", server_default="user")
+    # Suspended accounts can't log in, and their sessions stop working.
+    disabled_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+
+    @property
+    def is_admin(self) -> bool:
+        return self.role == Role.ADMIN
 
 
 class UserSession(Base):
@@ -75,6 +82,21 @@ class PasswordResetToken(Base):
     user: Mapped[User] = relationship()
 
 
+class Role:
+    USER = "user"
+    ADMIN = "admin"
+
+
+class AttemptMode:
+    PRACTICE = "practice"
+    # Proctored, with a cooldown between attempts; a high score earns a certificate.
+    CERTIFICATION = "certification"
+    # Proctored, started from a company invitation; results go to the admin, not the candidate.
+    INVITE = "invite"
+
+    PROCTORED = (CERTIFICATION, INVITE)
+
+
 class AttemptStatus:
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
@@ -93,6 +115,8 @@ class Attempt(Base):
     user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     test_id: Mapped[str] = mapped_column(String(100), index=True)
     test_title: Mapped[str] = mapped_column(String(200))
+    mode: Mapped[str] = mapped_column(String(20), default=AttemptMode.PRACTICE, server_default=AttemptMode.PRACTICE, index=True)
+    invite_id: Mapped[str | None] = mapped_column(ForeignKey("invites.id", ondelete="SET NULL"), index=True)
     status: Mapped[str] = mapped_column(String(20), default=AttemptStatus.IN_PROGRESS, index=True)
 
     started_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
@@ -155,3 +179,64 @@ class AttemptItem(Base):
     @property
     def grading(self) -> dict[str, Any] | None:
         return json.loads(self.grading_json) if self.grading_json else None
+
+
+class IntegrityEvent(Base):
+    """Something the browser observed during a proctored attempt (tab switch, paste...)."""
+
+    __tablename__ = "integrity_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    attempt_id: Mapped[str] = mapped_column(ForeignKey("attempts.id", ondelete="CASCADE"), index=True)
+    kind: Mapped[str] = mapped_column(String(30))
+    occurred_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    duration_ms: Mapped[int | None] = mapped_column(Integer)
+    detail: Mapped[str | None] = mapped_column(String(200))
+
+
+class CertificateStatus:
+    ISSUED = "issued"
+    UNDER_REVIEW = "under_review"  # integrity concerns: an admin decides
+    REJECTED = "rejected"
+    REVOKED = "revoked"
+
+
+class Certificate(Base):
+    __tablename__ = "certificates"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    # Public verification code, e.g. EPR-7KQ2-M9XD.
+    code: Mapped[str] = mapped_column(String(20), unique=True, index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    attempt_id: Mapped[str] = mapped_column(ForeignKey("attempts.id", ondelete="CASCADE"), unique=True)
+    test_id: Mapped[str] = mapped_column(String(100), index=True)
+    test_title: Mapped[str] = mapped_column(String(200))
+    percent: Mapped[float] = mapped_column(Float)
+    level: Mapped[str] = mapped_column(String(20))  # "pass" or "distinction"
+    status: Mapped[str] = mapped_column(String(20), index=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    issued_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    reviewed_by: Mapped[str | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    review_note: Mapped[str | None] = mapped_column(Text)
+
+    user: Mapped[User] = relationship(foreign_keys=[user_id])
+
+
+class Invite(Base):
+    """A company's invitation for a candidate to take one assessment."""
+
+    __tablename__ = "invites"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    email: Mapped[str] = mapped_column(String(320), index=True)
+    candidate_name: Mapped[str] = mapped_column(String(100))
+    company: Mapped[str] = mapped_column(String(120))
+    test_id: Mapped[str] = mapped_column(String(100))
+    test_title: Mapped[str] = mapped_column(String(200))
+    message: Mapped[str | None] = mapped_column(Text)
+    created_by: Mapped[str | None] = mapped_column(ForeignKey("users.id", ondelete="SET NULL"))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    opened_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    cancelled_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
