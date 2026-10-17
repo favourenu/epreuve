@@ -72,6 +72,9 @@ export const api = {
   signup: (name: string, email: string, password: string) =>
     post<User>('/api/auth/signup', { name, email, password }),
   logout: () => post<void>('/api/auth/logout'),
+  forgotPassword: (email: string) => post<{ detail: string }>('/api/auth/password/forgot', { email }),
+  checkResetToken: (token: string) => post<{ email: string }>('/api/auth/password/reset/check', { token }),
+  resetPassword: (token: string, password: string) => post<User>('/api/auth/password/reset', { token, password }),
   tests: () => request<TestSummary[]>('/api/tests'),
   test: (id: string) => request<TestSummary>(`/api/tests/${encodeURIComponent(id)}`),
   stats: () => request<Stats>('/api/stats'),

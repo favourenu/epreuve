@@ -21,7 +21,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
-from app.models import Attempt, User, UserSession, utcnow
+from app.models import Attempt, PasswordResetToken, User, UserSession, utcnow
 
 log = logging.getLogger(__name__)
 
@@ -88,8 +88,8 @@ class LoginThrottle:
     such as Redis if the API ever runs as multiple processes.
     """
 
-    def __init__(self, max_failures: int, window_seconds: int):
-        self.max_failures, self.window = max_failures, window_seconds
+    def __init__(self, max_failures: int, window_seconds: int, message: str = "Too many failed login attempts."):
+        self.max_failures, self.window, self.message = max_failures, window_seconds, message
         self._failures: dict[str, deque[float]] = defaultdict(deque)
         self._lock = threading.Lock()
 
@@ -106,9 +106,7 @@ class LoginThrottle:
                 q = self._recent(key, now)
                 if len(q) >= self.max_failures:
                     retry = int(q[0] + self.window - now) + 1
-                    raise TooManyAttempts(
-                        f"Too many failed login attempts. Try again in {max(1, retry // 60)} minute(s)."
-                    )
+                    raise TooManyAttempts(f"{self.message} Try again in {max(1, retry // 60)} minute(s).")
 
     def fail(self, *keys: str) -> None:
         now = time.monotonic()
@@ -126,6 +124,14 @@ class LoginThrottle:
 def get_throttle() -> LoginThrottle:
     s = get_settings()
     return LoginThrottle(s.login_max_failures, s.login_window_seconds)
+
+
+@lru_cache
+def get_reset_throttle() -> LoginThrottle:
+    s = get_settings()
+    return LoginThrottle(
+        s.password_reset_max_requests, s.password_reset_window_seconds, "Too many password reset requests."
+    )
 
 
 def signup(db: Session, email: str, password: str, name: str) -> User:
@@ -195,3 +201,66 @@ def user_for_token(db: Session, token: str) -> User | None:
 def end_session(db: Session, token: str) -> None:
     db.execute(delete(UserSession).where(UserSession.token_hash == _token_hash(token)))
     db.commit()
+
+
+class InvalidResetToken(AuthError):
+    status_code = 400
+
+    def __init__(self):
+        super().__init__("This reset link is invalid or has expired. Request a new one.")
+
+
+def request_password_reset(db: Session, email: str, client_ip: str, settings: Settings) -> tuple[User, str] | None:
+    """Create a single-use reset token for the account with this email, if there is one.
+
+    Returns (user, token) so the caller can email the link, or None when no account
+    matches. Callers must respond identically in both cases.
+    """
+    email = normalize_email(email)
+    throttle = get_reset_throttle()
+    keys = (f"email:{email}", f"ip:{client_ip}")
+    throttle.check(*keys)
+    throttle.fail(*keys)  # every request counts toward the limit, not just failures
+
+    user = db.scalar(select(User).where(User.email == email))
+    if user is None:
+        return None
+    # Only the newest link works: older unused links are invalidated.
+    db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id, PasswordResetToken.used_at.is_(None)))
+    token = secrets.token_urlsafe(32)
+    db.add(
+        PasswordResetToken(
+            user_id=user.id,
+            token_hash=_token_hash(token),
+            expires_at=utcnow() + timedelta(minutes=settings.password_reset_minutes),
+        )
+    )
+    db.execute(delete(PasswordResetToken).where(PasswordResetToken.expires_at < utcnow()))
+    db.commit()
+    return user, token
+
+
+def _valid_reset(db: Session, token: str) -> PasswordResetToken:
+    reset = db.scalar(select(PasswordResetToken).where(PasswordResetToken.token_hash == _token_hash(token)))
+    if reset is None or reset.used_at is not None or reset.expires_at < utcnow():
+        raise InvalidResetToken()
+    return reset
+
+
+def check_reset_token(db: Session, token: str) -> User:
+    """The account a still-valid reset token belongs to (raises if it isn't valid)."""
+    return _valid_reset(db, token).user
+
+
+def reset_password(db: Session, token: str, new_password: str) -> User:
+    """Set a new password with a reset token. Signs the account out everywhere."""
+    reset = _valid_reset(db, token)
+    validate_password(new_password)
+    user = reset.user
+    user.password_hash = _hasher.hash(new_password)
+    reset.used_at = utcnow()
+    db.execute(delete(UserSession).where(UserSession.user_id == user.id))
+    db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id, PasswordResetToken.id != reset.id))
+    db.commit()
+    get_throttle().reset(f"email:{user.email}")
+    return user

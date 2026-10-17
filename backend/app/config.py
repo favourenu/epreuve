@@ -32,6 +32,23 @@ class Settings(BaseSettings):
     login_max_failures: int = 5
     login_window_seconds: int = 900
 
+    # Built frontend to serve from this server (one service, one domain, so cookies
+    # need no cross-site setup). Ignored if the folder has no index.html (e.g. in dev).
+    frontend_dist_dir: str = str(BACKEND_DIR.parent / "frontend" / "dist")
+
+    # Public URL of the web app, used to build links in emails (no trailing slash).
+    app_base_url: str = "http://localhost:5173"
+
+    # Email (Resend). Without an API key, emails are logged instead of sent.
+    resend_api_key: str = ""
+    email_from: str = "Épreuve <noreply@epreuve.site>"
+
+    # Password reset links
+    password_reset_minutes: int = 60
+    # Reset emails allowed per address (and per client IP) within the window.
+    password_reset_max_requests: int = 3
+    password_reset_window_seconds: int = 3600
+
     # Seconds of leeway after a test's deadline before answers are rejected,
     # to absorb network latency on the final submission.
     deadline_grace_seconds: int = 5
@@ -39,6 +56,13 @@ class Settings(BaseSettings):
     # Code execution
     code_run_timeout_seconds: float = 5.0
     code_max_output_chars: int = 10_000
+    # Enforced on Linux/macOS via resource limits (the deployment target). Sized for
+    # small hosts: e.g. Render's free tier has 512 MB for the whole server.
+    code_memory_limit_mb: int = 256
+    code_output_limit_bytes: int = 1_000_000
+    # Runs allowed at once; more wait in line (up to code_queue_wait_seconds).
+    code_max_concurrent_runs: int = 2
+    code_queue_wait_seconds: float = 20.0
 
     # AI providers, tried in this order. Unconfigured providers are skipped.
     ai_provider_order: list[str] = Field(default=["openrouter", "gemini", "ollama"])

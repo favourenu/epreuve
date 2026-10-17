@@ -60,6 +60,21 @@ class UserSession(Base):
     user: Mapped[User] = relationship()
 
 
+class PasswordResetToken(Base):
+    """A single-use password reset link. Only a keyed hash of the token is stored."""
+
+    __tablename__ = "password_reset_tokens"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    token_hash: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    used_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+
+    user: Mapped[User] = relationship()
+
+
 class AttemptStatus:
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"

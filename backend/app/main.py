@@ -1,7 +1,11 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -14,6 +18,7 @@ from app.services.attempts import recover_interrupted_feedback
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("app")
+logging.getLogger("alembic.runtime.plugins").setLevel(logging.WARNING)  # noisy at startup
 
 
 @asynccontextmanager
@@ -59,7 +64,28 @@ def create_app() -> FastAPI:
     def health():
         return {"status": "ok"}
 
+    serve_frontend(app, Path(settings.frontend_dist_dir))
     return app
+
+
+def serve_frontend(app: FastAPI, dist: Path) -> None:
+    """Serve the built React app, falling back to index.html for client-side routes."""
+    index = dist / "index.html"
+    if not index.is_file():
+        return
+    root = dist.resolve()
+    if (dist / "assets").is_dir():
+        # Vite fingerprints asset filenames, so they can be cached for a long time.
+        app.mount("/assets", StaticFiles(directory=dist / "assets"), name="assets")
+
+    @app.get("/{path:path}", include_in_schema=False)
+    def spa(path: str):
+        if path == "api" or path.startswith("api/"):
+            raise HTTPException(404, "Not found")
+        candidate = (dist / path).resolve()
+        if path and candidate.is_file() and root in candidate.parents:
+            return FileResponse(candidate)
+        return FileResponse(index, headers={"Cache-Control": "no-cache"})
 
 
 app = create_app()

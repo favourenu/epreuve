@@ -1,20 +1,35 @@
 from collections.abc import Iterator
+from pathlib import Path
 
 from sqlalchemy import create_engine, event, inspect, text
-from sqlalchemy.engine import Engine
+from sqlalchemy.engine import Connection, Engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 from app.config import get_settings
+
+MIGRATIONS_DIR = Path(__file__).resolve().parent.parent / "migrations"
+# The schema as it was when migrations were introduced (see migrations/versions/0001_*).
+BASELINE_REVISION = "0001"
+BASELINE_TABLES = ("users", "sessions", "attempts", "attempt_items")
 
 
 class Base(DeclarativeBase):
     pass
 
 
-def make_engine(url: str) -> Engine:
-    connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
-    engine = create_engine(url, connect_args=connect_args)
+def normalize_url(url: str) -> str:
+    """Hosted Postgres providers (Neon, Render, Supabase) hand out postgres:// URLs;
+    point SQLAlchemy at the psycopg 3 driver we ship."""
+    for prefix in ("postgres://", "postgresql://"):
+        if url.startswith(prefix):
+            return "postgresql+psycopg://" + url[len(prefix):]
+    return url
+
+
+def make_engine(url: str, **kwargs) -> Engine:
+    url = normalize_url(url)
     if url.startswith("sqlite"):
+        engine = create_engine(url, connect_args={"check_same_thread": False}, **kwargs)
 
         @event.listens_for(engine, "connect")
         def _enable_sqlite_fks(dbapi_conn, _record):  # pragma: no cover - driver hook
@@ -22,7 +37,12 @@ def make_engine(url: str) -> Engine:
             cursor.execute("PRAGMA foreign_keys=ON")
             cursor.close()
 
-    return engine
+        return engine
+    # Serverless Postgres (e.g. Neon) closes idle connections, so check before use
+    # and recycle them regularly instead of failing on a stale one.
+    kwargs.setdefault("pool_pre_ping", True)
+    kwargs.setdefault("pool_recycle", 300)
+    return create_engine(url, **kwargs)
 
 
 engine = make_engine(get_settings().database_url)
@@ -37,23 +57,44 @@ def get_db() -> Iterator[Session]:
         db.close()
 
 
-def init_db(bind: Engine | None = None) -> None:
+def migrate(bind: Engine | None = None) -> None:
+    """Bring the database schema up to date. Safe to run on every startup."""
+    from alembic import command
+    from alembic.config import Config
+
     from app import models  # noqa: F401  (registers tables)
 
     bind = bind or engine
-    Base.metadata.create_all(bind=bind)
-    _migrate_attempt_owner(bind)
+    with bind.begin() as conn:
+        cfg = Config()
+        cfg.set_main_option("script_location", str(MIGRATIONS_DIR))
+        cfg.attributes["connection"] = conn
+        tables = set(inspect(conn).get_table_names())
+        if "alembic_version" not in tables and tables & set(BASELINE_TABLES):
+            # Created before migrations existed: complete the baseline schema, then
+            # record it as revision 0001 so later migrations apply on top.
+            _upgrade_pre_migration_db(conn)
+            command.stamp(cfg, BASELINE_REVISION)
+        command.upgrade(cfg, "head")
 
 
-def _migrate_attempt_owner(bind: Engine) -> None:
+# Kept for callers and tests that predate migrations.
+init_db = migrate
+
+
+def _upgrade_pre_migration_db(conn: Connection) -> None:
+    Base.metadata.create_all(conn, tables=[Base.metadata.tables[t] for t in BASELINE_TABLES])
+    _migrate_attempt_owner(conn)
+
+
+def _migrate_attempt_owner(conn: Connection) -> None:
     """Databases created before accounts existed have no attempts.user_id column.
 
     Add it (nullable, as SQLite can't add a NOT NULL column to existing rows).
     Rows without an owner stay hidden until the first account signs up and claims
     them (see services.auth.signup).
     """
-    columns = {c["name"] for c in inspect(bind).get_columns("attempts")}
+    columns = {c["name"] for c in inspect(conn).get_columns("attempts")}
     if "user_id" not in columns:
-        with bind.begin() as conn:
-            conn.execute(text("ALTER TABLE attempts ADD COLUMN user_id VARCHAR(36) REFERENCES users(id)"))
-            conn.execute(text("CREATE INDEX IF NOT EXISTS ix_attempts_user_id ON attempts (user_id)"))
+        conn.execute(text("ALTER TABLE attempts ADD COLUMN user_id VARCHAR(36) REFERENCES users(id)"))
+        conn.execute(text("CREATE INDEX IF NOT EXISTS ix_attempts_user_id ON attempts (user_id)"))

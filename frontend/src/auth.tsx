@@ -12,6 +12,8 @@ interface AuthState {
   login: (email: string, password: string) => Promise<void>
   signup: (name: string, email: string, password: string) => Promise<void>
   logout: () => Promise<void>
+  /** Set a new password with a reset token; signs in on success. */
+  completeReset: (token: string, password: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -44,6 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (name: string, email: string, password: string) => signedIn(await api.signup(name, email, password)),
     [signedIn],
   )
+  const completeReset = useCallback(
+    async (token: string, password: string) => signedIn(await api.resetPassword(token, password)),
+    [signedIn],
+  )
   const logout = useCallback(async () => {
     try {
       await api.logout()
@@ -53,7 +59,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const value = useMemo(() => ({ user, loggedOut, login, signup, logout }), [user, loggedOut, login, signup, logout])
+  const value = useMemo(
+    () => ({ user, loggedOut, login, signup, logout, completeReset }),
+    [user, loggedOut, login, signup, logout, completeReset],
+  )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

@@ -1,10 +1,9 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { safeNext, useAuth } from '../auth'
-import { Logo } from '../components/Logo'
+import { AuthShell } from '../components/AuthShell'
+import { NewPasswordFields, newPasswordProblem } from '../components/PasswordFields'
 import { ErrorBox } from '../components/ui'
-
-const MIN_PASSWORD = 8
 
 export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
   const { login, signup } = useAuth()
@@ -16,6 +15,7 @@ export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
@@ -23,8 +23,9 @@ export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
   async function submit(e: FormEvent) {
     e.preventDefault()
     setError(null)
-    if (isSignup && password.length < MIN_PASSWORD) {
-      setError(`Your password needs at least ${MIN_PASSWORD} characters.`)
+    const problem = isSignup ? newPasswordProblem(password, confirm) : null
+    if (problem) {
+      setError(problem)
       return
     }
     setBusy(true)
@@ -41,58 +42,58 @@ export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
   const otherLink = `${isSignup ? '/login' : '/signup'}${params.get('next') ? `?next=${encodeURIComponent(next)}` : ''}`
 
   return (
-    <div className="auth-page">
-      <Link to="/" className="brand auth-brand" aria-label="Épreuve home">
-        <Logo />
-      </Link>
-      <div className="auth-card">
-        <h1>{isSignup ? 'Create your account' : 'Welcome back'}</h1>
-        <p className="muted">
-          {isSignup
-            ? 'Your scores, history and study plans are saved to your account.'
-            : 'Log in to continue practising.'}
-        </p>
-
-        <form onSubmit={submit} className="form">
-          {isSignup && (
-            <div className="field">
-              <label htmlFor="name">Name</label>
-              <input
-                id="name"
-                name="name"
-                autoComplete="name"
-                required
-                maxLength={100}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          )}
+    <AuthShell
+      title={isSignup ? 'Create your account' : 'Welcome back'}
+      intro={isSignup ? 'Your scores, history and study plans are saved to your account.' : 'Log in to continue practising.'}
+    >
+      <form onSubmit={submit} className="form">
+        {isSignup && (
           <div className="field">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="name">Name</label>
             <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              inputMode="email"
+              id="name"
+              name="name"
+              autoComplete="name"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              maxLength={100}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
+        )}
+        <div className="field">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            autoComplete={isSignup ? 'email' : 'username'}
+            inputMode="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        {isSignup ? (
+          <NewPasswordFields password={password} confirm={confirm} onPassword={setPassword} onConfirm={setConfirm} />
+        ) : (
           <div className="field">
-            <label htmlFor="password">Password</label>
+            <div className="label-row">
+              <label htmlFor="password">Password</label>
+              {/* Pass the typed email in router state, never in the URL (it would end up in history and logs). */}
+              <Link to="/forgot-password" state={{ email: email.trim() }} className="label-link">
+                Forgot password?
+              </Link>
+            </div>
             <div className="password-row">
               <input
                 id="password"
                 name="password"
                 type={showPassword ? 'text' : 'password'}
-                autoComplete={isSignup ? 'new-password' : 'current-password'}
+                autoComplete="current-password"
                 required
-                minLength={isSignup ? MIN_PASSWORD : undefined}
                 maxLength={128}
-                aria-describedby={isSignup ? 'password-hint' : undefined}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -106,25 +107,20 @@ export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
                 {showPassword ? 'Hide' : 'Show'}
               </button>
             </div>
-            {isSignup && (
-              <p id="password-hint" className="hint">
-                At least {MIN_PASSWORD} characters.
-              </p>
-            )}
           </div>
+        )}
 
-          {error && <ErrorBox message={error} />}
+        {error && <ErrorBox message={error} />}
 
-          <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={busy}>
-            {busy ? (isSignup ? 'Creating account...' : 'Logging in...') : isSignup ? 'Create account' : 'Log in'}
-          </button>
-        </form>
+        <button type="submit" className="btn btn-primary btn-lg btn-block" disabled={busy}>
+          {busy ? (isSignup ? 'Creating account...' : 'Logging in...') : isSignup ? 'Create account' : 'Log in'}
+        </button>
+      </form>
 
-        <p className="auth-switch">
-          {isSignup ? 'Already have an account?' : 'New to Épreuve?'}{' '}
-          <Link to={otherLink}>{isSignup ? 'Log in' : 'Create an account'}</Link>
-        </p>
-      </div>
-    </div>
+      <p className="auth-switch">
+        {isSignup ? 'Already have an account?' : 'New to Épreuve?'}{' '}
+        <Link to={otherLink}>{isSignup ? 'Log in' : 'Create an account'}</Link>
+      </p>
+    </AuthShell>
   )
 }

@@ -4,7 +4,15 @@ from pathlib import Path
 
 # Configure before the app (and its engine) is imported.
 _tmp = Path(tempfile.mkdtemp(prefix="epreuve-test-"))
-os.environ["DATABASE_URL"] = f"sqlite:///{(_tmp / 'test.db').as_posix()}"
+# Set TEST_DATABASE_URL to run the whole suite against Postgres instead (its schema is wiped).
+os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{(_tmp / 'test.db').as_posix()}"
+if os.environ.get("TEST_DATABASE_URL"):
+    from sqlalchemy import create_engine, text
+
+    from app.db import normalize_url
+
+    with create_engine(normalize_url(os.environ["TEST_DATABASE_URL"])).begin() as _conn:
+        _conn.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public"))
 os.environ["CODE_RUN_TIMEOUT_SECONDS"] = "2"
 os.environ["OPENROUTER_API_KEY"] = ""
 os.environ["GEMINI_API_KEY"] = ""
@@ -19,7 +27,8 @@ from fastapi.testclient import TestClient  # noqa: E402
 from app.deps import get_ai_service  # noqa: E402
 from app.main import app  # noqa: E402
 from app.services.ai.service import AIService  # noqa: E402
-from app.services.auth import get_throttle  # noqa: E402
+from app.services.auth import get_reset_throttle, get_throttle  # noqa: E402
+from app.services.email import get_email_sender  # noqa: E402
 
 PASSWORD = "correct-horse-battery"
 _ids = itertools.count()
@@ -50,8 +59,28 @@ def ai():
 @pytest.fixture(autouse=True)
 def fresh_login_throttle():
     get_throttle.cache_clear()
+    get_reset_throttle.cache_clear()
     yield
     get_throttle.cache_clear()
+    get_reset_throttle.cache_clear()
+
+
+class OutboxSender:
+    """Captures emails instead of sending them."""
+
+    def __init__(self):
+        self.sent = []
+
+    def send(self, email):
+        self.sent.append(email)
+
+
+@pytest.fixture(autouse=True)
+def outbox():
+    box = OutboxSender()
+    app.dependency_overrides[get_email_sender] = lambda: box
+    yield box
+    app.dependency_overrides.pop(get_email_sender, None)
 
 
 @pytest.fixture

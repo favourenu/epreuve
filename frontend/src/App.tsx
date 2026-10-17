@@ -6,6 +6,7 @@ import { Landing } from './pages/Landing'
 import { Logo } from './components/Logo'
 import { EmptyState } from './components/ui'
 import { History } from './pages/History'
+import { ForgotPassword, ResetPassword } from './pages/PasswordPages'
 import { Results } from './pages/Results'
 import { TakeTest } from './pages/TakeTest'
 import { TestIntro } from './pages/TestIntro'
@@ -76,6 +77,9 @@ export default function App() {
       <Route path="/" element={<GuestOnly><Landing /></GuestOnly>} />
       <Route path="/login" element={<GuestOnly><AuthPage mode="login" /></GuestOnly>} />
       <Route path="/signup" element={<GuestOnly><AuthPage mode="signup" /></GuestOnly>} />
+      <Route path="/forgot-password" element={<GuestOnly><ForgotPassword /></GuestOnly>} />
+      {/* Not guest-only: a signed-in user following a reset link should still be able to use it. */}
+      <Route path="/reset-password" element={<ResetPassword />} />
       {/* The test screen is full-focus, without navigation, like a real assessment. */}
       <Route path="/attempts/:attemptId" element={authed(<TakeTest />, false)} />
       <Route path="/dashboard" element={authed(<Dashboard />)} />

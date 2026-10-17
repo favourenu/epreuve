@@ -250,6 +250,15 @@ button { font: inherit; }
 .password-row { display: flex; gap: 0.5rem; }
 .password-row .btn { flex: none; min-height: 48px; }
 .hint { font-size: 0.86rem; color: var(--muted); margin: 0; }
+.hint:empty { display: none; }
+.hint-error { color: var(--bad); font-weight: 700; }
+.field input[aria-invalid="true"] { border-color: var(--bad); }
+.field input[readonly] { background: var(--surface-2); color: var(--muted); }
+.label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.label-link { font-size: 0.9rem; font-weight: 700; padding: 0.35rem 0; }
+.notice { padding: 0.9rem 1.1rem; border-radius: var(--radius-sm); background: var(--good-soft); border-left: 4px solid var(--good); }
+.notice p:last-child { margin-bottom: 0; }
+.auth-card .notice { margin-top: 1.25rem; }
 .auth-switch { margin: 1.4rem 0 0; text-align: center; }
 .auth-switch a { display: inline-block; padding: 0.5rem 0.25rem; font-weight: 700; }
 

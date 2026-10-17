@@ -1,28 +1,139 @@
-"""Runs candidate Python code against test cases in a separate process.
+"""Runs candidate Python code against test cases in a separate, locked-down process.
 
-This isolates crashes, infinite loops and stray output from the API process, and
-enforces a wall-clock time limit. It is NOT a security sandbox: it is meant for
-running your own practice code on your own machine.
+Defence in depth, designed to work on hosts without containers (e.g. free web
+services), in layers:
+
+1. A separate process with a scrubbed environment: no SECRET_KEY, API keys or
+   database URL is visible to submitted code. Python runs isolated (-I).
+2. Python audit hooks inside that process block opening files (except reading
+   the standard library), listing directories, network sockets, starting
+   processes, and ctypes.
+3. On Linux, resource limits cap CPU time, memory, output size and open files,
+   and the process runs in its own session so it can be killed as a group.
+4. Output goes to size-capped files, never an unbounded pipe, and a wall-clock
+   timeout applies everywhere.
+
+Audit hooks are not a perfect security boundary (CPython's own docs say so), so
+this raises the bar a lot rather than making escape impossible. For untrusted
+public traffic at scale, run the runner in a container or microVM as well.
 """
 
 import json
+import os
+import secrets
+import signal
 import subprocess
 import sys
 import tempfile
+import threading
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from app.config import get_settings
 
-RESULT_MARKER = "__ASSESSMENT_RESULT__"
-
 _HARNESS = r'''
-import contextlib, copy, io, json, linecache, math, sys, traceback
+import contextlib, copy, io, json, linecache, math, os, sys, traceback
 
-MARKER = sys.argv[2]
-spec = json.load(open(sys.argv[1], encoding="utf-8"))
-MAX_OUT = spec["max_output"]
+
+def apply_limits(cfg):
+    """Lower this process's resource limits (Linux/macOS). Code can't raise them again."""
+    try:
+        import resource
+    except ImportError:  # Windows: rely on the wall-clock timeout
+        return
+    mb = 1024 * 1024
+    limits = {
+        resource.RLIMIT_CPU: cfg["cpu_seconds"],
+        resource.RLIMIT_AS: cfg["memory_mb"] * mb,
+        resource.RLIMIT_FSIZE: cfg["output_bytes"],
+        resource.RLIMIT_NOFILE: 64,
+        resource.RLIMIT_CORE: 0,
+    }
+    for res, value in limits.items():
+        try:
+            resource.setrlimit(res, (value, value))
+        except (ValueError, OSError):
+            pass
+
+
+BLOCKED_EVENTS = {
+    "os.system": "Running shell commands",
+    "os.exec": "Starting programs",
+    "os.posix_spawn": "Starting programs",
+    "os.spawn": "Starting programs",
+    "os.fork": "Starting processes",
+    "os.forkpty": "Starting processes",
+    "os.startfile": "Starting programs",
+    "subprocess.Popen": "Starting programs",
+    "os.kill": "Sending signals",
+    "os.killpg": "Sending signals",
+    "socket.__new__": "Network access",
+    "socket.connect": "Network access",
+    "socket.bind": "Network access",
+    "socket.getaddrinfo": "Network access",
+    "socket.gethostbyname": "Network access",
+    "glob.glob": "Listing directories",
+    "os.chdir": "Changing directory",
+    "os.remove": "Deleting files",
+    "os.rmdir": "Deleting files",
+    "shutil.rmtree": "Deleting files",
+    "os.rename": "Moving files",
+    "os.mkdir": "Creating directories",
+    "os.chmod": "Changing file permissions",
+    "os.chown": "Changing file permissions",
+    "os.truncate": "Changing files",
+    "os.link": "Creating links",
+    "os.symlink": "Creating links",
+    "os.utime": "Changing files",
+    "os.putenv": "Changing the environment",
+    "os.unsetenv": "Changing the environment",
+    "webbrowser.open": "Opening a browser",
+}
+BLOCKED_PREFIXES = ("ctypes.", "winreg.", "_winapi.", "msvcrt.")
+# Importing socket is harmless (stdlib modules like email.utils do it); using it is
+# blocked by the socket.* events above. These modules, though, can bypass the hooks.
+BLOCKED_MODULES = {"ctypes", "_ctypes", "cffi", "_posixsubprocess", "_winapi", "winreg", "msvcrt", "multiprocessing"}
+
+
+def install_guard():
+    roots = tuple(sorted({os.path.realpath(p) + os.sep for p in (sys.prefix, sys.base_prefix, sys.exec_prefix, sys.base_exec_prefix)}))
+
+    def deny(what):
+        raise PermissionError(f"{what} is disabled in the code runner.")
+
+    def inside_python(path):
+        if isinstance(path, bytes):
+            path = os.fsdecode(path)
+        real = os.path.realpath(os.fspath(path))
+        return real.startswith(roots) or real + os.sep in roots
+
+    def hook(event, args):
+        if event in BLOCKED_EVENTS:
+            deny(BLOCKED_EVENTS[event])
+        if event.startswith(BLOCKED_PREFIXES):
+            deny("Low-level system access")
+        if event == "import" and args[0].split(".")[0] in BLOCKED_MODULES:
+            deny(f"Importing '{args[0]}'")
+        if event in ("os.listdir", "os.scandir"):
+            # The import system lists package folders to find submodules, so allow
+            # that inside the Python installation only.
+            path = args[0] if args and args[0] is not None else "."
+            if isinstance(path, int) or not inside_python(path):
+                deny("Listing directories")
+        if event == "open":
+            path, mode = args[0], args[1] if len(args) > 1 else "r"
+            if isinstance(path, int):
+                if path > 2:
+                    deny("Opening files")
+                return
+            if any(c in (mode or "r") for c in "wax+"):
+                deny("Writing files")
+            if not inside_python(path):
+                deny("Opening files")
+
+    sys.addaudithook(hook)
 
 
 def same(a, b):
@@ -57,45 +168,58 @@ def describe(exc):
     return (head + "".join(traceback.format_exception_only(type(exc), exc))).strip()
 
 
-def emit(payload):
-    sys.__stdout__.write(MARKER + json.dumps(payload) + "\n")
+def main():
+    spec_path, marker = sys.argv[1], sys.argv[2]
+    del sys.argv[1:]  # don't leave the marker lying around for submitted code
+    with open(spec_path, encoding="utf-8") as f:
+        spec = json.load(f)
+    real_stdout = sys.__stdout__
+    max_out = spec["max_output"]
 
+    def emit(payload):
+        real_stdout.write(marker + json.dumps(payload) + "\n")
+        real_stdout.flush()
 
-# Lets tracebacks show the candidate's source lines for the virtual solution.py file.
-linecache.cache["solution.py"] = (len(spec["code"]), None, spec["code"].splitlines(True), "solution.py")
-namespace = {"__name__": "solution"}
-setup_out = io.StringIO()
-try:
-    with contextlib.redirect_stdout(setup_out):
-        exec(compile(spec["code"], "solution.py", "exec"), namespace)
-except BaseException as exc:
-    emit({"error": describe(exc)})
-    sys.exit(0)
+    apply_limits(spec["limits"])
+    # Lets tracebacks show the candidate's source lines for the virtual solution.py file.
+    linecache.cache["solution.py"] = (len(spec["code"]), None, spec["code"].splitlines(True), "solution.py")
+    install_guard()
 
-fn = namespace.get(spec["function_name"])
-if not callable(fn):
-    emit({"error": f"Function '{spec['function_name']}' is not defined. Keep the function name from the starter code."})
-    sys.exit(0)
-
-results = []
-for test in spec["tests"]:
-    out = io.StringIO()
-    entry = {"passed": False, "output": None, "error": None, "stdout": ""}
+    namespace = {"__name__": "solution"}
     try:
-        with contextlib.redirect_stdout(out):
-            got = fn(*copy.deepcopy(test["args"]))
-        try:
-            got = json.loads(json.dumps(got))
-        except (TypeError, ValueError):
-            got = repr(got)
-        entry["output"] = got
-        entry["passed"] = same(got, test["expected"])
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(compile(spec["code"], "solution.py", "exec"), namespace)
     except BaseException as exc:
-        entry["error"] = last_line(exc)
-    entry["stdout"] = out.getvalue()[:MAX_OUT]
-    results.append(entry)
+        emit({"error": describe(exc)})
+        return
 
-emit({"error": None, "results": results})
+    fn = namespace.get(spec["function_name"])
+    if not callable(fn):
+        emit({"error": f"Function '{spec['function_name']}' is not defined. Keep the function name from the starter code."})
+        return
+
+    results = []
+    for test in spec["tests"]:
+        out = io.StringIO()
+        entry = {"passed": False, "output": None, "error": None, "stdout": ""}
+        try:
+            with contextlib.redirect_stdout(out):
+                got = fn(*copy.deepcopy(test["args"]))
+            try:
+                got = json.loads(json.dumps(got))
+            except (TypeError, ValueError):
+                got = repr(got)
+            entry["output"] = got
+            entry["passed"] = same(got, test["expected"])
+        except BaseException as exc:
+            entry["error"] = last_line(exc)
+        entry["stdout"] = out.getvalue()[:max_out]
+        results.append(entry)
+
+    emit({"error": None, "results": results})
+
+
+main()
 '''
 
 
@@ -148,12 +272,60 @@ class RunResult:
         }
 
 
+def _child_env() -> dict[str, str]:
+    """A minimal environment: nothing from the server's own (secrets, keys, DB URL)."""
+    env = {"PYTHONIOENCODING": "utf-8", "PYTHONUTF8": "1", "PYTHONDONTWRITEBYTECODE": "1", "LANG": "C.UTF-8"}
+    if os.name == "nt":  # Python can't start on Windows without these
+        for key in ("SYSTEMROOT", "WINDIR"):
+            if key in os.environ:
+                env[key] = os.environ[key]
+    return env
+
+
+def _read_capped(path: Path, limit: int) -> str:
+    with open(path, "rb") as f:
+        return f.read(limit).decode("utf-8", errors="replace")
+
+
+def _kill(proc: subprocess.Popen) -> None:
+    try:
+        if os.name == "posix":
+            os.killpg(proc.pid, signal.SIGKILL)  # the whole session, not just the child
+        else:
+            proc.kill()
+    except (ProcessLookupError, PermissionError, OSError):
+        pass
+    proc.wait()
+
+
+@lru_cache
+def _run_slots() -> threading.BoundedSemaphore:
+    return threading.BoundedSemaphore(get_settings().code_max_concurrent_runs)
+
+
 def run_tests(code: str, function_name: str, tests: list[dict[str, Any]]) -> RunResult:
     """Run `code` and call `function_name` with each test's args.
 
     `tests` items: {"args": [...], "expected": ..., "hidden": bool}.
+    At most `code_max_concurrent_runs` run at once, so a burst of submissions
+    can't exhaust a small server's memory.
     """
+    slots = _run_slots()
+    if not slots.acquire(timeout=get_settings().code_queue_wait_seconds):
+        return RunResult(
+            outcomes=[TestOutcome(t["args"], t["expected"], t.get("hidden", False), False) for t in tests],
+            error="The code runner is busy right now. Please try again in a moment.",
+        )
+    try:
+        return _run_tests(code, function_name, tests)
+    finally:
+        slots.release()
+
+
+def _run_tests(code: str, function_name: str, tests: list[dict[str, Any]]) -> RunResult:
     settings = get_settings()
+    timeout = settings.code_run_timeout_seconds
+    output_cap = settings.code_output_limit_bytes
 
     def failed_all(error: str, timed_out: bool = False) -> RunResult:
         return RunResult(
@@ -162,39 +334,57 @@ def run_tests(code: str, function_name: str, tests: list[dict[str, Any]]) -> Run
             timed_out=timed_out,
         )
 
+    marker = f"__RESULT_{secrets.token_hex(16)}__"
     spec = {
         "code": code,
         "function_name": function_name,
         "tests": [{"args": t["args"], "expected": t["expected"]} for t in tests],
         "max_output": 2000,
+        "limits": {
+            "cpu_seconds": int(timeout) + 1,
+            "memory_mb": settings.code_memory_limit_mb,
+            "output_bytes": output_cap,
+        },
     }
-    with tempfile.TemporaryDirectory(prefix="assess-run-") as tmp:
+    with tempfile.TemporaryDirectory(prefix="epreuve-run-") as tmp:
         tmp_path = Path(tmp)
         (tmp_path / "harness.py").write_text(_HARNESS, encoding="utf-8")
         (tmp_path / "spec.json").write_text(json.dumps(spec), encoding="utf-8")
-        try:
-            proc = subprocess.run(
-                [sys.executable, "-I", "-X", "utf8", "harness.py", "spec.json", RESULT_MARKER],
+        out_path, err_path = tmp_path / "stdout.txt", tmp_path / "stderr.txt"
+        with open(out_path, "wb") as out_f, open(err_path, "wb") as err_f:
+            proc = subprocess.Popen(
+                [sys.executable, "-I", "-X", "utf8", "harness.py", "spec.json", marker],
                 cwd=tmp,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="replace",
-                timeout=settings.code_run_timeout_seconds,
+                env=_child_env(),
+                stdin=subprocess.DEVNULL,
+                stdout=out_f,
+                stderr=err_f,
+                start_new_session=os.name == "posix",
             )
-        except subprocess.TimeoutExpired:
-            return failed_all(
-                f"Time limit exceeded ({settings.code_run_timeout_seconds:g}s). "
-                "Check for infinite loops or an inefficient algorithm.",
-                timed_out=True,
-            )
+            try:
+                proc.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                _kill(proc)
+                return failed_all(
+                    f"Time limit exceeded ({timeout:g}s). Check for infinite loops or an inefficient algorithm.",
+                    timed_out=True,
+                )
+        flooded = out_path.stat().st_size >= output_cap
+        stdout = _read_capped(out_path, output_cap + 1024)
+        stderr = _read_capped(err_path, settings.code_max_output_chars)
 
-    line = next((ln for ln in reversed(proc.stdout.splitlines()) if ln.startswith(RESULT_MARKER)), None)
+    if flooded:
+        return failed_all("Your code printed too much output and was stopped.")
+
+    line = next((ln for ln in reversed(stdout.splitlines()) if ln.startswith(marker)), None)
     if line is None:
-        stderr = proc.stderr.strip()[-settings.code_max_output_chars :]
-        return failed_all(f"Your code crashed before finishing.\n{stderr}".strip())
+        if os.name == "posix" and proc.returncode == -signal.SIGXFSZ:
+            return failed_all("Your code printed too much output and was stopped.")
+        if os.name == "posix" and proc.returncode in (-signal.SIGXCPU, -signal.SIGKILL):
+            return failed_all("Your code used too much CPU time or memory and was stopped.")
+        return failed_all(f"Your code crashed before finishing.\n{stderr.strip()}".strip())
 
-    payload = json.loads(line[len(RESULT_MARKER) :])
+    payload = json.loads(line[len(marker) :])
     if payload.get("error"):
         return failed_all(payload["error"])
 

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { api } from '../api'
 import { useAuth } from '../auth'
@@ -36,6 +36,7 @@ function TestCard({ test, featured = false }: { test: TestSummary; featured?: bo
 
 export function Dashboard() {
   const { user } = useAuth()
+  const notice = (useLocation().state as { notice?: string } | null)?.notice
   const { data, error, loading, reload } = useAsync(
     () => Promise.all([api.tests(), api.stats(), api.attempts('in_progress'), api.aiStatus()]),
     [],
@@ -83,6 +84,12 @@ export function Dashboard() {
           AI coach: {ai.providers.length ? ai.providers.map((p) => p.name).join(' → ') : 'not set up'}
         </span>
       </div>
+
+      {notice && (
+        <div className="notice" role="status">
+          {notice}
+        </div>
+      )}
 
       {inProgress.length > 0 && (
         <section className="stack-sm" aria-labelledby="running-title">
