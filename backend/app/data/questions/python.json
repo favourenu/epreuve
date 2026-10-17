@@ -55,12 +55,12 @@
     "difficulty": "easy",
     "prompt": "What does this print?\n\n```python\nd = {\"a\": 1}\nprint(d.get(\"b\", 0))\n```",
     "options": [
-      "`None`",
       "`0`",
+      "`None`",
       "`1`",
       "`KeyError`"
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "`dict.get(key, default)` returns the default when the key is missing instead of raising KeyError."
   },
   {
@@ -104,11 +104,11 @@
     "prompt": "What is the idiomatic way to check whether a variable `x` is None?",
     "options": [
       "`if x == None:`",
-      "`if x is None:`",
       "`if not x:`",
+      "`if x is None:`",
       "`if x.isNone():`"
     ],
-    "answer": 1,
+    "answer": 2,
     "explanation": "None is a singleton, so compare by identity with `is`. `not x` is also true for 0, empty strings and empty lists, which is a common bug."
   },
   {
@@ -152,11 +152,11 @@
     "prompt": "What does this evaluate to?\n\n```python\n{1, 2, 3} & {2, 3, 4}\n```",
     "options": [
       "`{1, 2, 3, 4}`",
-      "`{2, 3}`",
       "`{1, 4}`",
-      "`{1}`"
+      "`{1}`",
+      "`{2, 3}`"
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "`&` is set intersection: the elements in both sets. `|` is union and `^` is symmetric difference."
   },
   {
@@ -190,5 +190,453 @@
     ],
     "answer": 1,
     "explanation": "Strings sort by Unicode code point, and every uppercase letter (A-Z) comes before every lowercase letter (a-z), so 'Cherry' sorts first. Use `sorted(words, key=str.lower)` for case-insensitive order."
+  },
+  {
+    "id": "py-013",
+    "type": "mcq",
+    "category": "python",
+    "topic": "copying lists",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nx = [1, 2, 3]\ny = x[:]\ny.append(4)\nprint(len(x), len(y))\n```",
+    "options": [
+      "`3 4`",
+      "`3 3`",
+      "`4 4`",
+      "`4 3`"
+    ],
+    "answer": 0,
+    "explanation": "`x[:]` makes a shallow copy, so appending to `y` doesn't change `x`."
+  },
+  {
+    "id": "py-014",
+    "type": "mcq",
+    "category": "python",
+    "topic": "string operators",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nprint(\"abc\" * 2 + \"d\")\n```",
+    "options": [
+      "`abcabcd`",
+      "`abcd abcd`",
+      "`abcdabcd`",
+      "An error"
+    ],
+    "answer": 0,
+    "explanation": "`*` repeats a string and `+` concatenates: 'abcabc' + 'd'."
+  },
+  {
+    "id": "py-015",
+    "type": "mcq",
+    "category": "python",
+    "topic": "dictionaries",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nd = {\"a\": 1, \"b\": 2}\nfor k, v in d.items():\n    print(k * v, end=\" \")\n```",
+    "options": [
+      "`a1 b2`",
+      "`a bb`",
+      "`a b`",
+      "`1 2`"
+    ],
+    "answer": 1,
+    "explanation": "Dicts keep insertion order. `'a' * 1` is 'a' and `'b' * 2` is 'bb'."
+  },
+  {
+    "id": "py-016",
+    "type": "mcq",
+    "category": "python",
+    "topic": "truthiness",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nprint(bool([]), bool([0]), bool(\"\"))\n```",
+    "options": [
+      "`False False False`",
+      "`True True False`",
+      "`False True False`",
+      "`False True True`"
+    ],
+    "answer": 2,
+    "explanation": "Empty containers and empty strings are falsy. `[0]` is a non-empty list, so it's truthy, even though it contains 0."
+  },
+  {
+    "id": "py-017",
+    "type": "mcq",
+    "category": "python",
+    "topic": "in-place methods",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nnums = [3, 1, 2]\nresult = nums.sort()\nprint(result)\n```",
+    "options": [
+      "`[1, 2, 3]`",
+      "`[3, 1, 2]`",
+      "`None`",
+      "An error"
+    ],
+    "answer": 2,
+    "explanation": "`list.sort()` sorts in place and returns None. Use `sorted(nums)` to get a new sorted list."
+  },
+  {
+    "id": "py-018",
+    "type": "mcq",
+    "category": "python",
+    "topic": "sorting",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nprint(sorted(\"banana\"))\n```",
+    "options": [
+      "`banana`",
+      "`['a', 'a', 'a', 'b', 'n', 'n']`",
+      "`aaabnn`",
+      "`['a', 'b', 'n']`"
+    ],
+    "answer": 1,
+    "explanation": "`sorted()` always returns a list. Here it's the string's characters in order, duplicates included."
+  },
+  {
+    "id": "py-019",
+    "type": "mcq",
+    "category": "python",
+    "topic": "function arguments",
+    "difficulty": "hard",
+    "prompt": "What does this print?\n\n```python\ndef f(a, b=2, *args, **kwargs):\n    print(a, b, args, kwargs)\n\nf(1, 3, 4, 5, x=6)\n```",
+    "options": [
+      "`1 2 (3, 4, 5) {'x': 6}`",
+      "`1 3 [4, 5] {'x': 6}`",
+      "An error",
+      "`1 3 (4, 5) {'x': 6}`"
+    ],
+    "answer": 3,
+    "explanation": "Positional arguments fill `a` and `b` first; the extras go into the `args` tuple, and keyword extras go into the `kwargs` dict."
+  },
+  {
+    "id": "py-020",
+    "type": "mcq",
+    "category": "python",
+    "topic": "modulo",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nprint(10 % 3, -10 % 3)\n```",
+    "options": [
+      "`1 1`",
+      "`1 2`",
+      "`1 -1`",
+      "`1 -2`"
+    ],
+    "answer": 1,
+    "explanation": "In Python, `%` takes the sign of the divisor, so -10 % 3 is 2 (because -10 = 3 x -4 + 2)."
+  },
+  {
+    "id": "py-021",
+    "type": "mcq",
+    "category": "python",
+    "topic": "rounding",
+    "difficulty": "hard",
+    "prompt": "What does this print?\n\n```python\nprint(round(2.5), round(3.5))\n```",
+    "options": [
+      "`2 4`",
+      "`3 4`",
+      "`2 3`",
+      "`3 3`"
+    ],
+    "answer": 0,
+    "explanation": "Python rounds halves to the nearest even number (banker's rounding), so 2.5 -> 2 and 3.5 -> 4."
+  },
+  {
+    "id": "py-022",
+    "type": "mcq",
+    "category": "python",
+    "topic": "string methods",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\ns = \"hello world\"\nprint(s.title(), s.split(\"o\"))\n```",
+    "options": [
+      "`Hello world ['hell', 'w', 'rld']`",
+      "`Hello World ['hell', ' w', 'rld']`",
+      "`Hello World ['hello', 'world']`",
+      "`HELLO WORLD ['hell', ' w', 'rld']`"
+    ],
+    "answer": 1,
+    "explanation": "`title()` capitalises each word. `split('o')` cuts at every 'o' and keeps the space in ' w'."
+  },
+  {
+    "id": "py-023",
+    "type": "mcq",
+    "category": "python",
+    "topic": "comprehensions",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nprint([i for i in range(10) if i % 3 == 0][-1])\n```",
+    "options": [
+      "`3`",
+      "`6`",
+      "`9`",
+      "`10`"
+    ],
+    "answer": 2,
+    "explanation": "The list is [0, 3, 6, 9]; index -1 is the last item, 9."
+  },
+  {
+    "id": "py-024",
+    "type": "mcq",
+    "category": "python",
+    "topic": "tuples and exceptions",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\na = (1, 2, 3)\ntry:\n    a[0] = 9\nexcept TypeError:\n    print(\"immutable\")\n```",
+    "options": [
+      "`(9, 2, 3)`",
+      "`None`",
+      "`immutable`",
+      "Nothing"
+    ],
+    "answer": 2,
+    "explanation": "Tuples are immutable; assigning to an item raises TypeError."
+  },
+  {
+    "id": "py-025",
+    "type": "mcq",
+    "category": "python",
+    "topic": "sets",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nprint({1, 2, 2, 3} | {3, 4})\n```",
+    "options": [
+      "`{1, 2, 2, 3, 3, 4}`",
+      "`{3}`",
+      "`{1, 2, 4}`",
+      "`{1, 2, 3, 4}`"
+    ],
+    "answer": 3,
+    "explanation": "Sets drop duplicates, and `|` is union."
+  },
+  {
+    "id": "py-026",
+    "type": "mcq",
+    "category": "python",
+    "topic": "scope",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nx = 5\n\ndef change():\n    x = 10\n\nchange()\nprint(x)\n```",
+    "options": [
+      "`10`",
+      "`None`",
+      "`5`",
+      "An error"
+    ],
+    "answer": 2,
+    "explanation": "Assigning inside a function creates a new local `x`; the global `x` is unchanged."
+  },
+  {
+    "id": "py-027",
+    "type": "mcq",
+    "category": "python",
+    "topic": "global variables",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\ncount = 0\n\ndef inc():\n    global count\n    count += 1\n\ninc()\ninc()\nprint(count)\n```",
+    "options": [
+      "`0`",
+      "`2`",
+      "`1`",
+      "An error"
+    ],
+    "answer": 1,
+    "explanation": "`global count` makes the function update the module-level variable."
+  },
+  {
+    "id": "py-028",
+    "type": "mcq",
+    "category": "python",
+    "topic": "slicing",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nprint(\"Python\"[1:4], \"Python\"[-2:])\n```",
+    "options": [
+      "`Pyt on`",
+      "`yth hon`",
+      "`ytho on`",
+      "`yth on`"
+    ],
+    "answer": 3,
+    "explanation": "[1:4] is indexes 1, 2, 3 ('yth'); [-2:] is the last two characters ('on')."
+  },
+  {
+    "id": "py-029",
+    "type": "mcq",
+    "category": "python",
+    "topic": "enumerate",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nitems = [\"a\", \"b\", \"c\"]\nfor i, item in enumerate(items, start=1):\n    print(f\"{i}{item}\", end=\",\")\n```",
+    "options": [
+      "`0a,1b,2c,`",
+      "`1a,2b,3c,`",
+      "`1a,2b,3c`",
+      "`a1,b2,c3,`"
+    ],
+    "answer": 1,
+    "explanation": "`start=1` makes the count begin at 1, and `end=','` prints a comma after every item."
+  },
+  {
+    "id": "py-030",
+    "type": "mcq",
+    "category": "python",
+    "topic": "zip",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nprint(list(zip([1, 2, 3], \"ab\")))\n```",
+    "options": [
+      "`[(1, 'a'), (2, 'b'), (3, None)]`",
+      "`[(1, 'a'), (2, 'b')]`",
+      "`[1, 'a', 2, 'b']`",
+      "An error"
+    ],
+    "answer": 1,
+    "explanation": "`zip` stops at the shortest input. Use `itertools.zip_longest` to pad instead."
+  },
+  {
+    "id": "py-031",
+    "type": "mcq",
+    "category": "python",
+    "topic": "class attributes",
+    "difficulty": "hard",
+    "prompt": "What does this print?\n\n```python\nclass Dog:\n    sound = \"woof\"\n\na, b = Dog(), Dog()\na.sound = \"yap\"\nprint(a.sound, b.sound, Dog.sound)\n```",
+    "options": [
+      "`yap yap yap`",
+      "`yap woof yap`",
+      "`woof woof woof`",
+      "`yap woof woof`"
+    ],
+    "answer": 3,
+    "explanation": "Assigning `a.sound` creates an instance attribute on `a` only. `b` and the class still see the class attribute."
+  },
+  {
+    "id": "py-032",
+    "type": "mcq",
+    "category": "python",
+    "topic": "floating point",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nprint(0.1 + 0.2 == 0.3)\n```",
+    "options": [
+      "`True`",
+      "`0.3`",
+      "`False`",
+      "An error"
+    ],
+    "answer": 2,
+    "explanation": "0.1 and 0.2 can't be represented exactly in binary, so the sum is 0.30000000000000004. Compare floats with `math.isclose`."
+  },
+  {
+    "id": "py-033",
+    "type": "mcq",
+    "category": "python",
+    "topic": "generators",
+    "difficulty": "hard",
+    "prompt": "What does this print?\n\n```python\ndef gen():\n    yield 1\n    yield 2\n\ng = gen()\nprint(list(g), list(g))\n```",
+    "options": [
+      "`[1, 2] []`",
+      "`[1, 2] [1, 2]`",
+      "`[] []`",
+      "An error"
+    ],
+    "answer": 0,
+    "explanation": "A generator can only be consumed once; the second `list(g)` gets nothing."
+  },
+  {
+    "id": "py-034",
+    "type": "mcq",
+    "category": "python",
+    "topic": "join and map",
+    "difficulty": "easy",
+    "prompt": "What does this print?\n\n```python\nprint(\" \".join(map(str, range(3))))\n```",
+    "options": [
+      "`0 1 2`",
+      "`012`",
+      "`[0, 1, 2]`",
+      "An error"
+    ],
+    "answer": 0,
+    "explanation": "`map(str, ...)` turns the numbers into strings so `join` can glue them with spaces."
+  },
+  {
+    "id": "py-035",
+    "type": "mcq",
+    "category": "python",
+    "topic": "exceptions",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\ntry:\n    print(1 / 0)\nexcept ZeroDivisionError as e:\n    print(type(e).__name__)\nfinally:\n    print(\"done\")\n```",
+    "options": [
+      "`ZeroDivisionError` then `done`",
+      "`done`",
+      "`ZeroDivisionError`",
+      "`inf` then `done`"
+    ],
+    "answer": 0,
+    "explanation": "Dividing by zero raises ZeroDivisionError; the except block prints its class name, then `finally` always runs."
+  },
+  {
+    "id": "py-036",
+    "type": "mcq",
+    "category": "python",
+    "topic": "counting with dicts",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\ncounts = {}\nfor ch in \"abca\":\n    counts[ch] = counts.get(ch, 0) + 1\nprint(counts)\n```",
+    "options": [
+      "`{'a': 1, 'b': 1, 'c': 1}`",
+      "`{'a': 2, 'c': 1, 'b': 1}`",
+      "`{'a': 2, 'b': 1, 'c': 1}`",
+      "An error"
+    ],
+    "answer": 2,
+    "explanation": "`get(ch, 0)` avoids a KeyError for new keys. Dicts keep insertion order: a, b, c."
+  },
+  {
+    "id": "py-037",
+    "type": "mcq",
+    "category": "python",
+    "topic": "any and all",
+    "difficulty": "hard",
+    "prompt": "What does this print?\n\n```python\nprint(any([0, \"\", None]), all([]))\n```",
+    "options": [
+      "`False False`",
+      "`True True`",
+      "`True False`",
+      "`False True`"
+    ],
+    "answer": 3,
+    "explanation": "No item is truthy, so `any` is False. `all` of an empty list is True: there's no falsy item to make it fail."
+  },
+  {
+    "id": "py-038",
+    "type": "mcq",
+    "category": "python",
+    "topic": "operator precedence",
+    "difficulty": "hard",
+    "prompt": "What does this print?\n\n```python\nprint(2 ** 3 ** 2)\n```",
+    "options": [
+      "`64`",
+      "`36`",
+      "`729`",
+      "`512`"
+    ],
+    "answer": 3,
+    "explanation": "`**` is right-associative: 2 ** (3 ** 2) = 2 ** 9 = 512."
+  },
+  {
+    "id": "py-039",
+    "type": "mcq",
+    "category": "python",
+    "topic": "identity vs equality",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nprint([1, 2] == [1, 2], [1, 2] is [1, 2])\n```",
+    "options": [
+      "`True False`",
+      "`True True`",
+      "`False False`",
+      "`False True`"
+    ],
+    "answer": 0,
+    "explanation": "`==` compares values; `is` compares identity. The two list literals are different objects."
+  },
+  {
+    "id": "py-040",
+    "type": "mcq",
+    "category": "python",
+    "topic": "f-strings",
+    "difficulty": "medium",
+    "prompt": "What does this print?\n\n```python\nprint(f\"{3.14159:.2f}|{42:>5}|\")\n```",
+    "options": [
+      "`3.14|42|`",
+      "`3.142|42   |`",
+      "`3.14|42   |`",
+      "`3.14|   42|`"
+    ],
+    "answer": 3,
+    "explanation": "`.2f` gives two decimals; `>5` right-aligns 42 in a 5-character field."
   }
 ]

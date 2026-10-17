@@ -7,13 +7,18 @@
     "difficulty": "medium",
     "prompt": "The night before a release, you find that a feature you built can corrupt some user data in a rare case. The release is tomorrow morning and your manager is offline. What is the **most effective** response?",
     "options": [
+      "Message your manager and the release owner now, describing the bug, its impact, and options (fix, disable via feature flag, or delay).",
       "Say nothing. It's a rare case, so fix it in the next release.",
       "Push a fix straight to the release branch tonight without review.",
-      "Mention it in the team channel tomorrow morning at standup.",
-      "Message your manager and the release owner now, describing the bug, its impact, and options (fix, disable via feature flag, or delay)."
+      "Mention it in the team channel tomorrow morning at standup."
     ],
-    "answer": 3,
-    "option_scores": [0, 0, 1, 2],
+    "answer": 0,
+    "option_scores": [
+      2,
+      0,
+      0,
+      1
+    ],
     "explanation": "Data corruption is a serious risk, so escalate quickly and clearly, with enough detail and options for others to decide. Staying silent or making unreviewed changes adds risk. Waiting until standup may be too late."
   },
   {
@@ -30,7 +35,12 @@
       "Point out in the team channel that they keep missing standups."
     ],
     "answer": 0,
-    "option_scores": [2, 1, 0, 0],
+    "option_scores": [
+      2,
+      1,
+      0,
+      0
+    ],
     "explanation": "Start with a direct, respectful conversation. It solves most issues and builds trust. Escalate to the manager if it doesn't. Doing their work silently hides the problem, and calling them out publicly damages the team."
   },
   {
@@ -42,12 +52,17 @@
     "prompt": "You're assigned a task with unclear requirements and a 2-day deadline. What is the **most effective** approach?",
     "options": [
       "Wait until someone clarifies the requirements.",
-      "Build every possible interpretation so one of them is right.",
       "Ask the stakeholder targeted clarifying questions early, write down your assumptions, and confirm them before building much.",
+      "Build every possible interpretation so one of them is right.",
       "Start building from your best guess and adjust later if needed."
     ],
-    "answer": 2,
-    "option_scores": [0, 0, 2, 1],
+    "answer": 1,
+    "option_scores": [
+      0,
+      2,
+      0,
+      1
+    ],
     "explanation": "Clearing up ambiguity early is cheap; rework late is expensive. Writing down assumptions creates a shared understanding. Starting from a best guess is reasonable only if you also check in early."
   },
   {
@@ -59,12 +74,17 @@
     "prompt": "In code review, a senior engineer asks you to change an approach. You believe your approach is better. What is the **most effective** response?",
     "options": [
       "Ignore the comment and merge.",
-      "Reply respectfully with your reasoning and evidence (benchmarks, docs, trade-offs), ask for their perspective, and be open to being wrong.",
       "Make the change to avoid conflict, even though you think it's worse.",
-      "Escalate to your manager."
+      "Escalate to your manager.",
+      "Reply respectfully with your reasoning and evidence (benchmarks, docs, trade-offs), ask for their perspective, and be open to being wrong."
     ],
-    "answer": 1,
-    "option_scores": [0, 2, 1, 0],
+    "answer": 3,
+    "option_scores": [
+      0,
+      1,
+      0,
+      2
+    ],
     "explanation": "Healthy teams settle technical disagreements with evidence and open discussion. Giving in silently is acceptable but loses a learning opportunity. Ignoring feedback or escalating first damages trust."
   },
   {
@@ -77,11 +97,16 @@
     "options": [
       "Keep quiet and deliver whatever is done on day 3, even if it's not fully tested.",
       "Work extra hours and only say something if you're still behind on day 3.",
-      "Wait for your manager to ask how it's going.",
-      "Tell the stakeholders now: the new estimate, why it changed, and options such as reducing scope or reprioritising."
+      "Tell the stakeholders now: the new estimate, why it changed, and options such as reducing scope or reprioritising.",
+      "Wait for your manager to ask how it's going."
     ],
-    "answer": 3,
-    "option_scores": [0, 1, 0, 2],
+    "answer": 2,
+    "option_scores": [
+      0,
+      1,
+      2,
+      0
+    ],
     "explanation": "Raising slippage early, with reasons and options, lets others plan. Hiding it, or shipping untested code, creates bigger problems later."
   },
   {
@@ -93,12 +118,17 @@
     "prompt": "A non-technical product manager asks why a feature is delayed. What is the **most effective** response?",
     "options": [
       "\"It's complicated, there were technical issues.\"",
-      "A detailed technical explanation of the database migration bug.",
       "A plain-language explanation of what caused the delay, its impact, the new expected date, and what you're doing to stay on track.",
+      "A detailed technical explanation of the database migration bug.",
       "Explain that another team's API caused it, so it isn't your team's fault."
     ],
-    "answer": 2,
-    "option_scores": [0, 1, 2, 0],
+    "answer": 1,
+    "option_scores": [
+      0,
+      2,
+      1,
+      0
+    ],
     "explanation": "Match the explanation to your audience: cause, impact, new date and plan, without jargon. Too much technical detail is accurate but unhelpful, and vague answers or blame erode trust."
   },
   {
@@ -115,7 +145,12 @@
       "Read it until you understand it, add tests for edge cases, and only merge once you could explain and maintain it."
     ],
     "answer": 3,
-    "option_scores": [0, 1, 0, 2],
+    "option_scores": [
+      0,
+      1,
+      0,
+      2
+    ],
     "explanation": "You own every line you merge, however it was written. Understanding the code and testing edge cases is the professional standard. Rewriting from scratch is safe but usually wasteful."
   },
   {
@@ -127,12 +162,391 @@
     "prompt": "You realise you accidentally pushed a production API key to a public GitHub repository an hour ago. What should you do **first**?",
     "options": [
       "Delete the file in a new commit.",
-      "Revoke and rotate the key immediately, then remove it from the Git history and tell your lead.",
       "Rewrite the Git history with a force-push to remove the key.",
+      "Revoke and rotate the key immediately, then remove it from the Git history and tell your lead.",
       "Do nothing if no unusual usage shows up on the dashboard."
     ],
-    "answer": 1,
-    "option_scores": [0, 2, 1, 0],
+    "answer": 2,
+    "option_scores": [
+      0,
+      1,
+      2,
+      0
+    ],
     "explanation": "Once a secret is public, assume it has been compromised. Bots scan GitHub for keys within minutes. Rotating the key is the only real fix. Cleaning the history is good hygiene but doesn't make a leaked key safe, and a new commit leaves the key in the history."
+  },
+  {
+    "id": "sj-009",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "security and ownership",
+    "difficulty": "medium",
+    "prompt": "While reading a teammate's merged code, you notice it logs users' passwords in plain text in production.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Post a screenshot in the team channel so everyone learns from it.",
+      "Quietly push a fix to main yourself without review.",
+      "Add it to the backlog for next sprint.",
+      "Tell the teammate and your lead right away, explain the risk, and propose a fix plus clearing the existing logs."
+    ],
+    "answer": 3,
+    "explanation": "Leaked credentials are urgent: act quickly, through the right people, and include clean-up. Public shaming damages trust, and unreviewed fixes add risk.",
+    "option_scores": [
+      0,
+      0,
+      0,
+      2
+    ]
+  },
+  {
+    "id": "sj-010",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "quality under pressure",
+    "difficulty": "hard",
+    "prompt": "Your manager asks you to skip writing tests so a feature ships by Friday.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Agree, and skip the tests without saying anything.",
+      "Explain the specific risks, propose testing just the critical paths to still hit Friday, and let your manager decide with that information.",
+      "Refuse outright; testing is non-negotiable.",
+      "Agree, but email your concerns so there's a record."
+    ],
+    "answer": 1,
+    "explanation": "Good engineers make trade-offs visible and offer options rather than silently complying or flatly refusing.",
+    "option_scores": [
+      0,
+      2,
+      0,
+      1
+    ]
+  },
+  {
+    "id": "sj-011",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "asking for help",
+    "difficulty": "easy",
+    "prompt": "You've been stuck on a bug for two days and the sprint ends tomorrow.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Keep trying alone. Asking for help looks weak.",
+      "Quietly switch to an easier task.",
+      "Ask a teammate for help, summarising the problem, what you've tried, and what you suspect.",
+      "Post \"it's not working, any ideas?\" in the team channel."
+    ],
+    "answer": 2,
+    "explanation": "Asking early, with context, respects others' time and unblocks you. Vague requests get vague help.",
+    "option_scores": [
+      0,
+      0,
+      2,
+      1
+    ]
+  },
+  {
+    "id": "sj-012",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "supporting colleagues",
+    "difficulty": "medium",
+    "prompt": "A new team member keeps interrupting you with basic questions while you're working against a deadline.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Ignore the messages until your deadline passes.",
+      "Suggest batching questions into a short daily slot, point them to the docs, and pair briefly on the blocking issue.",
+      "Answer every question immediately, even if you miss your deadline.",
+      "Tell them to ask someone else."
+    ],
+    "answer": 1,
+    "explanation": "This balances your commitments with helping them ramp up, and builds their independence.",
+    "option_scores": [
+      0,
+      2,
+      1,
+      0
+    ]
+  },
+  {
+    "id": "sj-013",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "conflicting requirements",
+    "difficulty": "medium",
+    "prompt": "Two stakeholders give you conflicting requirements for the same feature.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Bring the conflict to both of them (or the product owner) to agree on one direction, and write down the decision.",
+      "Build whichever is easier.",
+      "Follow the more senior stakeholder.",
+      "Build both versions behind a setting."
+    ],
+    "answer": 0,
+    "explanation": "Surface the conflict so the right people resolve it, and record the outcome to avoid rework.",
+    "option_scores": [
+      2,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "id": "sj-014",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "owning mistakes",
+    "difficulty": "medium",
+    "prompt": "A change you deployed caused a 10-minute outage. It's fixed now, and nobody has worked out what caused it.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Say nothing; it's resolved.",
+      "Blame the flaky infrastructure.",
+      "Fix the underlying issue quietly and only mention it if someone asks.",
+      "Tell your team it was your change, explain what happened, and help write up how to prevent it."
+    ],
+    "answer": 3,
+    "explanation": "Owning mistakes quickly builds trust and helps the team learn. Blameless post-mortems depend on honesty.",
+    "option_scores": [
+      0,
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "id": "sj-015",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "inclusive teamwork",
+    "difficulty": "medium",
+    "prompt": "A teammate in a very different time zone keeps missing out on decisions made in your live meetings.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Propose writing decisions up asynchronously before they're final, and rotating meeting times.",
+      "Nothing; it's their responsibility to keep up.",
+      "Record the meetings and share the links.",
+      "Complain to HR on their behalf."
+    ],
+    "answer": 0,
+    "explanation": "Async decision records and fair scheduling include everyone. Recordings alone don't give people a voice before decisions are made.",
+    "option_scores": [
+      2,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "id": "sj-016",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "receiving feedback",
+    "difficulty": "medium",
+    "prompt": "In your review, your manager says your pull requests are too large and hard to review. You disagree.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Argue that your PRs are fine.",
+      "Accept it without comment, then carry on as before.",
+      "Accept the feedback and ask nothing.",
+      "Ask for specific examples, consider them honestly, and agree on a concrete target such as keeping PRs under ~300 lines."
+    ],
+    "answer": 3,
+    "explanation": "Curiosity first: examples show whether the feedback is valid, and a concrete goal makes improvement measurable.",
+    "option_scores": [
+      0,
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "id": "sj-017",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "customer communication",
+    "difficulty": "medium",
+    "prompt": "An angry customer reports that exports have been failing all morning. You're asked to reply.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Acknowledge the impact, apologise, say what you know and what you're doing, and promise an update by a specific time.",
+      "Explain the technical reason in detail and suggest they may be using it wrong.",
+      "Promise it will be fixed within the hour.",
+      "Reply \"We're looking into it.\""
+    ],
+    "answer": 0,
+    "explanation": "Empathy, honesty, a plan and a committed update time. Don't over-promise, and don't blame the customer.",
+    "option_scores": [
+      2,
+      0,
+      0,
+      1
+    ]
+  },
+  {
+    "id": "sj-018",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "data integrity",
+    "difficulty": "medium",
+    "prompt": "The night before presenting quarterly numbers to leadership, you notice a figure in your report looks wrong.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Present it anyway; nobody will notice.",
+      "Check it now, correct it or clearly flag the uncertainty, and let your manager know before the meeting.",
+      "Quietly remove that slide.",
+      "Postpone the meeting without explaining why."
+    ],
+    "answer": 1,
+    "explanation": "Accuracy and transparency matter most when others will make decisions based on your numbers.",
+    "option_scores": [
+      0,
+      2,
+      1,
+      0
+    ]
+  },
+  {
+    "id": "sj-019",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "prioritisation",
+    "difficulty": "medium",
+    "prompt": "You're working on your planned task when another team's manager asks you to urgently help with theirs.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Explain the trade-off to your own manager (or both managers) and let them agree the priority.",
+      "Drop your task and help, since they said it's urgent.",
+      "Work overtime to do both.",
+      "Do neither until someone decides."
+    ],
+    "answer": 0,
+    "explanation": "Priorities across teams should be set by the people accountable for them, with the trade-off made visible.",
+    "option_scores": [
+      2,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "id": "sj-020",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "technical decisions",
+    "difficulty": "medium",
+    "prompt": "You want to add a new open-source library to the project. The team has an approval process for dependencies.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Add it; it's only one library.",
+      "Write it all yourself instead to avoid the process.",
+      "Propose it with the trade-offs (maintenance, licence, security) and get it approved first.",
+      "Use it on a branch and merge before anyone notices."
+    ],
+    "answer": 2,
+    "explanation": "Dependencies carry security and maintenance costs; the process exists for good reasons.",
+    "option_scores": [
+      0,
+      1,
+      2,
+      0
+    ]
+  },
+  {
+    "id": "sj-021",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "credit and recognition",
+    "difficulty": "hard",
+    "prompt": "In a meeting, a colleague presents a solution you designed as their own work.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Confront them angrily in front of everyone.",
+      "Calmly add context about how the design came together, then talk to them privately afterwards.",
+      "Say nothing, ever.",
+      "Mention your contribution in your next status update without raising it with them."
+    ],
+    "answer": 1,
+    "explanation": "Clarify facts calmly and address it directly but privately. It may be a misunderstanding.",
+    "option_scores": [
+      0,
+      2,
+      0,
+      1
+    ]
+  },
+  {
+    "id": "sj-022",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "initiative",
+    "difficulty": "easy",
+    "prompt": "You finish your sprint tasks two days early.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Quietly start a personal side project.",
+      "Slow down so you don't get more work.",
+      "Tell your lead and pick up the next priority, or offer to help a teammate who's behind.",
+      "Refactor some code you don't like without telling anyone."
+    ],
+    "answer": 2,
+    "explanation": "Making spare capacity visible lets the team use it where it matters most.",
+    "option_scores": [
+      0,
+      0,
+      2,
+      1
+    ]
+  },
+  {
+    "id": "sj-023",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "wellbeing",
+    "difficulty": "medium",
+    "prompt": "A teammate who's usually upbeat has seemed stressed and withdrawn for a couple of weeks.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Check in privately, listen, and offer help with their workload if it's useful.",
+      "Ignore it; it's not your business.",
+      "Tell your manager straight away without talking to them.",
+      "Make a light joke about it in the team chat."
+    ],
+    "answer": 0,
+    "explanation": "A private, supportive conversation respects their privacy. Escalating may be right later, especially if you're worried about their safety.",
+    "option_scores": [
+      2,
+      0,
+      1,
+      0
+    ]
+  },
+  {
+    "id": "sj-024",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "code review",
+    "difficulty": "medium",
+    "prompt": "A junior developer's pull request works but has dozens of small style issues.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Leave 40 comments, one per issue.",
+      "Approve it as is to avoid discouraging them.",
+      "Comment on the important issues and fix the style nits yourself after merging.",
+      "Focus comments on the issues that matter most, be encouraging, and suggest adding a linter or formatter to catch style issues automatically."
+    ],
+    "answer": 3,
+    "explanation": "Prioritise, teach, and automate the trivia so reviews focus on what tools can't catch.",
+    "option_scores": [
+      0,
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "id": "sj-025",
+    "type": "mcq",
+    "category": "situational_judgement",
+    "topic": "estimation",
+    "difficulty": "medium",
+    "prompt": "You're asked to estimate a task using a technology you've never used.\n\nWhat is the **most effective** response?",
+    "options": [
+      "Give a single, confident number to look competent.",
+      "Refuse to estimate.",
+      "Break the task down, give a range with your assumptions, and suggest a short time-boxed spike to reduce the uncertainty.",
+      "Double your first guess without saying why."
+    ],
+    "answer": 2,
+    "explanation": "Honest ranges with stated assumptions, plus a plan to reduce the unknowns, are what good estimates look like.",
+    "option_scores": [
+      0,
+      0,
+      2,
+      1
+    ]
   }
 ]

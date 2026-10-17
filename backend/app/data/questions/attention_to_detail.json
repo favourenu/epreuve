@@ -7,12 +7,12 @@
     "difficulty": "easy",
     "prompt": "Which pair contains two **exactly identical** values?",
     "options": [
-      "`usr_8812_LM`  -  `usr_8821_LM`",
       "`api.v2.prod-eu`  -  `api.v2.prod-eu`",
+      "`usr_8812_LM`  -  `usr_8821_LM`",
       "`0x7F3A9C`  -  `0x7F3A9G`",
       "`Ledger#00419`  -  `Ledger#00491`"
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "The others differ subtly: 8812 vs 8821 (swapped digits), 9C vs 9G, and 00419 vs 00491."
   },
   {
@@ -22,8 +22,13 @@
     "topic": "comparing records",
     "difficulty": "medium",
     "prompt": "Compare the original configuration with the copy. How many lines differ?\n\n**Original**\n```\nhost=db.internal\nport=5432\nuser=svc_reports\npool_size=20\ntimeout=30s\nssl=true\n```\n**Copy**\n```\nhost=db.internal\nport=5423\nuser=svc_report\npool_size=20\ntimeout=30s\nssl=ture\n```",
-    "options": ["1", "2", "3", "4"],
-    "answer": 2,
+    "options": [
+      "3",
+      "1",
+      "2",
+      "4"
+    ],
+    "answer": 0,
     "explanation": "port 5432 vs 5423, user svc_reports vs svc_report (missing 's'), and ssl true vs ture. That's 3 lines."
   },
   {
@@ -33,7 +38,12 @@
     "topic": "checking calculations",
     "difficulty": "medium",
     "prompt": "Review this invoice.\n\n| Line | Item | Qty | Unit price | Line total |\n|---|---|---|---|---|\n| 1 | Notebook | 3 | $12.50 | $37.50 |\n| 2 | Pen pack | 2 | $8.00 | $16.00 |\n| 3 | Folder | 4 | $5.25 | $20.00 |\n| | **Subtotal** | | | **$73.50** |\n\nWhich line contains an error?",
-    "options": ["Line 1", "Line 2", "Line 3", "There is no error"],
+    "options": [
+      "Line 1",
+      "Line 2",
+      "Line 3",
+      "There is no error"
+    ],
     "answer": 2,
     "explanation": "4 x $5.25 = $21.00, not $20.00. The subtotal adds up the listed line totals correctly, so the error is easy to miss if you only check the sum."
   },
@@ -45,12 +55,12 @@
     "difficulty": "easy",
     "prompt": "Which list is in correct **ascending alphabetical** order?",
     "options": [
-      "apple, apricot, avocado, banana",
       "apple, avocado, apricot, banana",
       "apricot, apple, avocado, banana",
+      "apple, apricot, avocado, banana",
       "apple, apricot, banana, avocado"
     ],
-    "answer": 0,
+    "answer": 2,
     "explanation": "Comparing letter by letter: 'apple' < 'apricot' (l < r), 'apricot' < 'avocado' (p < v), and all 'a' words come before 'banana'."
   },
   {
@@ -60,8 +70,13 @@
     "topic": "matching identifiers",
     "difficulty": "easy",
     "prompt": "A support ticket refers to the ID **TKT-40917-B**. Which entry matches it exactly?",
-    "options": ["TKT-40917-8", "TKT-4097-B", "TKT-40917-B", "TKT_40917-B"],
-    "answer": 2,
+    "options": [
+      "TKT-40917-8",
+      "TKT-4097-B",
+      "TKT_40917-B",
+      "TKT-40917-B"
+    ],
+    "answer": 3,
     "explanation": "The others have an 8 instead of B, a missing 1, or an underscore instead of a hyphen."
   },
   {
@@ -71,8 +86,317 @@
     "topic": "data entry verification",
     "difficulty": "medium",
     "prompt": "**Source record**\n\nName: Adaeze Okafor | Date of birth: 1998-04-12 | Phone: +234 803 551 2290 | Employee ID: EMP-30815\n\n**Entered into system**\n\nName: Adaeze Okafor | Date of birth: 1998-04-21 | Phone: +234 803 551 2290 | Employee ID: EMP-30815\n\nWhich field was entered incorrectly?",
-    "options": ["Name", "Date of birth", "Phone", "Employee ID"],
+    "options": [
+      "Name",
+      "Date of birth",
+      "Phone",
+      "Employee ID"
+    ],
     "answer": 1,
     "explanation": "The day and month digits were transposed: 04-12 became 04-21."
+  },
+  {
+    "id": "ad-007",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "string comparison",
+    "difficulty": "medium",
+    "prompt": "The allowlist contains exactly these addresses: **10.0.4.17**, **10.0.4.71** and **10.0.14.7**.\n\nWhich incoming address is **not** on the allowlist?",
+    "options": [
+      "10.0.4.17",
+      "10.0.14.7",
+      "10.0.41.7",
+      "10.0.4.71"
+    ],
+    "answer": 2,
+    "explanation": "10.0.41.7 looks similar to 10.0.14.7 and 10.0.4.17, but its third number is 41."
+  },
+  {
+    "id": "ad-008",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "counting",
+    "difficulty": "medium",
+    "prompt": "How many times does the digit **7** appear below?\n\n`7071 7727 1077 7170`",
+    "options": [
+      "7",
+      "9",
+      "8",
+      "10"
+    ],
+    "answer": 1,
+    "explanation": "7071 has two, 7727 has three, 1077 has two and 7170 has two: 9 in total."
+  },
+  {
+    "id": "ad-009",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "alphabetical order",
+    "difficulty": "medium",
+    "prompt": "Sorted alphabetically, which surname comes **third**?\n\nOkafor, Okeke, Obi, Okonkwo, Ojo",
+    "options": [
+      "Okafor",
+      "Ojo",
+      "Okeke",
+      "Okonkwo"
+    ],
+    "answer": 0,
+    "explanation": "Order: Obi, Ojo, Okafor, Okeke, Okonkwo. Compare letter by letter: Oka < Oke < Oko."
+  },
+  {
+    "id": "ad-010",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "matching records",
+    "difficulty": "easy",
+    "prompt": "Which entry matches **ada.lovelace@techcorp.io** exactly?",
+    "options": [
+      "ada.lovelace@tech-corp.io",
+      "ada.lovelace@techcorp.io",
+      "ada.lovelce@techcorp.io",
+      "ada.lovelace@techcorp.co"
+    ],
+    "answer": 1,
+    "explanation": "The others add a hyphen, drop an 'a' from lovelace, or change .io to .co."
+  },
+  {
+    "id": "ad-011",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "reading tables",
+    "difficulty": "medium",
+    "prompt": "| ID | Name | Department | Joined |\n|---|---|---|---|\n| E101 | Ada | Engineering | 2021-03-14 |\n| E102 | Bayo | Sales | 2022-07-01 |\n| E103 | Chidi | Engineering | 2023-01-09 |\n| E104 | Dami | Engineering | 2022-11-30 |\n| E105 | Efe | Marketing | 2020-05-18 |\n| E106 | Femi | Engineering | 2019-08-02 |\n\nHow many **Engineering** employees joined **before 2023**?",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "answer": 1,
+    "explanation": "Ada (2021), Dami (2022) and Femi (2019). Chidi joined in January 2023."
+  },
+  {
+    "id": "ad-012",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "reading tables",
+    "difficulty": "easy",
+    "prompt": "| ID | Name | Department | Joined |\n|---|---|---|---|\n| E101 | Ada | Engineering | 2021-03-14 |\n| E102 | Bayo | Sales | 2022-07-01 |\n| E103 | Chidi | Engineering | 2023-01-09 |\n| E104 | Dami | Engineering | 2022-11-30 |\n| E105 | Efe | Marketing | 2020-05-18 |\n| E106 | Femi | Engineering | 2019-08-02 |\n\nWho joined **most recently**?",
+    "options": [
+      "Chidi",
+      "Dami",
+      "Bayo",
+      "Ada"
+    ],
+    "answer": 0,
+    "explanation": "Chidi joined on 2023-01-09, the latest date. Dami (2022-11-30) is close but earlier."
+  },
+  {
+    "id": "ad-013",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "checking code against a spec",
+    "difficulty": "medium",
+    "prompt": "Spec: *return the sum of the **even** numbers in a list.*\n\n```python\n1 def sum_evens(nums):\n2     total = 0\n3     for n in nums:\n4         if n % 2 == 1:\n5             total += n\n6     return total\n```\n\nWhich line breaks the spec?",
+    "options": [
+      "Line 2",
+      "Line 3",
+      "Line 4",
+      "Line 6"
+    ],
+    "answer": 2,
+    "explanation": "Line 4 selects odd numbers. It should be `n % 2 == 0`."
+  },
+  {
+    "id": "ad-014",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "comparing data",
+    "difficulty": "medium",
+    "prompt": "Original:\n```json\n{\"id\": 42, \"active\": true, \"roles\": [\"admin\", \"editor\"], \"plan\": \"pro\"}\n```\nCopy:\n```json\n{\"id\": 42, \"active\": \"true\", \"roles\": [\"admin\", \"editor\"], \"plan\": \"pro\"}\n```\nWhich field differs?",
+    "options": [
+      "id",
+      "roles",
+      "active",
+      "plan"
+    ],
+    "answer": 2,
+    "explanation": "In the copy, `active` is the string \"true\", not the boolean true. Code checking `active is True` would treat them differently."
+  },
+  {
+    "id": "ad-015",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "sequences",
+    "difficulty": "easy",
+    "prompt": "Invoice numbers should be consecutive: INV-1041, INV-1042, INV-1044, INV-1045, INV-1046. Which number is missing?",
+    "options": [
+      "INV-1040",
+      "INV-1047",
+      "INV-1043",
+      "INV-1042"
+    ],
+    "answer": 2,
+    "explanation": "1042 is followed by 1044, so 1043 is missing."
+  },
+  {
+    "id": "ad-016",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "validating data",
+    "difficulty": "medium",
+    "prompt": "Which of these is **not** a real calendar date?",
+    "options": [
+      "2024-02-29",
+      "2023-02-29",
+      "2025-04-30",
+      "2026-12-31"
+    ],
+    "answer": 1,
+    "explanation": "2023 is not a leap year, so February has only 28 days. 2024 is a leap year, so 2024-02-29 is valid."
+  },
+  {
+    "id": "ad-017",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "ordering numbers",
+    "difficulty": "medium",
+    "prompt": "Sort these values from smallest to largest. Which is **second**?\n\n0.5, 0.05, 0.505, 0.055",
+    "options": [
+      "0.05",
+      "0.5",
+      "0.505",
+      "0.055"
+    ],
+    "answer": 3,
+    "explanation": "Order: 0.05, 0.055, 0.5, 0.505."
+  },
+  {
+    "id": "ad-018",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "proofreading",
+    "difficulty": "easy",
+    "prompt": "Which sentence has **no** spelling errors?",
+    "options": [
+      "The committee will review the proposal.",
+      "The comittee will review the proposal.",
+      "The committee will reveiw the proposal.",
+      "The committee will review the propasal."
+    ],
+    "answer": 0,
+    "explanation": "Committee has double m, t and e; review is spelled r-e-v-i-e-w; proposal is p-r-o-p-o-s-a-l."
+  },
+  {
+    "id": "ad-019",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "reading tables",
+    "difficulty": "medium",
+    "prompt": "| Order | Status | Amount |\n|---|---|---|\n| 1001 | Shipped | $120.00 |\n| 1002 | Pending | $75.50 |\n| 1003 | Shipped | $300.00 |\n| 1004 | Cancelled | $45.00 |\n| 1005 | Shipped | $89.99 |\n| 1006 | Pending | $210.00 |\n\nWhat is the total amount of **shipped** orders?",
+    "options": [
+      "$419.99",
+      "$509.90",
+      "$719.99",
+      "$509.99"
+    ],
+    "answer": 3,
+    "explanation": "$120.00 + $300.00 + $89.99 = $509.99."
+  },
+  {
+    "id": "ad-020",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "reading tables",
+    "difficulty": "medium",
+    "prompt": "| Order | Status | Amount |\n|---|---|---|\n| 1001 | Shipped | $120.00 |\n| 1002 | Pending | $75.50 |\n| 1003 | Shipped | $300.00 |\n| 1004 | Cancelled | $45.00 |\n| 1005 | Shipped | $89.99 |\n| 1006 | Pending | $210.00 |\n\nHow many orders over $100 are **not** shipped?",
+    "options": [
+      "0",
+      "2",
+      "1",
+      "3"
+    ],
+    "answer": 2,
+    "explanation": "Orders over $100: 1001, 1003 and 1006. Only 1006 (Pending) isn't shipped."
+  },
+  {
+    "id": "ad-021",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "string comparison",
+    "difficulty": "medium",
+    "prompt": "How many of these pairs are **exactly identical**?\n\n- `XK-2291` / `XK-2291`\n- `LM-8840` / `LM-8480`\n- `QR-1107` / `QR-1107`\n- `ZT-5562` / `ZT-5526`\n- `AB-0091` / `AB-0091`",
+    "options": [
+      "3",
+      "2",
+      "4",
+      "5"
+    ],
+    "answer": 0,
+    "explanation": "LM-8840/LM-8480 and ZT-5562/ZT-5526 differ by swapped digits; the other three match."
+  },
+  {
+    "id": "ad-022",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "version numbers",
+    "difficulty": "hard",
+    "prompt": "Using semantic versioning (major.minor.patch), which version is the **newest**?",
+    "options": [
+      "2.10.0",
+      "2.9.9",
+      "2.1.10",
+      "2.10.1"
+    ],
+    "answer": 3,
+    "explanation": "Compare each part as a number: minor 10 beats 9 and 1, and patch 1 beats 0. Reading them as decimals (2.9 > 2.10) is the trap."
+  },
+  {
+    "id": "ad-023",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "validating configuration",
+    "difficulty": "medium",
+    "prompt": "A config is valid only if: `timeout` is 30-60 seconds (inclusive), `retries` is 1-5, and `region` is `eu-west` or `us-east`. Which config is valid?",
+    "options": [
+      "timeout=60, retries=0, region=eu-west",
+      "timeout=45, retries=3, region=us-east",
+      "timeout=25, retries=2, region=eu-west",
+      "timeout=30, retries=5, region=eu-north"
+    ],
+    "answer": 1,
+    "explanation": "The first has 0 retries, the third a 25 s timeout, and the fourth an unsupported region."
+  },
+  {
+    "id": "ad-024",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "cross-checking schedules",
+    "difficulty": "medium",
+    "prompt": "Each meeting lasts 60 minutes.\n\n| Day | Start | Meeting | Room |\n|---|---|---|---|\n| Mon | 10:00 | Design review | Room 2 |\n| Mon | 10:30 | Hiring sync | Room 2 |\n| Mon | 11:30 | Standup | Room 1 |\n| Tue | 10:00 | Retro | Room 2 |\n\nWhich two meetings clash (same room, overlapping time)?",
+    "options": [
+      "Hiring sync and Standup",
+      "Design review and Hiring sync",
+      "Design review and Retro",
+      "None of them clash"
+    ],
+    "answer": 1,
+    "explanation": "Design review runs 10:00-11:00 in Room 2 and Hiring sync starts at 10:30 in Room 2. Standup is in a different room, and Retro is on Tuesday."
+  },
+  {
+    "id": "ad-025",
+    "type": "mcq",
+    "category": "attention_to_detail",
+    "topic": "transcription",
+    "difficulty": "easy",
+    "prompt": "The source record says **+44 20 7946 0958**. Which entry is correct?",
+    "options": [
+      "+44 20 7964 0958",
+      "+44 20 7946 0985",
+      "+44 02 7946 0958",
+      "+44 20 7946 0958"
+    ],
+    "answer": 3,
+    "explanation": "The others swap 46/64, 58/85 or 20/02."
   }
 ]

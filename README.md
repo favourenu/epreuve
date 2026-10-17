@@ -6,7 +6,8 @@ Built for preparing for the Learn2Earn job-readiness assessment, covering techni
 
 ## What it does
 
-- **10 tests, 90 questions** across numerical reasoning, critical thinking, attention to detail, software engineering, Python, AI/ML fundamentals, coding, situational judgement and written communication, plus a 60-minute mixed **Job Readiness Assessment**.
+- **10 tests, nearly 300 questions** across numerical reasoning, critical thinking, attention to detail, software engineering, Python, AI/ML fundamentals, coding, situational judgement and written communication, plus a 60-minute mixed **Job Readiness Assessment**.
+- **Fresh questions on every retake.** Tests serve the questions you've seen least, so you practise the skill rather than memorising answers.
 - **Real test conditions, enforced by the server.** The deadline is held by the API, not the browser. Questions must be answered in order and can't be revisited. Answers are never sent to the browser until the attempt is completed.
 - **Coding questions** run your Python in a separate process against visible example tests (with a Run button) and hidden tests (for scoring), with a time limit and partial credit per test passed.
 - **Situational judgement** scoring gives partial credit for acceptable-but-not-best answers, as real SJTs do.
@@ -93,7 +94,7 @@ The suite checks sign-up, login, wrong passwords, throttling, session revocation
 
 ## Adding questions
 
-Add entries to a file in `backend/app/data/questions/` (or create a new file). The app refuses to start if a question is malformed, a test asks for more questions than exist, or IDs clash. Run `pytest` after adding coding questions; it verifies the reference solution against your tests.
+Add entries to a file in `backend/app/data/questions/` (or create a new file). The app refuses to start if a question is malformed, a test asks for more questions than exist, or IDs clash. Run `pytest` after adding questions: it verifies every coding question's reference solution against its tests, and runs every Python "What does this print?" snippet to check the marked answer.
 
 Question types: `mcq` (optional `option_scores` for partial credit), `code` (Python function plus visible and hidden tests), and `written` (rubric and word limits, graded by AI).
 

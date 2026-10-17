@@ -6,8 +6,13 @@
     "topic": "git",
     "difficulty": "medium",
     "prompt": "You made a commit on your local `main` branch but have **not pushed** it. You want to undo the commit and keep its changes staged so you can recommit them. Which command do you use?",
-    "options": ["`git revert HEAD`", "`git reset --hard HEAD~1`", "`git reset --soft HEAD~1`", "`git checkout HEAD~1`"],
-    "answer": 2,
+    "options": [
+      "`git revert HEAD`",
+      "`git reset --hard HEAD~1`",
+      "`git checkout HEAD~1`",
+      "`git reset --soft HEAD~1`"
+    ],
+    "answer": 3,
     "explanation": "`reset --soft` moves the branch back one commit but leaves the changes staged. `--hard` throws the changes away. `revert` adds a new commit that undoes the old one, which is used for commits that are already pushed. `checkout HEAD~1` detaches HEAD."
   },
   {
@@ -17,7 +22,12 @@
     "topic": "http",
     "difficulty": "easy",
     "prompt": "A `POST /orders` request successfully creates a new order. Which HTTP status code is most appropriate to return?",
-    "options": ["200 OK", "201 Created", "204 No Content", "302 Found"],
+    "options": [
+      "200 OK",
+      "201 Created",
+      "204 No Content",
+      "302 Found"
+    ],
     "answer": 1,
     "explanation": "201 Created means a new resource was created, usually with a Location header or the created resource in the body."
   },
@@ -28,8 +38,13 @@
     "topic": "http",
     "difficulty": "easy",
     "prompt": "According to the HTTP specification, which method is **not** idempotent?",
-    "options": ["GET", "PUT", "DELETE", "POST"],
-    "answer": 3,
+    "options": [
+      "GET",
+      "PUT",
+      "POST",
+      "DELETE"
+    ],
+    "answer": 2,
     "explanation": "Idempotent means repeating the same request has the same effect as sending it once. PUT replaces, DELETE removes and GET reads, so all three are idempotent. Repeating a POST typically creates duplicates."
   },
   {
@@ -71,7 +86,12 @@
     "topic": "complexity",
     "difficulty": "easy",
     "prompt": "What is the time complexity of binary search on a sorted array of n elements?",
-    "options": ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
+    "options": [
+      "O(1)",
+      "O(log n)",
+      "O(n)",
+      "O(n log n)"
+    ],
     "answer": 1,
     "explanation": "Each step halves the search range, so at most about log2(n) steps are needed."
   },
@@ -82,8 +102,13 @@
     "topic": "complexity",
     "difficulty": "medium",
     "prompt": "What is the time complexity of this function?\n\n```python\ndef pairs(items):\n    n = len(items)\n    count = 0\n    for i in range(n):\n        for j in range(i, n):\n            count += 1\n    return count\n```",
-    "options": ["O(n)", "O(n log n)", "O(n^2)", "O(2^n)"],
-    "answer": 2,
+    "options": [
+      "O(n)",
+      "O(n^2)",
+      "O(n log n)",
+      "O(2^n)"
+    ],
+    "answer": 1,
     "explanation": "The inner loop runs n + (n-1) + ... + 1 = n(n+1)/2 times. Constant factors are dropped, so this is O(n^2)."
   },
   {
@@ -93,8 +118,13 @@
     "topic": "data structures",
     "difficulty": "easy",
     "prompt": "You need to look up user records by email address as fast as possible, with average O(1) lookups. Which data structure fits best?",
-    "options": ["A sorted array", "A linked list", "A hash map (dictionary)", "A stack"],
-    "answer": 2,
+    "options": [
+      "A hash map (dictionary)",
+      "A sorted array",
+      "A linked list",
+      "A stack"
+    ],
+    "answer": 0,
     "explanation": "Hash maps give average constant-time lookup by key. A sorted array gives O(log n) with binary search, and a linked list O(n)."
   },
   {
@@ -104,8 +134,13 @@
     "topic": "oop and design principles",
     "difficulty": "easy",
     "prompt": "\"A class should have only one reason to change.\" Which SOLID principle is this?",
-    "options": ["Single Responsibility Principle", "Open/Closed Principle", "Liskov Substitution Principle", "Dependency Inversion Principle"],
-    "answer": 0,
+    "options": [
+      "Open/Closed Principle",
+      "Liskov Substitution Principle",
+      "Single Responsibility Principle",
+      "Dependency Inversion Principle"
+    ],
+    "answer": 2,
     "explanation": "The Single Responsibility Principle keeps each class focused on one concern, so changes in one area don't ripple into unrelated code."
   },
   {
@@ -117,11 +152,11 @@
     "prompt": "In a unit test, why would you use a **mock** for a payment gateway client?",
     "options": [
       "To make the test run against the real payment API.",
-      "To replace the real dependency with a controlled stand-in, so you test only your own code, quickly and predictably.",
       "To increase code coverage numbers without testing anything.",
-      "To make the payment gateway respond faster in production."
+      "To make the payment gateway respond faster in production.",
+      "To replace the real dependency with a controlled stand-in, so you test only your own code, quickly and predictably."
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "Mocks isolate the unit under test from slow, costly or unpredictable dependencies, and let you simulate cases like declined payments or timeouts."
   },
   {
@@ -133,11 +168,11 @@
     "prompt": "What is the most effective way to prevent SQL injection?",
     "options": [
       "Escape single quotes in user input by hand.",
-      "Use parameterized queries (prepared statements).",
       "Hide database error messages from users.",
+      "Use parameterized queries (prepared statements).",
       "Only allow POST requests."
     ],
-    "answer": 1,
+    "answer": 2,
     "explanation": "Parameterized queries send data separately from the SQL text, so user input can never be read as SQL. Escaping by hand is easy to get wrong, and hiding errors does not fix the vulnerability."
   },
   {
@@ -147,8 +182,13 @@
     "topic": "api design",
     "difficulty": "easy",
     "prompt": "Following REST conventions, which endpoint best retrieves all orders belonging to user 42?",
-    "options": ["`POST /getOrders?user=42`", "`GET /users/42/orders`", "`GET /orders/getAllForUser/42`", "`DELETE /users/42/orders`"],
-    "answer": 1,
+    "options": [
+      "`GET /users/42/orders`",
+      "`POST /getOrders?user=42`",
+      "`GET /orders/getAllForUser/42`",
+      "`DELETE /users/42/orders`"
+    ],
+    "answer": 0,
     "explanation": "REST uses nouns for resources and HTTP methods for actions. Orders nested under the user resource, fetched with GET, is the conventional design."
   },
   {
@@ -159,12 +199,12 @@
     "difficulty": "easy",
     "prompt": "When does a merge conflict occur in Git?",
     "options": [
-      "When two branches have different commit messages.",
       "When both branches changed the same lines of the same file in different ways.",
+      "When two branches have different commit messages.",
       "Whenever two people work on the same repository.",
       "When a branch is more than 10 commits behind main."
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "Git merges changes to different parts of a file automatically. It only needs a human when both sides changed the same region and it can't tell which version is correct."
   },
   {
@@ -176,11 +216,11 @@
     "prompt": "Two web requests run at the same time. Each one reads a product's `stock` (10), subtracts 1 in application code, and writes the result back. Afterwards, stock is 9 instead of 8. What is this problem and how do you fix it?",
     "options": [
       "A memory leak; restart the server more often.",
-      "A race condition (lost update); use an atomic update such as `UPDATE products SET stock = stock - 1 WHERE id = ?`, or a transaction with row locking.",
       "A deadlock; add more database connections.",
-      "Caching; disable the browser cache."
+      "Caching; disable the browser cache.",
+      "A race condition (lost update); use an atomic update such as `UPDATE products SET stock = stock - 1 WHERE id = ?`, or a transaction with row locking."
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "Both requests read the same old value before either writes, so one update is lost. Doing the read-modify-write atomically in the database, or locking the row, makes the updates happen one after the other."
   },
   {
@@ -192,11 +232,11 @@
     "prompt": "You cache an API's product-price response for 10 minutes. What is the main trade-off?",
     "options": [
       "Responses become slower.",
-      "Users may see out-of-date (stale) prices for up to 10 minutes.",
       "The database load increases.",
-      "The API can no longer be called."
+      "The API can no longer be called.",
+      "Users may see out-of-date (stale) prices for up to 10 minutes."
     ],
-    "answer": 1,
+    "answer": 3,
     "explanation": "Caching trades freshness for speed and lower load. For data like prices, you must decide whether staleness is acceptable or add invalidation when prices change."
   },
   {
@@ -207,12 +247,12 @@
     "difficulty": "easy",
     "prompt": "In Docker, what is the relationship between an image and a container?",
     "options": [
-      "They are the same thing.",
       "A container is a running (or stopped) instance created from an image.",
+      "They are the same thing.",
       "An image is a running instance of a container.",
       "Images are for Linux and containers are for Windows."
     ],
-    "answer": 1,
+    "answer": 0,
     "explanation": "An image is a read-only template: the filesystem plus config. A container is an instance of that image with its own writable layer and process."
   },
   {
@@ -222,8 +262,13 @@
     "topic": "data structures",
     "difficulty": "easy",
     "prompt": "Which data structure is the natural fit for implementing \"undo\" in a text editor?",
-    "options": ["Queue (FIFO)", "Stack (LIFO)", "Binary search tree", "Hash set"],
-    "answer": 1,
+    "options": [
+      "Queue (FIFO)",
+      "Binary search tree",
+      "Stack (LIFO)",
+      "Hash set"
+    ],
+    "answer": 2,
     "explanation": "Undo reverses the most recent action first, which is last-in, first-out: a stack."
   },
   {
@@ -234,12 +279,12 @@
     "difficulty": "medium",
     "prompt": "How should user passwords be stored in a database?",
     "options": [
+      "Hashed with a slow, salted password-hashing algorithm such as bcrypt or Argon2.",
       "In plain text, in a column only admins can read.",
       "Encrypted with AES, with the key stored in the app config.",
-      "Hashed with a slow, salted password-hashing algorithm such as bcrypt or Argon2.",
       "Hashed with plain MD5 for speed."
     ],
-    "answer": 2,
+    "answer": 0,
     "explanation": "Password hashing should be one-way, salted (so identical passwords hash differently) and deliberately slow to resist brute force. Encryption can be reversed by anyone with the key, and MD5 is far too fast to resist cracking."
   },
   {
@@ -250,12 +295,12 @@
     "difficulty": "medium",
     "prompt": "What is the main trade-off of adding an index to a database column?",
     "options": [
-      "Faster reads that filter on that column, but slower writes and extra storage.",
       "Faster writes, but slower reads.",
+      "Faster reads that filter on that column, but slower writes and extra storage.",
       "No trade-off; you should index every column.",
       "It deletes duplicate rows."
     ],
-    "answer": 0,
+    "answer": 1,
     "explanation": "Indexes speed up lookups and sorts on the indexed column, but every INSERT/UPDATE/DELETE must also update the index, and the index uses disk space."
   },
   {
@@ -273,5 +318,613 @@
     ],
     "answer": 1,
     "explanation": "429 is rate limiting. The correct client behaviour is to retry with exponential backoff, honouring the Retry-After header. 401/403 are authentication errors and 404 means not found."
+  },
+  {
+    "id": "se-021",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "A logged-in user requests an admin-only page they don't have permission to see. Which status code fits best?",
+    "options": [
+      "400 Bad Request",
+      "403 Forbidden",
+      "401 Unauthorized",
+      "404 Not Found"
+    ],
+    "answer": 1,
+    "explanation": "403 means \"I know who you are, but you're not allowed\". 401 means the user isn't authenticated at all."
+  },
+  {
+    "id": "se-022",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "You want to update only a user's email, leaving every other field unchanged. Which HTTP method is designed for partial updates?",
+    "options": [
+      "GET",
+      "PATCH",
+      "PUT",
+      "DELETE"
+    ],
+    "answer": 1,
+    "explanation": "PATCH applies a partial change. PUT replaces the whole resource with what you send."
+  },
+  {
+    "id": "se-023",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "git",
+    "difficulty": "easy",
+    "prompt": "Which command creates a new branch called `feature/login` **and** switches to it?",
+    "options": [
+      "`git branch feature/login`",
+      "`git merge feature/login`",
+      "`git commit -b feature/login`",
+      "`git switch -c feature/login`"
+    ],
+    "answer": 3,
+    "explanation": "`git switch -c` (or the older `git checkout -b`) creates and switches in one step. `git branch` only creates it."
+  },
+  {
+    "id": "se-024",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "git",
+    "difficulty": "medium",
+    "prompt": "What does `git rebase main` do when run on your feature branch?",
+    "options": [
+      "Merges main into your branch with a merge commit",
+      "Deletes your branch and recreates it from main",
+      "Pushes your branch to main",
+      "Replays your branch's commits on top of the latest main, rewriting their history"
+    ],
+    "answer": 3,
+    "explanation": "Rebase moves your commits onto a new base, creating new commits. This gives a linear history, but don't rebase commits others have already pulled."
+  },
+  {
+    "id": "se-025",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "git",
+    "difficulty": "medium",
+    "prompt": "A bad commit is already pushed to the shared `main` branch that teammates have pulled. What's the safest way to undo it?",
+    "options": [
+      "`git reset --hard HEAD~1` then force-push",
+      "Delete the main branch and recreate it",
+      "`git revert <commit>` and push the new commit",
+      "`git commit --amend` and force-push"
+    ],
+    "answer": 2,
+    "explanation": "`revert` adds a new commit that undoes the change without rewriting shared history. Force-pushing rewritten history breaks everyone else's copies."
+  },
+  {
+    "id": "se-026",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "sql",
+    "difficulty": "easy",
+    "prompt": "What is the main purpose of a **primary key**?",
+    "options": [
+      "To uniquely identify each row in a table",
+      "To speed up every query on the table",
+      "To link two databases together",
+      "To encrypt a column"
+    ],
+    "answer": 0,
+    "explanation": "A primary key is unique and non-null for every row. It's indexed automatically, but uniqueness is its purpose."
+  },
+  {
+    "id": "se-027",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "sql",
+    "difficulty": "medium",
+    "prompt": "`orders.customer_id` is a **foreign key** to `customers.id`. What does that enforce?",
+    "options": [
+      "Every customer must have at least one order",
+      "customer_id values must be unique in orders",
+      "An order can't reference a customer that doesn't exist",
+      "Orders are deleted every night"
+    ],
+    "answer": 2,
+    "explanation": "Foreign keys enforce referential integrity: every value must match an existing row in the referenced table."
+  },
+  {
+    "id": "se-028",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "sql",
+    "difficulty": "hard",
+    "prompt": "Which query returns the **second-highest** salary from `employees(salary)`?",
+    "options": [
+      "`SELECT MAX(salary) FROM employees;`",
+      "`SELECT salary FROM employees ORDER BY salary LIMIT 2;`",
+      "`SELECT MAX(salary) FROM employees WHERE salary < (SELECT MAX(salary) FROM employees);`",
+      "`SELECT MIN(salary) FROM employees WHERE salary > 2;`"
+    ],
+    "answer": 2,
+    "explanation": "The subquery finds the top salary; the outer query finds the largest value below it, which also handles ties for first place correctly."
+  },
+  {
+    "id": "se-029",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "sql",
+    "difficulty": "medium",
+    "prompt": "A table has 100 rows, and 20 of them have NULL in `email`. What do `COUNT(*)` and `COUNT(email)` return?",
+    "options": [
+      "100 and 100",
+      "80 and 80",
+      "100 and 80",
+      "80 and 100"
+    ],
+    "answer": 2,
+    "explanation": "`COUNT(*)` counts rows; `COUNT(column)` skips NULLs."
+  },
+  {
+    "id": "se-030",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "database design",
+    "difficulty": "medium",
+    "prompt": "An `orders` table repeats the customer's full address on every order row. What's the main problem?",
+    "options": [
+      "Queries become impossible",
+      "Data is duplicated, so updating an address means changing many rows and risks inconsistency",
+      "Addresses can't contain commas",
+      "Orders can't be sorted by date"
+    ],
+    "answer": 1,
+    "explanation": "This is an update anomaly. Normalising moves the address into a `customers` table that orders reference."
+  },
+  {
+    "id": "se-031",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "databases",
+    "difficulty": "medium",
+    "prompt": "A bank transfer debits one account and credits another inside a transaction. The credit fails. What does **atomicity** guarantee?",
+    "options": [
+      "The debit stays and the credit is retried forever",
+      "The database shuts down",
+      "Both accounts are locked permanently",
+      "The debit is rolled back too, so it's all or nothing"
+    ],
+    "answer": 3,
+    "explanation": "Atomicity (the A in ACID) means a transaction's changes are applied completely or not at all."
+  },
+  {
+    "id": "se-032",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "complexity",
+    "difficulty": "medium",
+    "prompt": "You need to check whether 10,000 IDs exist in a list of 1 million IDs. Why convert the list to a `set` first?",
+    "options": [
+      "Sets use less memory than lists",
+      "Sets keep items sorted",
+      "Lists can't hold integers",
+      "Membership checks are O(1) on average in a set, versus O(n) in a list"
+    ],
+    "answer": 3,
+    "explanation": "Each `x in list` scans the list; `x in set` is a hash lookup. That's 10,000 x 1,000,000 steps versus about 10,000."
+  },
+  {
+    "id": "se-033",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "complexity",
+    "difficulty": "easy",
+    "prompt": "What is the typical time complexity of a good general-purpose sorting algorithm such as Python's `sorted()`?",
+    "options": [
+      "O(n log n)",
+      "O(n)",
+      "O(n^2)",
+      "O(log n)"
+    ],
+    "answer": 0,
+    "explanation": "Comparison sorts like Timsort and merge sort run in O(n log n)."
+  },
+  {
+    "id": "se-034",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "recursion",
+    "difficulty": "easy",
+    "prompt": "A recursive function is missing its base case. What happens when you call it?",
+    "options": [
+      "It returns None",
+      "It runs once and stops",
+      "Python adds a base case automatically",
+      "It recurses until it hits the recursion limit and raises an error"
+    ],
+    "answer": 3,
+    "explanation": "Without a stopping condition every call makes another call, until Python raises RecursionError (a stack overflow in other languages)."
+  },
+  {
+    "id": "se-035",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "data structures",
+    "difficulty": "easy",
+    "prompt": "Print jobs must be processed in the order they arrive. Which data structure fits?",
+    "options": [
+      "Stack",
+      "Queue",
+      "Hash set",
+      "Binary tree"
+    ],
+    "answer": 1,
+    "explanation": "First in, first out: a queue (`collections.deque` in Python)."
+  },
+  {
+    "id": "se-036",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "data structures",
+    "difficulty": "medium",
+    "prompt": "A scheduler must always pick the task with the **earliest deadline** next, while new tasks keep arriving. Which structure fits best?",
+    "options": [
+      "Priority queue (heap)",
+      "Unsorted list",
+      "Stack",
+      "Linked list"
+    ],
+    "answer": 0,
+    "explanation": "A heap gives the smallest item in O(1) and inserts or removes in O(log n). `heapq` in Python."
+  },
+  {
+    "id": "se-037",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "testing",
+    "difficulty": "easy",
+    "prompt": "According to the testing pyramid, which kind of test should you have the most of?",
+    "options": [
+      "End-to-end UI tests",
+      "Unit tests",
+      "Manual tests",
+      "Load tests"
+    ],
+    "answer": 1,
+    "explanation": "Unit tests are fast, cheap and precise, so they form the wide base. Fewer integration tests, and the fewest slow end-to-end tests."
+  },
+  {
+    "id": "se-038",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "testing",
+    "difficulty": "medium",
+    "prompt": "What is the order of the test-driven development (TDD) cycle?",
+    "options": [
+      "Write a failing test, make it pass, then refactor",
+      "Write code, write tests, deploy",
+      "Refactor, write code, write a test",
+      "Write all tests for the project first, then all the code"
+    ],
+    "answer": 0,
+    "explanation": "Red, green, refactor, in small steps."
+  },
+  {
+    "id": "se-039",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "testing",
+    "difficulty": "medium",
+    "prompt": "A test passes on some runs and fails on others without any code changes. What is this, and what's a common cause?",
+    "options": [
+      "A flaky test, often caused by timing, ordering or shared state between tests",
+      "A unit test, caused by mocks",
+      "A regression, caused by a new feature",
+      "A performance test, caused by slow hardware"
+    ],
+    "answer": 0,
+    "explanation": "Flaky tests usually depend on time, randomness, test order or external services. Fix the cause rather than just re-running."
+  },
+  {
+    "id": "se-040",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "security",
+    "difficulty": "medium",
+    "prompt": "Users can post comments that are shown to other users. How do you prevent cross-site scripting (XSS)?",
+    "options": [
+      "Escape or encode user content when rendering it, and add a Content Security Policy",
+      "Store comments in a separate database",
+      "Only allow comments under 100 characters",
+      "Use HTTPS"
+    ],
+    "answer": 0,
+    "explanation": "XSS happens when user input is rendered as HTML or JavaScript. Escaping output (React does this by default) plus a CSP stops it."
+  },
+  {
+    "id": "se-041",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "security",
+    "difficulty": "medium",
+    "prompt": "Which of these does HTTPS **not** protect against?",
+    "options": [
+      "Someone on public Wi-Fi reading the traffic",
+      "Data stolen from your hacked database",
+      "An attacker changing data in transit",
+      "A fake server pretending to be your site"
+    ],
+    "answer": 1,
+    "explanation": "HTTPS encrypts and authenticates data in transit. Data at rest needs other protections such as access control and encryption."
+  },
+  {
+    "id": "se-042",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "security",
+    "difficulty": "easy",
+    "prompt": "Where should an application's production API keys live?",
+    "options": [
+      "Hard-coded in the source code",
+      "In environment variables or a secrets manager, never in the repo",
+      "In a committed `config.json`",
+      "In the README so the team can find them"
+    ],
+    "answer": 1,
+    "explanation": "Secrets in git history are effectively public forever. Load them from the environment or a secrets manager."
+  },
+  {
+    "id": "se-043",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "security",
+    "difficulty": "easy",
+    "prompt": "What is the difference between **authentication** and **authorization**?",
+    "options": [
+      "Authentication checks who you are; authorization checks what you're allowed to do",
+      "They mean the same thing",
+      "Authentication is for APIs, authorization is for websites",
+      "Authorization happens before authentication"
+    ],
+    "answer": 0,
+    "explanation": "Log in first (authentication), then permissions are checked (authorization)."
+  },
+  {
+    "id": "se-044",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "api design",
+    "difficulty": "hard",
+    "prompt": "An API pages through a feed with `?page=3&size=20`. New items keep arriving at the top. What problem can this cause, and what's the common fix?",
+    "options": [
+      "Pages load slowly; fix with bigger pages",
+      "The API returns 404; fix with retries",
+      "Items shift between pages, so users see duplicates or miss items; fix with cursor-based pagination",
+      "None; offset pagination is always fine"
+    ],
+    "answer": 2,
+    "explanation": "With offsets, inserts move everything along. A cursor (\"items after id X\") gives stable pages."
+  },
+  {
+    "id": "se-045",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "api design",
+    "difficulty": "hard",
+    "prompt": "A mobile app retries a `POST /payments` request after a timeout, and the customer is charged twice. What's the standard fix?",
+    "options": [
+      "Never retry payments",
+      "Use GET instead of POST",
+      "Send an idempotency key with the request so the server processes it only once",
+      "Increase the timeout to 5 minutes"
+    ],
+    "answer": 2,
+    "explanation": "The server stores the key with the result. A retry with the same key returns the original result instead of charging again."
+  },
+  {
+    "id": "se-046",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "A client sends a request whose JSON body is missing a required field. Which status code should the API return?",
+    "options": [
+      "200 OK",
+      "500 Internal Server Error",
+      "302 Found",
+      "400 Bad Request (or 422)"
+    ],
+    "answer": 3,
+    "explanation": "The client sent invalid input, so it's a 4xx error. 5xx means the server itself failed."
+  },
+  {
+    "id": "se-047",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "scalability",
+    "difficulty": "easy",
+    "prompt": "Your API is overloaded and you add four more identical servers behind it. What is this called?",
+    "options": [
+      "Vertical scaling",
+      "Horizontal scaling",
+      "Caching",
+      "Sharding"
+    ],
+    "answer": 1,
+    "explanation": "Adding more machines is horizontal scaling. Giving one machine more CPU or RAM is vertical scaling."
+  },
+  {
+    "id": "se-048",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "scalability",
+    "difficulty": "easy",
+    "prompt": "What does a load balancer do?",
+    "options": [
+      "Compresses responses",
+      "Stores session data",
+      "Backs up the database",
+      "Spreads incoming requests across several servers and stops sending to unhealthy ones"
+    ],
+    "answer": 3,
+    "explanation": "It distributes traffic and routes around failed instances."
+  },
+  {
+    "id": "se-049",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "ci/cd",
+    "difficulty": "easy",
+    "prompt": "What is continuous integration (CI)?",
+    "options": [
+      "Deploying to production every hour",
+      "Automatically building and testing every change as it's merged into the shared branch",
+      "Writing code in pairs",
+      "A database replication method"
+    ],
+    "answer": 1,
+    "explanation": "CI catches integration problems early by running the build and tests on every change."
+  },
+  {
+    "id": "se-050",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "containers",
+    "difficulty": "easy",
+    "prompt": "What is a Dockerfile?",
+    "options": [
+      "A running container",
+      "A log of container activity",
+      "A text file of instructions for building a Docker image",
+      "A Docker registry account"
+    ],
+    "answer": 2,
+    "explanation": "Each instruction (FROM, COPY, RUN...) builds a layer of the image."
+  },
+  {
+    "id": "se-051",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "oop",
+    "difficulty": "easy",
+    "prompt": "Which describes **encapsulation**?",
+    "options": [
+      "A class inheriting from several parents",
+      "Bundling data with the methods that use it, and hiding internal details behind a clear interface",
+      "Running code in parallel",
+      "Converting objects to JSON"
+    ],
+    "answer": 1,
+    "explanation": "Encapsulation lets you change internals without breaking code that uses the class."
+  },
+  {
+    "id": "se-052",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "oop",
+    "difficulty": "medium",
+    "prompt": "Why is \"prefer composition over inheritance\" common advice?",
+    "options": [
+      "Composing objects from smaller parts is more flexible and less tightly coupled than deep class hierarchies",
+      "Inheritance is slower at runtime",
+      "Composition needs less code in every case",
+      "Python doesn't support inheritance"
+    ],
+    "answer": 0,
+    "explanation": "Deep hierarchies make changes ripple through subclasses. With composition you can swap behaviour more easily."
+  },
+  {
+    "id": "se-053",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "design patterns",
+    "difficulty": "medium",
+    "prompt": "Several parts of an app must react whenever a user's settings change, without the settings code knowing about each of them. Which pattern fits?",
+    "options": [
+      "Observer (publish/subscribe)",
+      "Singleton",
+      "Factory",
+      "Adapter"
+    ],
+    "answer": 0,
+    "explanation": "Observers subscribe to events; the subject notifies them without depending on them."
+  },
+  {
+    "id": "se-054",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "logging",
+    "difficulty": "easy",
+    "prompt": "A customer's payment failed and an engineer needs to look into it. Which log level is most appropriate?",
+    "options": [
+      "DEBUG",
+      "INFO",
+      "ERROR",
+      "TRACE"
+    ],
+    "answer": 2,
+    "explanation": "ERROR is for failures that need attention. INFO is for normal events, and DEBUG for detailed diagnostics."
+  },
+  {
+    "id": "se-055",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "debugging",
+    "difficulty": "easy",
+    "prompt": "A user reports a bug. What should you do first?",
+    "options": [
+      "Rewrite the module",
+      "Add more logging everywhere",
+      "Close the ticket as can't-reproduce",
+      "Reproduce the bug reliably"
+    ],
+    "answer": 3,
+    "explanation": "If you can't reproduce it, you can't confirm the cause or prove your fix works."
+  },
+  {
+    "id": "se-056",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "complexity",
+    "difficulty": "medium",
+    "prompt": "A function builds and returns a reversed copy of a list of n items. What is its extra space complexity?",
+    "options": [
+      "O(n)",
+      "O(1)",
+      "O(log n)",
+      "O(n^2)"
+    ],
+    "answer": 0,
+    "explanation": "The copy holds n items, so O(n) extra memory. Reversing in place would be O(1)."
+  },
+  {
+    "id": "se-057",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "http",
+    "difficulty": "easy",
+    "prompt": "What does a **500** status code indicate?",
+    "options": [
+      "The request was malformed",
+      "The resource was not found",
+      "Something went wrong on the server",
+      "The user is not logged in"
+    ],
+    "answer": 2,
+    "explanation": "5xx codes are server-side failures. They're the server's fault, not the client's."
+  },
+  {
+    "id": "se-058",
+    "type": "mcq",
+    "category": "software_engineering",
+    "topic": "git",
+    "difficulty": "easy",
+    "prompt": "What is a `.gitignore` file for?",
+    "options": [
+      "Deleting files from history",
+      "Blocking users from the repository",
+      "Storing commit messages",
+      "Listing files and folders git should not track, such as secrets, build output and dependencies"
+    ],
+    "answer": 3,
+    "explanation": "Typical entries are `.env`, `node_modules/` and `__pycache__/`. Note it doesn't remove files that are already tracked."
   }
 ]

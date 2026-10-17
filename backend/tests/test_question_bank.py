@@ -1,4 +1,7 @@
 import random
+import re
+import subprocess
+import sys
 
 import pytest
 
@@ -77,3 +80,27 @@ def test_least_seen_questions_come_first_once_all_are_seen():
         seen[qid] = 1
     picked = {q.id for q in bank.pick_questions(test, random.Random(2), times_seen=seen)}
     assert picked == set(fresh)
+
+
+output_questions = [
+    q for q in bank.questions.values()
+    if isinstance(q, McqQuestion) and q.category == "python" and q.prompt.startswith("What does this print?")
+]
+
+
+@pytest.mark.parametrize("q", output_questions, ids=lambda q: q.id)
+def test_python_output_questions_have_the_right_answer(q: McqQuestion):
+    """Run each "What does this print?" snippet and check the marked option matches.
+
+    Options are written like "`[1, 2]`"; multi-line output is written "`A` then `C`".
+    """
+    code = re.search(r"```python\n(.*?)\n```", q.prompt, re.S).group(1)
+    out = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True, timeout=10)
+    printed = out.stdout.rstrip()
+
+    def norm(option: str) -> str:
+        return option.replace("`", "").replace(" then ", "\n").rstrip()
+
+    assert norm(q.options[q.answer]) == printed, f"marked {q.options[q.answer]!r}, code prints {printed!r}"
+    others = [norm(o) for i, o in enumerate(q.options) if i != q.answer]
+    assert printed not in others, "a wrong option is also correct"

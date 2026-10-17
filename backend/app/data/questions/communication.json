@@ -99,5 +99,145 @@
     "model_answer": "Thanks for this! One blocking issue: building the SQL by concatenating `id` makes this vulnerable to SQL injection. If `id` comes from a request, a value like `1 OR 1=1` would return every user, and worse payloads could modify data.\n\nCould you switch to a parameterized query? For example:\n\n```python\ndef get_user(user_id: int):\n    return db.execute(\"SELECT id, name, email FROM users WHERE id = ?\", (user_id,))\n```\n\nA couple of smaller suggestions: renaming the parameter to `user_id` avoids shadowing Python's built-in `id`, and selecting explicit columns instead of `*` avoids accidentally returning sensitive fields such as password hashes. It may also be worth deciding what we return when no user is found.\n\nHappy to pair on it if useful!",
     "points": 10,
     "explanation": "Strong reviews explain the risk, show the fix, and stay friendly."
+  },
+  {
+    "id": "wr-006",
+    "type": "written",
+    "category": "communication",
+    "topic": "explaining technical concepts",
+    "difficulty": "easy",
+    "prompt": "A non-technical client asks:\n\n> \"You keep saying our app runs 'in the cloud'. What does that actually mean, and is our data safe there?\"\n\nWrite your reply (**80-180 words**).",
+    "min_words": 80,
+    "max_words": 180,
+    "rubric": [
+      "Explains 'the cloud' accurately in plain language (renting computing resources in professionally run data centres)",
+      "Uses a relatable analogy or concrete example",
+      "Addresses the safety question honestly and specifically (e.g. encryption, access control, backups) without over-promising",
+      "Clear, friendly, professional tone",
+      "Stays within the word limit"
+    ],
+    "model_answer": "\"The cloud\" just means our app runs on computers we rent in large, professionally managed data centres (in our case, from a major provider) instead of on a server in our own office. It's a bit like renting space in a secure warehouse rather than keeping everything in your garage: the provider handles power, cooling, physical security and hardware failures, so we can focus on the app.\n\nOn safety: your data is encrypted when it's stored and when it travels over the internet, only a small number of authorised staff can access the production systems, and we take automatic daily backups kept in a separate location. No system is risk-free, but this setup is generally more secure than what most companies could run themselves.\n\nHappy to walk you through our security setup in more detail if that would help.",
+    "points": 10,
+    "explanation": "Strong answers combine a simple analogy with specific, honest reassurance."
+  },
+  {
+    "id": "wr-007",
+    "type": "written",
+    "category": "communication",
+    "topic": "status updates",
+    "difficulty": "medium",
+    "prompt": "Write your weekly update to your manager on a project to build a reporting dashboard. This week: the data pipeline is finished, the charts are half done, and you've found that one data source updates only daily, which may not meet the client's 'real-time' expectation. (**100-200 words**)",
+    "min_words": 100,
+    "max_words": 200,
+    "rubric": [
+      "Clear structure that is easy to skim (e.g. done / next / risks)",
+      "States progress concretely",
+      "Flags the real-time risk clearly, with its impact",
+      "Proposes options or asks for a specific decision about the risk",
+      "Concise and professional"
+    ],
+    "model_answer": "Subject: Reporting dashboard: week 3 update\n\nDone\n- Data pipeline complete and tested; all four sources load into the warehouse.\n\nIn progress\n- Charts: 4 of 8 built. On track to finish the rest by Wednesday.\n\nRisk: \"real-time\" data\n- The finance source only updates once a day (overnight), so finance figures will be up to 24 hours old. The client expects real-time numbers.\n- Options: (1) label finance charts \"updated daily\" and set expectations now; (2) ask finance whether they can provide an hourly export (likely +1 week); (3) drop finance charts from v1.\n- I recommend option 1 for launch and exploring option 2 in parallel.\n\nDecision needed\n- Could you confirm the approach with the client by Thursday so the charts match their expectations?\n\nThanks,\nAlex",
+    "points": 10,
+    "explanation": "Status updates should make risks impossible to miss and end with a clear ask."
+  },
+  {
+    "id": "wr-008",
+    "type": "written",
+    "category": "communication",
+    "topic": "asking for help",
+    "difficulty": "easy",
+    "prompt": "You're stuck on a bug: your FastAPI endpoint returns HTTP 422 when the frontend calls it, but it works in the API docs page. Write a message to a senior engineer on Slack asking for help (**60-150 words**).",
+    "min_words": 60,
+    "max_words": 150,
+    "rubric": [
+      "Gives enough context to understand the problem quickly (what, where, expected vs actual)",
+      "Says what you've already tried",
+      "Asks a specific question or for a specific kind of help",
+      "Respects their time (concise, easy to answer)",
+      "Friendly, professional tone"
+    ],
+    "model_answer": "Hi Tolu, do you have 10 minutes today to help with a 422 I'm stuck on?\n\nContext: `POST /api/orders` returns 422 when the React app calls it, but the same request works from the /docs page.\n\nWhat I've tried:\n- Compared payloads: they look identical in the browser's network tab\n- Logged the request body on the server: it arrives empty from the frontend\n- Checked CORS: no errors\n\nMy guess is the frontend isn't sending `Content-Type: application/json`, but adding the header didn't help.\n\nCould you take a quick look at the fetch call in `api.ts`, or tell me what you'd check next? Happy to screen-share.",
+    "points": 10,
+    "explanation": "Good help requests save the helper time: context, what you tried, and a specific ask."
+  },
+  {
+    "id": "wr-009",
+    "type": "written",
+    "category": "communication",
+    "topic": "explaining trade-offs",
+    "difficulty": "hard",
+    "prompt": "Your product manager asks why the team chose PostgreSQL (a relational database) instead of MongoDB (a document database) for the new orders system. Explain the trade-off for a non-specialist (**100-220 words**).",
+    "min_words": 100,
+    "max_words": 220,
+    "rubric": [
+      "Explains the key difference between the two in plain language",
+      "Ties the choice to the orders system's needs (e.g. related data, consistency, transactions, reporting)",
+      "Acknowledges what the alternative would have been better at (a balanced trade-off)",
+      "Avoids unnecessary jargon or explains it",
+      "Well organised and professional"
+    ],
+    "model_answer": "Both are good databases; they suit different shapes of data.\n\nPostgreSQL stores data in tables with defined relationships (customers, orders, products), and it guarantees that multi-step changes either fully happen or don't happen at all. For orders, that matters: when a customer pays, we must create the order, reduce stock and record the payment together. If one step fails, none should apply. Relational databases also make reporting questions (\"revenue by region last quarter\") straightforward.\n\nMongoDB stores flexible documents, a bit like JSON files. It shines when data varies a lot between records or changes shape often, and it can be quicker to start with because there's no fixed structure.\n\nOur orders data is highly structured and interconnected, and correctness is critical, so PostgreSQL's guarantees and reporting strengths outweighed MongoDB's flexibility. If we later need flexible data, such as storing varied product attributes, PostgreSQL's JSON columns can handle much of that too.",
+    "points": 10,
+    "explanation": "The best answers make the trade-off concrete for this system rather than listing generic pros and cons."
+  },
+  {
+    "id": "wr-010",
+    "type": "written",
+    "category": "communication",
+    "topic": "customer communication",
+    "difficulty": "medium",
+    "prompt": "A customer emails: *\"Your app has been really slow all week. This is unacceptable for what we pay.\"* Your team has found the cause (a database issue) and a fix is being deployed tomorrow. Write the reply (**80-180 words**).",
+    "min_words": 80,
+    "max_words": 180,
+    "rubric": [
+      "Acknowledges the frustration and apologises sincerely, without being defensive",
+      "Explains the cause briefly in plain language",
+      "Gives the fix and a specific timeline",
+      "Offers something useful (follow-up, workaround, or a confirmation once fixed)",
+      "Professional, warm tone; appropriate length"
+    ],
+    "model_answer": "Hi Sam,\n\nThank you for letting us know, and I'm sorry. You're right that the app has been slower than it should be this week, and I understand how disruptive that is when your team relies on it every day.\n\nWe found the cause: one of our database queries became very slow as data grew, which delays page loads. Our engineers have a fix ready and will deploy it tomorrow morning (before 10:00 GMT). In the meantime, the reports page is the most affected, so exporting reports overnight may help.\n\nI'll email you once the fix is live and check that performance is back to normal for your account. If anything still feels slow after that, reply here and I'll look into it personally.\n\nBest regards,\nAlex",
+    "points": 10,
+    "explanation": "Own the problem, explain briefly, commit to a timeline, and close the loop."
+  },
+  {
+    "id": "wr-011",
+    "type": "written",
+    "category": "communication",
+    "topic": "handover notes",
+    "difficulty": "medium",
+    "prompt": "You're going on two weeks' leave tomorrow. A colleague will take over your half-finished task: adding email notifications when an order ships. Write the handover note (**100-200 words**).",
+    "min_words": 100,
+    "max_words": 200,
+    "rubric": [
+      "States the goal and current status clearly",
+      "Lists what's done and what's left in concrete terms",
+      "Points to where things are (branch, tickets, docs, credentials location without the secrets themselves)",
+      "Flags open questions, risks or gotchas",
+      "Well structured and easy to act on"
+    ],
+    "model_answer": "Handover: order-shipped email notifications (ticket SHOP-214)\n\nGoal: when an order's status changes to Shipped, email the customer with the tracking link.\n\nDone\n- Email template designed and approved (in /templates/order_shipped.html)\n- Status-change hook calls `send_shipped_email()` (branch `feature/shipped-email`)\n- Unit tests for the template rendering\n\nLeft to do\n- Connect to the email provider. The API key is in the team password manager under \"Mailer - staging\"; don't hard-code it\n- Retry if the provider is down (currently fails silently)\n- Integration test on staging, then code review\n\nGotchas\n- Some orders have no tracking number yet; the template needs a fallback line (open question for Ada in product)\n- Don't send emails for orders imported from the old system (`legacy=True`)\n\nI'm back on the 14th. Thanks for picking this up!",
+    "points": 10,
+    "explanation": "Great handovers let someone continue without needing to contact you."
+  },
+  {
+    "id": "wr-012",
+    "type": "written",
+    "category": "communication",
+    "topic": "describing yourself",
+    "difficulty": "medium",
+    "prompt": "An interviewer for a junior AI engineer role says: *\"Tell me about yourself.\"* Write your answer as you would say it (**120-220 words**).",
+    "min_words": 120,
+    "max_words": 220,
+    "rubric": [
+      "Clear, logical structure (e.g. present, past, future, or background, skills, motivation)",
+      "Highlights relevant skills and experience with at least one concrete example or achievement",
+      "Connects clearly to the role being applied for",
+      "Concise and professional; avoids a life story or a list of buzzwords",
+      "Ends with motivation for this role"
+    ],
+    "model_answer": "",
+    "points": 10,
+    "explanation": "Interviewers want a relevant, specific two-minute story, not a CV recital. Present, past, future works well."
   }
 ]

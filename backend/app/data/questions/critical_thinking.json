@@ -54,7 +54,12 @@
     "topic": "ordering puzzles",
     "difficulty": "medium",
     "prompt": "Five tasks, A, B, C, D and E, are done one after another.\n\n- C is done first.\n- E is done last.\n- A is done after C.\n- D is done immediately after A.\n- B is done before D.\n\nWhich task is done third?",
-    "options": ["A", "B", "C", "D"],
+    "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+    ],
     "answer": 0,
     "explanation": "Positions 2-4 hold A, B and D. D comes directly after A, and B comes before D, so B cannot follow the A-D pair. The order is C, B, A, D, E, so A is third."
   },
@@ -83,11 +88,11 @@
     "prompt": "\"Our app is slow, so we should buy faster servers.\"\n\nWhich assumption does this argument rely on?",
     "options": [
       "Faster servers are cheap.",
-      "The slowness is caused by limited server hardware capacity.",
       "Users will pay more for a faster app.",
+      "The slowness is caused by limited server hardware capacity.",
       "The app was fast in the past."
     ],
-    "answer": 1,
+    "answer": 2,
     "explanation": "Buying faster servers only fixes the problem if the hardware is the bottleneck. If the cause is a slow database query or a network issue, faster servers would not help."
   },
   {
@@ -113,8 +118,13 @@
     "topic": "coding and patterns",
     "difficulty": "easy",
     "prompt": "In a code, **CODE** is written as **DPEF**. How is **TEST** written in the same code?",
-    "options": ["UFTU", "UFSU", "SDRS", "UGTU"],
-    "answer": 0,
+    "options": [
+      "UFSU",
+      "SDRS",
+      "UGTU",
+      "UFTU"
+    ],
+    "answer": 3,
     "explanation": "Each letter shifts forward by one: C->D, O->P, D->E, E->F. So T->U, E->F, S->T, T->U gives UFTU."
   },
   {
@@ -124,8 +134,456 @@
     "topic": "cycles and modular reasoning",
     "difficulty": "medium",
     "prompt": "An on-call rotation cycles through Ana, Ben, Chi and Dan in that order, one person per day, every day including weekends. Ana is on call today.\n\nWho will be on call 30 days from today?",
-    "options": ["Ana", "Ben", "Chi", "Dan"],
-    "answer": 2,
+    "options": [
+      "Ana",
+      "Chi",
+      "Ben",
+      "Dan"
+    ],
+    "answer": 1,
     "explanation": "The cycle has length 4. 30 mod 4 = 2, so we move two places forward from Ana: Ben (1), Chi (2)."
+  },
+  {
+    "id": "ct-010",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "syllogisms",
+    "difficulty": "medium",
+    "prompt": "No junior developers have production access. Some testers are junior developers.\n\nWhich statement **must** be true?",
+    "options": [
+      "No testers have production access.",
+      "All junior developers are testers.",
+      "Some testers do not have production access.",
+      "Some people with production access are testers."
+    ],
+    "answer": 2,
+    "explanation": "The testers who are junior developers cannot have production access, so at least some testers lack it. Nothing tells us about the other testers."
+  },
+  {
+    "id": "ct-011",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "syllogisms",
+    "difficulty": "medium",
+    "prompt": "All APIs in our system are documented. Some documented things are out of date.\n\nWhich statement **must** be true?",
+    "options": [
+      "Some APIs are out of date.",
+      "No APIs are out of date.",
+      "Everything out of date is an API.",
+      "None of these must be true."
+    ],
+    "answer": 3,
+    "explanation": "The out-of-date documented things might all be non-API documents. The premises allow that, so none of the statements is guaranteed."
+  },
+  {
+    "id": "ct-012",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "conditional logic",
+    "difficulty": "medium",
+    "prompt": "\"The deployment runs only if the tests pass.\" Today, the tests passed.\n\nWhat can you conclude?",
+    "options": [
+      "The deployment ran.",
+      "The deployment did not run.",
+      "Whether the deployment ran cannot be determined.",
+      "The tests will fail tomorrow."
+    ],
+    "answer": 2,
+    "explanation": "\"A only if B\" means \"if A, then B\": a deployment requires passing tests. Passing tests is necessary, not sufficient, so we can't tell whether it ran."
+  },
+  {
+    "id": "ct-013",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "conditional logic",
+    "difficulty": "medium",
+    "prompt": "\"If an account is locked, the user cannot log in.\"\n\nWhich statement is logically **equivalent**?",
+    "options": [
+      "If the user cannot log in, the account is locked.",
+      "If the user can log in, the account is not locked.",
+      "If the account is not locked, the user can log in.",
+      "Locked accounts can log in with admin approval."
+    ],
+    "answer": 1,
+    "explanation": "The contrapositive (if not B, then not A) is always equivalent. The other two reversals are the classic converse and inverse errors."
+  },
+  {
+    "id": "ct-014",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "ordering puzzles",
+    "difficulty": "medium",
+    "prompt": "Five people, A, B, C, D and E, stand in a queue.\n\n- E is first.\n- D is last.\n- A is somewhere ahead of B.\n- C is directly behind A.\n\nWho is third in the queue?",
+    "options": [
+      "A",
+      "B",
+      "C",
+      "E"
+    ],
+    "answer": 2,
+    "explanation": "Positions 2-4 hold A, B and C. C must be directly behind A, and B behind A, so A is 2nd. The order is E, A, C, B, D, and C is third."
+  },
+  {
+    "id": "ct-015",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "ordering puzzles",
+    "difficulty": "easy",
+    "prompt": "Kemi scored higher than Tunde. Ade scored lower than Tunde but higher than Bola.\n\nWho scored the lowest?",
+    "options": [
+      "Kemi",
+      "Tunde",
+      "Ade",
+      "Bola"
+    ],
+    "answer": 3,
+    "explanation": "The order from highest is Kemi, Tunde, Ade, Bola."
+  },
+  {
+    "id": "ct-016",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "evaluating arguments",
+    "difficulty": "medium",
+    "prompt": "\"Our new onboarding video works: support tickets fell 20% in the month after it launched.\"\n\nWhich statement, if true, most **weakens** this argument?",
+    "options": [
+      "The month before launch had an unusual spike in tickets caused by a major outage.",
+      "Most new users say they enjoyed the video.",
+      "The video cost less to produce than expected.",
+      "Competitors also use onboarding videos."
+    ],
+    "answer": 0,
+    "explanation": "If the comparison month was abnormally high, a 20% drop is what you'd expect anyway (a return to normal), not evidence the video helped."
+  },
+  {
+    "id": "ct-017",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "evaluating arguments",
+    "difficulty": "medium",
+    "prompt": "\"Introducing pair programming will reduce our defect rate.\"\n\nWhich statement, if true, most **strengthens** this claim?",
+    "options": [
+      "Developers find pair programming tiring.",
+      "Teams in our company with similar codebases that already pair have about 30% fewer defects.",
+      "Pair programming is popular at large tech companies.",
+      "Our defect rate is higher than the industry average."
+    ],
+    "answer": 1,
+    "explanation": "Evidence from comparable teams in the same context is the strongest support. Popularity or a high baseline doesn't show that pairing reduces defects."
+  },
+  {
+    "id": "ct-018",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "identifying assumptions",
+    "difficulty": "easy",
+    "prompt": "\"Ade finished an online Python course, so Ade is ready for the coding assessment.\"\n\nWhich assumption does this argument rely on?",
+    "options": [
+      "Online courses are expensive.",
+      "The course teaches the skills the assessment tests.",
+      "Ade enjoyed the course.",
+      "Ade has taken other assessments before."
+    ],
+    "answer": 1,
+    "explanation": "The conclusion only follows if completing the course builds the specific skills being assessed."
+  },
+  {
+    "id": "ct-019",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "spotting flaws",
+    "difficulty": "easy",
+    "prompt": "\"Every developer I asked prefers dark mode, so dark mode is what all our users want.\"\n\nWhat is the main flaw?",
+    "options": [
+      "The sample isn't representative of all users.",
+      "Dark mode is hard to implement.",
+      "Developers are experts in design.",
+      "The argument has no flaw."
+    ],
+    "answer": 0,
+    "explanation": "Developers are a small, unusual group. Generalising from an unrepresentative sample is a hasty generalisation."
+  },
+  {
+    "id": "ct-020",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "inference",
+    "difficulty": "hard",
+    "prompt": "This year there were 40 deployments and 6 outages. Every outage happened during a deployment.\n\nWhich statement **must** be true?",
+    "options": [
+      "Deployments cause outages.",
+      "Stopping deployments would prevent every outage.",
+      "Most deployments happened without an outage.",
+      "Exactly 6 deployments each had one outage."
+    ],
+    "answer": 2,
+    "explanation": "At most 6 of the 40 deployments had an outage, so at least 34 had none. Timing alone doesn't prove causation, and one deployment could have had two outages."
+  },
+  {
+    "id": "ct-021",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "codes and patterns",
+    "difficulty": "hard",
+    "prompt": "In a code, **APPLE** is written as **ZKKOV**. How is **CODE** written?",
+    "options": [
+      "XMWV",
+      "YLWV",
+      "XLWV",
+      "XLVW"
+    ],
+    "answer": 2,
+    "explanation": "Each letter is replaced by its mirror in the alphabet (A<->Z, B<->Y, C<->X ...). C->X, O->L, D->W, E->V gives XLWV."
+  },
+  {
+    "id": "ct-022",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "letter series",
+    "difficulty": "easy",
+    "prompt": "What comes next?\n\n**B, E, H, K, ?**",
+    "options": [
+      "M",
+      "N",
+      "O",
+      "P"
+    ],
+    "answer": 1,
+    "explanation": "Each letter moves 3 places forward: K + 3 = N."
+  },
+  {
+    "id": "ct-023",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "letter series",
+    "difficulty": "easy",
+    "prompt": "What comes next?\n\n**AZ, BY, CX, ?**",
+    "options": [
+      "DV",
+      "DW",
+      "EW",
+      "CW"
+    ],
+    "answer": 1,
+    "explanation": "The first letter moves forward (A, B, C, D) and the second moves backward (Z, Y, X, W)."
+  },
+  {
+    "id": "ct-024",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "classification",
+    "difficulty": "easy",
+    "prompt": "Which is the odd one out?",
+    "options": [
+      "Python",
+      "Java",
+      "Rust",
+      "HTML"
+    ],
+    "answer": 3,
+    "explanation": "HTML is a markup language that describes content. The others are general-purpose programming languages."
+  },
+  {
+    "id": "ct-025",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "analogies",
+    "difficulty": "medium",
+    "prompt": "**Compiler** is to **source code** as **translator** is to ...",
+    "options": [
+      "a document in another language",
+      "a dictionary",
+      "a language",
+      "an author"
+    ],
+    "answer": 0,
+    "explanation": "A compiler converts source code into another form; a translator converts a document from one language into another."
+  },
+  {
+    "id": "ct-026",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "conditional logic",
+    "difficulty": "easy",
+    "prompt": "Either the database is down or the network is slow (or both). The database is **not** down.\n\nWhat follows?",
+    "options": [
+      "The network is slow.",
+      "The network is not slow.",
+      "Both are working normally.",
+      "Nothing can be concluded."
+    ],
+    "answer": 0,
+    "explanation": "With \"A or B\" and \"not A\", B must be true (disjunctive syllogism)."
+  },
+  {
+    "id": "ct-027",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "chained conditionals",
+    "difficulty": "medium",
+    "prompt": "If it is a weekday, the office is open. If the office is open, Ada is at her desk. Ada is **not** at her desk.\n\nWhat follows?",
+    "options": [
+      "Today is a weekday.",
+      "Today is not a weekday.",
+      "The office is open.",
+      "Nothing can be concluded."
+    ],
+    "answer": 1,
+    "explanation": "Chain the rules: weekday -> open -> Ada at desk. Ada isn't at her desk, so the office isn't open, so it isn't a weekday."
+  },
+  {
+    "id": "ct-028",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "sets",
+    "difficulty": "medium",
+    "prompt": "In a class of 30 students, 18 study Python, 15 study SQL and 7 study both. How many study neither?",
+    "options": [
+      "0",
+      "3",
+      "7",
+      "4"
+    ],
+    "answer": 3,
+    "explanation": "Students studying at least one = 18 + 15 - 7 = 26. Neither = 30 - 26 = 4."
+  },
+  {
+    "id": "ct-029",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "sets",
+    "difficulty": "hard",
+    "prompt": "Of 50 applicants, 32 know Git, 25 know Docker and 10 know neither. How many know both?",
+    "options": [
+      "7",
+      "15",
+      "17",
+      "22"
+    ],
+    "answer": 2,
+    "explanation": "40 know at least one (50 - 10). Both = 32 + 25 - 40 = 17."
+  },
+  {
+    "id": "ct-030",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "scheduling",
+    "difficulty": "medium",
+    "prompt": "Task X takes 2 days. Task Y takes 3 days and can only start after X is finished. Task Z takes 4 days and doesn't depend on anything. With enough people to work in parallel, what is the minimum time to finish all three?",
+    "options": [
+      "5 days",
+      "4 days",
+      "7 days",
+      "9 days"
+    ],
+    "answer": 0,
+    "explanation": "X then Y takes 2 + 3 = 5 days; Z runs in parallel and finishes in 4. The longest chain sets the total: 5 days."
+  },
+  {
+    "id": "ct-031",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "critical path",
+    "difficulty": "hard",
+    "prompt": "A project has five tasks:\n\n| Task | Days | Needs |\n|---|---|---|\n| A | 3 | none |\n| B | 2 | none |\n| C | 4 | A |\n| D | 5 | A and B |\n| E | 1 | C and D |\n\nWith tasks run in parallel wherever possible, what is the shortest time to finish the project?",
+    "options": [
+      "8 days",
+      "9 days",
+      "10 days",
+      "15 days"
+    ],
+    "answer": 1,
+    "explanation": "A finishes day 3; B day 2. C runs days 3-7. D can start when both A and B are done (day 3) and finishes day 8. E needs C and D, so it runs day 8-9. The critical path is A -> D -> E."
+  },
+  {
+    "id": "ct-032",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "verbal reasoning",
+    "difficulty": "medium",
+    "prompt": "**Read the policy, then judge the statement as True, False, or Cannot say from the text alone.**\n\n> Employees may work from home up to three days per week. Managers may approve additional remote days for employees whose role does not require on-site equipment.\n\n**Statement:** An employee whose role needs on-site lab equipment can never work from home.",
+    "options": [
+      "True",
+      "False",
+      "Cannot say"
+    ],
+    "answer": 1,
+    "explanation": "Everyone may work from home up to three days a week. The equipment condition only limits *additional* days, so \"never\" is false."
+  },
+  {
+    "id": "ct-033",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "verbal reasoning",
+    "difficulty": "medium",
+    "prompt": "**Read the policy, then judge the statement as True, False, or Cannot say from the text alone.**\n\n> Employees may work from home up to three days per week. Managers may approve additional remote days for employees whose role does not require on-site equipment.\n\n**Statement:** Some employees may work from home four days a week.",
+    "options": [
+      "True",
+      "False",
+      "Cannot say"
+    ],
+    "answer": 0,
+    "explanation": "Managers may approve additional days beyond three for eligible roles, so four days is possible."
+  },
+  {
+    "id": "ct-034",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "verbal reasoning",
+    "difficulty": "medium",
+    "prompt": "**Read the policy, then judge the statement as True, False, or Cannot say from the text alone.**\n\n> All production releases require approval from two reviewers. Hotfixes are production releases that may be approved retrospectively, within 24 hours of release.\n\n**Statement:** A hotfix can be released before both reviewers have approved it.",
+    "options": [
+      "True",
+      "False",
+      "Cannot say"
+    ],
+    "answer": 0,
+    "explanation": "Retrospective approval means approval after release, so yes."
+  },
+  {
+    "id": "ct-035",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "verbal reasoning",
+    "difficulty": "easy",
+    "prompt": "**Read the policy, then judge the statement as True, False, or Cannot say from the text alone.**\n\n> All production releases require approval from two reviewers. Hotfixes are production releases that may be approved retrospectively, within 24 hours of release.\n\n**Statement:** Hotfixes do not need reviewer approval.",
+    "options": [
+      "True",
+      "False",
+      "Cannot say"
+    ],
+    "answer": 1,
+    "explanation": "Hotfixes are production releases, which all need two approvals; the approval can just come later."
+  },
+  {
+    "id": "ct-036",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "verbal reasoning",
+    "difficulty": "medium",
+    "prompt": "**Read the policy, then judge the statement as True, False, or Cannot say from the text alone.**\n\n> All production releases require approval from two reviewers. Hotfixes are production releases that may be approved retrospectively, within 24 hours of release.\n\n**Statement:** Most production releases are hotfixes.",
+    "options": [
+      "True",
+      "False",
+      "Cannot say"
+    ],
+    "answer": 2,
+    "explanation": "The text says nothing about how many releases are hotfixes."
+  },
+  {
+    "id": "ct-037",
+    "type": "mcq",
+    "category": "critical_thinking",
+    "topic": "abstract patterns",
+    "difficulty": "medium",
+    "prompt": "If **3 # 4 = 25** and **5 # 12 = 169**, what is **6 # 8**?",
+    "options": [
+      "14",
+      "48",
+      "196",
+      "100"
+    ],
+    "answer": 3,
+    "explanation": "The rule is a # b = a^2 + b^2: 36 + 64 = 100."
   }
 ]

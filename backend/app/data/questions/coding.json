@@ -2694,5 +2694,1199 @@
     ],
     "points": 10,
     "explanation": "Keep a deque of allowed timestamps. For each request, pop from the left everything at or before t - window, which is now outside the window. Allow the request if fewer than `limit` remain. Each timestamp is pushed and popped at most once, so this is O(n). Rescanning the whole history for each request is O(n^2): it works, but it is the answer interviewers push back on."
+  },
+  {
+    "id": "code-007",
+    "type": "code",
+    "category": "coding",
+    "topic": "strings",
+    "difficulty": "easy",
+    "prompt": "Write `reverse_words(s)` that returns the words of `s` in reverse order, separated by single spaces.\n\n- Words are separated by one or more spaces.\n- Ignore leading and trailing spaces.\n\n**Example:** `reverse_words(\"  the sky   is blue \")` returns `\"blue is sky the\"`",
+    "language": "python",
+    "function_name": "reverse_words",
+    "starter_code": "def reverse_words(s: str) -> str):\n    # Your code here\n    pass\n",
+    "reference_solution": "def reverse_words(s):\n    return \" \".join(reversed(s.split()))\n",
+    "tests": [
+      {
+        "args": [
+          "hello world"
+        ],
+        "expected": "world hello",
+        "hidden": false
+      },
+      {
+        "args": [
+          "  the sky   is blue "
+        ],
+        "expected": "blue is sky the",
+        "hidden": false
+      },
+      {
+        "args": [
+          ""
+        ],
+        "expected": "",
+        "hidden": true
+      },
+      {
+        "args": [
+          "one"
+        ],
+        "expected": "one",
+        "hidden": true
+      },
+      {
+        "args": [
+          "a b  c"
+        ],
+        "expected": "c b a",
+        "hidden": true
+      },
+      {
+        "args": [
+          "   "
+        ],
+        "expected": "",
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "`str.split()` with no argument splits on any run of whitespace and drops empty pieces, which handles the spacing rules for you."
+  },
+  {
+    "id": "code-008",
+    "type": "code",
+    "category": "coding",
+    "topic": "loops and conditionals",
+    "difficulty": "easy",
+    "prompt": "Write `fizzbuzz(n)` that returns a list of strings for the numbers 1 to `n`:\n\n- `\"FizzBuzz\"` if the number is divisible by both 3 and 5,\n- `\"Fizz\"` if divisible by 3, `\"Buzz\"` if divisible by 5,\n- otherwise the number itself as a string.\n\n**Example:** `fizzbuzz(5)` returns `[\"1\", \"2\", \"Fizz\", \"4\", \"Buzz\"]`",
+    "language": "python",
+    "function_name": "fizzbuzz",
+    "starter_code": "def fizzbuzz(n: int) -> list[str]):\n    # Your code here\n    pass\n",
+    "reference_solution": "def fizzbuzz(n):\n    out = []\n    for i in range(1, n + 1):\n        if i % 15 == 0:\n            out.append(\"FizzBuzz\")\n        elif i % 3 == 0:\n            out.append(\"Fizz\")\n        elif i % 5 == 0:\n            out.append(\"Buzz\")\n        else:\n            out.append(str(i))\n    return out\n",
+    "tests": [
+      {
+        "args": [
+          5
+        ],
+        "expected": [
+          "1",
+          "2",
+          "Fizz",
+          "4",
+          "Buzz"
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          3
+        ],
+        "expected": [
+          "1",
+          "2",
+          "Fizz"
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          0
+        ],
+        "expected": [],
+        "hidden": true
+      },
+      {
+        "args": [
+          1
+        ],
+        "expected": [
+          "1"
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          16
+        ],
+        "expected": [
+          "1",
+          "2",
+          "Fizz",
+          "4",
+          "Buzz",
+          "Fizz",
+          "7",
+          "8",
+          "Fizz",
+          "Buzz",
+          "11",
+          "Fizz",
+          "13",
+          "14",
+          "FizzBuzz",
+          "16"
+        ],
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Check the combined case (divisible by 15) first; otherwise the Fizz branch catches 15 and you never print FizzBuzz."
+  },
+  {
+    "id": "code-009",
+    "type": "code",
+    "category": "coding",
+    "topic": "strings and two pointers",
+    "difficulty": "easy",
+    "prompt": "Write `is_palindrome(s)` that returns `True` if `s` reads the same forwards and backwards, considering only letters and digits and ignoring case.\n\n**Example:** `is_palindrome(\"A man, a plan, a canal: Panama\")` returns `True`",
+    "language": "python",
+    "function_name": "is_palindrome",
+    "starter_code": "def is_palindrome(s: str) -> bool):\n    # Your code here\n    pass\n",
+    "reference_solution": "def is_palindrome(s):\n    chars = [c.lower() for c in s if c.isalnum()]\n    return chars == chars[::-1]\n",
+    "tests": [
+      {
+        "args": [
+          "A man, a plan, a canal: Panama"
+        ],
+        "expected": true,
+        "hidden": false
+      },
+      {
+        "args": [
+          "race a car"
+        ],
+        "expected": false,
+        "hidden": false
+      },
+      {
+        "args": [
+          ""
+        ],
+        "expected": true,
+        "hidden": true
+      },
+      {
+        "args": [
+          "No 'x' in Nixon"
+        ],
+        "expected": true,
+        "hidden": true
+      },
+      {
+        "args": [
+          "ab"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          "0P"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          "Was it a car or a cat I saw?"
+        ],
+        "expected": true,
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Normalise first (keep alphanumerics, lowercase), then compare with the reverse. A two-pointer scan does the same in O(1) extra space."
+  },
+  {
+    "id": "code-010",
+    "type": "code",
+    "category": "coding",
+    "topic": "arrays",
+    "difficulty": "easy",
+    "prompt": "Write `second_largest(nums)` that returns the second-largest **distinct** value in `nums`, or `None` if there isn't one.\n\n**Examples:** `second_largest([3, 1, 4, 1, 5])` returns `4`; `second_largest([7, 7, 7])` returns `None`",
+    "language": "python",
+    "function_name": "second_largest",
+    "starter_code": "def second_largest(nums: list[int]) -> int | None):\n    # Your code here\n    pass\n",
+    "reference_solution": "def second_largest(nums):\n    distinct = sorted(set(nums), reverse=True)\n    return distinct[1] if len(distinct) >= 2 else None\n",
+    "tests": [
+      {
+        "args": [
+          [
+            3,
+            1,
+            4,
+            1,
+            5
+          ]
+        ],
+        "expected": 4,
+        "hidden": false
+      },
+      {
+        "args": [
+          [
+            7,
+            7,
+            7
+          ]
+        ],
+        "expected": null,
+        "hidden": false
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": null,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            2,
+            1
+          ]
+        ],
+        "expected": 1,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            -1,
+            -5,
+            -3
+          ]
+        ],
+        "expected": -3,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            5,
+            5,
+            4
+          ]
+        ],
+        "expected": 4,
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "\"Distinct\" is the key word: [5, 5, 4] has second-largest 4, not 5. Removing duplicates with set() handles it. A single pass tracking the top two values is O(n)."
+  },
+  {
+    "id": "code-011",
+    "type": "code",
+    "category": "coding",
+    "topic": "sliding window",
+    "difficulty": "medium",
+    "prompt": "Write `longest_unique(s)` that returns the **length** of the longest substring of `s` with no repeated characters.\n\n**Example:** `longest_unique(\"abcabcbb\")` returns `3` (\"abc\")",
+    "language": "python",
+    "function_name": "longest_unique",
+    "starter_code": "def longest_unique(s: str) -> int):\n    # Your code here\n    pass\n",
+    "reference_solution": "def longest_unique(s):\n    last = {}\n    start = best = 0\n    for i, ch in enumerate(s):\n        if ch in last and last[ch] >= start:\n            start = last[ch] + 1\n        last[ch] = i\n        best = max(best, i - start + 1)\n    return best\n",
+    "tests": [
+      {
+        "args": [
+          "abcabcbb"
+        ],
+        "expected": 3,
+        "hidden": false
+      },
+      {
+        "args": [
+          "bbbbb"
+        ],
+        "expected": 1,
+        "hidden": false
+      },
+      {
+        "args": [
+          ""
+        ],
+        "expected": 0,
+        "hidden": true
+      },
+      {
+        "args": [
+          "pwwkew"
+        ],
+        "expected": 3,
+        "hidden": true
+      },
+      {
+        "args": [
+          "abcdef"
+        ],
+        "expected": 6,
+        "hidden": true
+      },
+      {
+        "args": [
+          "abba"
+        ],
+        "expected": 2,
+        "hidden": true
+      },
+      {
+        "args": [
+          "dvdf"
+        ],
+        "expected": 3,
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Keep a window [start, i] with no repeats and remember each character's last index. When you see a repeat inside the window, move start past it. O(n). \"abba\" catches windows that move backwards by mistake."
+  },
+  {
+    "id": "code-012",
+    "type": "code",
+    "category": "coding",
+    "topic": "recursion",
+    "difficulty": "medium",
+    "prompt": "Write `flatten(nested)` that turns an arbitrarily nested list into a flat list, keeping the order.\n\n**Example:** `flatten([1, [2, [3, 4]], 5])` returns `[1, 2, 3, 4, 5]`",
+    "language": "python",
+    "function_name": "flatten",
+    "starter_code": "def flatten(nested: list) -> list):\n    # Your code here\n    pass\n",
+    "reference_solution": "def flatten(nested):\n    out = []\n    for item in nested:\n        if isinstance(item, list):\n            out.extend(flatten(item))\n        else:\n            out.append(item)\n    return out\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            [
+              2,
+              [
+                3,
+                4
+              ]
+            ],
+            5
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          [
+            [],
+            [
+              []
+            ]
+          ]
+        ],
+        "expected": [],
+        "hidden": false
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": [],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              [
+                4,
+                [
+                  5,
+                  [
+                    6
+                  ]
+                ]
+              ]
+            ]
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            "a",
+            [
+              "b"
+            ],
+            "c"
+          ]
+        ],
+        "expected": [
+          "a",
+          "b",
+          "c"
+        ],
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Recursion fits naturally: lists recurse, anything else is appended. For extremely deep nesting, an explicit stack avoids Python's recursion limit."
+  },
+  {
+    "id": "code-013",
+    "type": "code",
+    "category": "coding",
+    "topic": "parsing and validation",
+    "difficulty": "medium",
+    "prompt": "Write `is_valid_ipv4(s)` that returns `True` if `s` is a valid IPv4 address:\n\n- exactly four parts separated by dots,\n- each part contains only digits and is between 0 and 255,\n- no leading zeros (`\"0\"` is fine, `\"01\"` is not),\n- no spaces or other characters.\n\n**Examples:** `\"192.168.1.1\"` is valid; `\"256.1.1.1\"` and `\"01.2.3.4\"` are not.",
+    "language": "python",
+    "function_name": "is_valid_ipv4",
+    "starter_code": "def is_valid_ipv4(s: str) -> bool):\n    # Your code here\n    pass\n",
+    "reference_solution": "def is_valid_ipv4(s):\n    parts = s.split(\".\")\n    if len(parts) != 4:\n        return False\n    for p in parts:\n        if not p or not all(c in \"0123456789\" for c in p):\n            return False\n        if len(p) > 1 and p[0] == \"0\":\n            return False\n        if int(p) > 255:\n            return False\n    return True\n",
+    "tests": [
+      {
+        "args": [
+          "192.168.1.1"
+        ],
+        "expected": true,
+        "hidden": false
+      },
+      {
+        "args": [
+          "256.1.1.1"
+        ],
+        "expected": false,
+        "hidden": false
+      },
+      {
+        "args": [
+          "01.2.3.4"
+        ],
+        "expected": false,
+        "hidden": false
+      },
+      {
+        "args": [
+          "0.0.0.0"
+        ],
+        "expected": true,
+        "hidden": true
+      },
+      {
+        "args": [
+          "255.255.255.255"
+        ],
+        "expected": true,
+        "hidden": true
+      },
+      {
+        "args": [
+          "1.2.3"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          "1.2.3.4.5"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          "a.b.c.d"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          "1..2.3"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          " 1.2.3.4"
+        ],
+        "expected": false,
+        "hidden": true
+      },
+      {
+        "args": [
+          "1.2.3.+4"
+        ],
+        "expected": false,
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Validate each rule explicitly. `int()` alone is a trap: it accepts \" 1\" and \"+4\", so check that every character is a digit first."
+  },
+  {
+    "id": "code-014",
+    "type": "code",
+    "category": "coding",
+    "topic": "hash maps",
+    "difficulty": "medium",
+    "prompt": "Write `roman_to_int(s)` that converts a Roman numeral to an integer.\n\nSymbols: I=1, V=5, X=10, L=50, C=100, D=500, M=1000. When a smaller value comes **before** a larger one, it is subtracted (IV = 4, IX = 9, XL = 40, CM = 900).\n\n**Example:** `roman_to_int(\"MCMXCIV\")` returns `1994`",
+    "language": "python",
+    "function_name": "roman_to_int",
+    "starter_code": "def roman_to_int(s: str) -> int):\n    # Your code here\n    pass\n",
+    "reference_solution": "def roman_to_int(s):\n    values = {\"I\": 1, \"V\": 5, \"X\": 10, \"L\": 50, \"C\": 100, \"D\": 500, \"M\": 1000}\n    total = 0\n    for i, ch in enumerate(s):\n        v = values[ch]\n        if i + 1 < len(s) and values[s[i + 1]] > v:\n            total -= v\n        else:\n            total += v\n    return total\n",
+    "tests": [
+      {
+        "args": [
+          "III"
+        ],
+        "expected": 3,
+        "hidden": false
+      },
+      {
+        "args": [
+          "LVIII"
+        ],
+        "expected": 58,
+        "hidden": false
+      },
+      {
+        "args": [
+          "MCMXCIV"
+        ],
+        "expected": 1994,
+        "hidden": false
+      },
+      {
+        "args": [
+          "IV"
+        ],
+        "expected": 4,
+        "hidden": true
+      },
+      {
+        "args": [
+          "IX"
+        ],
+        "expected": 9,
+        "hidden": true
+      },
+      {
+        "args": [
+          "XL"
+        ],
+        "expected": 40,
+        "hidden": true
+      },
+      {
+        "args": [
+          "MMXXVI"
+        ],
+        "expected": 2026,
+        "hidden": true
+      },
+      {
+        "args": [
+          "CDXLIV"
+        ],
+        "expected": 444,
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Scan left to right: subtract a symbol's value if the next symbol is larger, otherwise add it."
+  },
+  {
+    "id": "code-015",
+    "type": "code",
+    "category": "coding",
+    "topic": "data processing",
+    "difficulty": "medium",
+    "prompt": "Write `paid_totals(orders)` that totals the **paid** orders per customer.\n\n- Each order is a dict like `{\"customer\": \"ada\", \"amount\": 20.5, \"status\": \"paid\"}`.\n- Only orders with status `\"paid\"` count.\n- Return a dict mapping each customer to their total, **rounded to 2 decimal places**. Customers with no paid orders are left out.\n\n**Example:**\n```python\npaid_totals([\n    {\"customer\": \"ada\", \"amount\": 20.5, \"status\": \"paid\"},\n    {\"customer\": \"bo\", \"amount\": 10, \"status\": \"refunded\"},\n    {\"customer\": \"ada\", \"amount\": 4.5, \"status\": \"paid\"},\n])  # -> {\"ada\": 25.0}\n```",
+    "language": "python",
+    "function_name": "paid_totals",
+    "starter_code": "def paid_totals(orders: list[dict]) -> dict[str, float]):\n    # Your code here\n    pass\n",
+    "reference_solution": "from collections import defaultdict\n\n\ndef paid_totals(orders):\n    totals = defaultdict(float)\n    for o in orders:\n        if o[\"status\"] == \"paid\":\n            totals[o[\"customer\"]] += o[\"amount\"]\n    return {c: round(t, 2) for c, t in totals.items()}\n",
+    "tests": [
+      {
+        "args": [
+          [
+            {
+              "customer": "ada",
+              "amount": 20.5,
+              "status": "paid"
+            },
+            {
+              "customer": "bo",
+              "amount": 10,
+              "status": "refunded"
+            },
+            {
+              "customer": "ada",
+              "amount": 4.5,
+              "status": "paid"
+            }
+          ]
+        ],
+        "expected": {
+          "ada": 25.0
+        },
+        "hidden": false
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": {},
+        "hidden": false
+      },
+      {
+        "args": [
+          [
+            {
+              "customer": "x",
+              "amount": 5,
+              "status": "pending"
+            }
+          ]
+        ],
+        "expected": {},
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            {
+              "customer": "c",
+              "amount": 0.1,
+              "status": "paid"
+            },
+            {
+              "customer": "c",
+              "amount": 0.2,
+              "status": "paid"
+            }
+          ]
+        ],
+        "expected": {
+          "c": 0.3
+        },
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            {
+              "customer": "a",
+              "amount": 1,
+              "status": "paid"
+            },
+            {
+              "customer": "b",
+              "amount": 2,
+              "status": "paid"
+            },
+            {
+              "customer": "a",
+              "amount": 3,
+              "status": "paid"
+            },
+            {
+              "customer": "b",
+              "amount": 9,
+              "status": "failed"
+            }
+          ]
+        ],
+        "expected": {
+          "a": 4.0,
+          "b": 2.0
+        },
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            {
+              "customer": "d",
+              "amount": 19.999,
+              "status": "paid"
+            }
+          ]
+        ],
+        "expected": {
+          "d": 20.0
+        },
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Filter, group, sum, round. Don't skip the rounding: 19.999 must come back as 20.0."
+  },
+  {
+    "id": "code-016",
+    "type": "code",
+    "category": "coding",
+    "topic": "sorting and heaps",
+    "difficulty": "hard",
+    "prompt": "Write `min_meeting_rooms(meetings)` that returns the minimum number of rooms needed so no two meetings in the same room overlap.\n\n- Each meeting is `[start, end]`. A meeting ending at 10 and another starting at 10 **can** use the same room.\n\n**Example:** `min_meeting_rooms([[0, 30], [5, 10], [15, 20]])` returns `2`",
+    "language": "python",
+    "function_name": "min_meeting_rooms",
+    "starter_code": "def min_meeting_rooms(meetings: list[list[int]]) -> int):\n    # Your code here\n    pass\n",
+    "reference_solution": "import heapq\n\n\ndef min_meeting_rooms(meetings):\n    ends = []\n    for start, end in sorted(meetings):\n        if ends and ends[0] <= start:\n            heapq.heapreplace(ends, end)\n        else:\n            heapq.heappush(ends, end)\n    return len(ends)\n",
+    "tests": [
+      {
+        "args": [
+          [
+            [
+              0,
+              30
+            ],
+            [
+              5,
+              10
+            ],
+            [
+              15,
+              20
+            ]
+          ]
+        ],
+        "expected": 2,
+        "hidden": false
+      },
+      {
+        "args": [
+          [
+            [
+              7,
+              10
+            ],
+            [
+              2,
+              4
+            ]
+          ]
+        ],
+        "expected": 1,
+        "hidden": false
+      },
+      {
+        "args": [
+          []
+        ],
+        "expected": 0,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              5
+            ],
+            [
+              5,
+              10
+            ]
+          ]
+        ],
+        "expected": 1,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              1,
+              10
+            ],
+            [
+              2,
+              9
+            ],
+            [
+              3,
+              8
+            ]
+          ]
+        ],
+        "expected": 3,
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            [
+              9,
+              10
+            ],
+            [
+              4,
+              9
+            ],
+            [
+              4,
+              17
+            ]
+          ]
+        ],
+        "expected": 2,
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Sort by start time and keep a min-heap of end times for rooms in use. If the earliest-ending room is free (end <= start), reuse it; otherwise open a new room. O(n log n)."
+  },
+  {
+    "id": "code-017",
+    "type": "code",
+    "category": "coding",
+    "topic": "data structure design",
+    "difficulty": "hard",
+    "prompt": "Simulate a **least-recently-used (LRU) cache**. Write `lru_cache(capacity, operations)`:\n\n- `operations` is a list of `[\"put\", key, value]` or `[\"get\", key]`.\n- `get` returns the value, or `-1` if the key isn't in the cache. A successful `get` counts as using the key.\n- `put` inserts or updates a key (which also counts as using it). If the cache is over capacity, evict the least recently used key.\n- Return a list with the result of every `get`, in order.\n\n**Example:**\n```python\nlru_cache(2, [[\"put\", 1, 1], [\"put\", 2, 2], [\"get\", 1], [\"put\", 3, 3],\n              [\"get\", 2], [\"put\", 4, 4], [\"get\", 1], [\"get\", 3], [\"get\", 4]])\n# -> [1, -1, -1, 3, 4]\n```",
+    "language": "python",
+    "function_name": "lru_cache",
+    "starter_code": "def lru_cache(capacity: int, operations: list[list]) -> list[int]):\n    # Your code here\n    pass\n",
+    "reference_solution": "from collections import OrderedDict\n\n\ndef lru_cache(capacity, operations):\n    cache = OrderedDict()\n    results = []\n    for op in operations:\n        if op[0] == \"get\":\n            key = op[1]\n            if key in cache:\n                cache.move_to_end(key)\n                results.append(cache[key])\n            else:\n                results.append(-1)\n        else:\n            _, key, value = op\n            cache[key] = value\n            cache.move_to_end(key)\n            if len(cache) > capacity:\n                cache.popitem(last=False)\n    return results\n",
+    "tests": [
+      {
+        "args": [
+          2,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "put",
+              2,
+              2
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "put",
+              3,
+              3
+            ],
+            [
+              "get",
+              2
+            ],
+            [
+              "put",
+              4,
+              4
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "get",
+              3
+            ],
+            [
+              "get",
+              4
+            ]
+          ]
+        ],
+        "expected": [
+          1,
+          -1,
+          -1,
+          3,
+          4
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          1,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "get",
+              1
+            ]
+          ]
+        ],
+        "expected": [
+          1
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          1,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "put",
+              2,
+              2
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "get",
+              2
+            ]
+          ]
+        ],
+        "expected": [
+          -1,
+          2
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "put",
+              2,
+              2
+            ],
+            [
+              "put",
+              1,
+              10
+            ],
+            [
+              "put",
+              3,
+              3
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "get",
+              2
+            ]
+          ]
+        ],
+        "expected": [
+          10,
+          -1
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              "get",
+              5
+            ]
+          ]
+        ],
+        "expected": [
+          -1
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          2,
+          [
+            [
+              "put",
+              1,
+              1
+            ],
+            [
+              "put",
+              2,
+              2
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "put",
+              3,
+              3
+            ],
+            [
+              "get",
+              1
+            ],
+            [
+              "get",
+              2
+            ],
+            [
+              "get",
+              3
+            ]
+          ]
+        ],
+        "expected": [
+          1,
+          1,
+          -1,
+          3
+        ],
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "An OrderedDict (or a dict plus a doubly linked list) gives O(1) get and put: move a key to the end when used, and pop from the front to evict. Updating an existing key must also refresh it."
+  },
+  {
+    "id": "code-018",
+    "type": "code",
+    "category": "coding",
+    "topic": "two pointers",
+    "difficulty": "medium",
+    "prompt": "Write `merge_sorted(a, b)` that merges two lists already sorted in ascending order into one sorted list.\n\nAim for O(len(a) + len(b)). Don't just concatenate and sort.\n\n**Example:** `merge_sorted([1, 3, 5], [2, 4, 6])` returns `[1, 2, 3, 4, 5, 6]`",
+    "language": "python",
+    "function_name": "merge_sorted",
+    "starter_code": "def merge_sorted(a: list[int], b: list[int]) -> list[int]):\n    # Your code here\n    pass\n",
+    "reference_solution": "def merge_sorted(a, b):\n    i = j = 0\n    out = []\n    while i < len(a) and j < len(b):\n        if a[i] <= b[j]:\n            out.append(a[i]); i += 1\n        else:\n            out.append(b[j]); j += 1\n    out.extend(a[i:])\n    out.extend(b[j:])\n    return out\n",
+    "tests": [
+      {
+        "args": [
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            2,
+            4,
+            6
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          [],
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": [
+          1,
+          2
+        ],
+        "hidden": false
+      },
+      {
+        "args": [
+          [],
+          []
+        ],
+        "expected": [],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            1,
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        "expected": [
+          1,
+          1,
+          1
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            -5,
+            0
+          ],
+          [
+            -6,
+            10
+          ]
+        ],
+        "expected": [
+          -6,
+          -5,
+          0,
+          10
+        ],
+        "hidden": true
+      },
+      {
+        "args": [
+          [
+            1,
+            2,
+            3
+          ],
+          []
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ],
+        "hidden": true
+      }
+    ],
+    "points": 10,
+    "explanation": "Two pointers: repeatedly take the smaller front item, then append whatever remains. This is the merge step of merge sort."
   }
 ]

@@ -6,8 +6,13 @@
     "topic": "percentage change",
     "difficulty": "easy",
     "prompt": "A startup's quarterly revenue is shown below.\n\n| Quarter | Revenue |\n|---|---|\n| Q1 | $120,000 |\n| Q2 | $150,000 |\n| Q3 | $135,000 |\n| Q4 | $180,000 |\n\nWhat was the percentage increase in revenue from Q3 to Q4?",
-    "options": ["20%", "25%", "33.3%", "45%"],
-    "answer": 2,
+    "options": [
+      "33.3%",
+      "20%",
+      "25%",
+      "45%"
+    ],
+    "answer": 0,
     "explanation": "Change = 180,000 - 135,000 = 45,000. Percentage change is always relative to the starting value: 45,000 / 135,000 = 0.333 = 33.3%. A common mistake is dividing by the new value (45/180 = 25%)."
   },
   {
@@ -17,8 +22,13 @@
     "topic": "averages",
     "difficulty": "easy",
     "prompt": "A startup's quarterly revenue is shown below.\n\n| Quarter | Revenue |\n|---|---|\n| Q1 | $120,000 |\n| Q2 | $150,000 |\n| Q3 | $135,000 |\n| Q4 | $180,000 |\n\nWhat was the average quarterly revenue for the year?",
-    "options": ["$140,000", "$146,250", "$150,000", "$152,500"],
-    "answer": 1,
+    "options": [
+      "$146,250",
+      "$140,000",
+      "$150,000",
+      "$152,500"
+    ],
+    "answer": 0,
     "explanation": "Total = 120 + 150 + 135 + 180 = 585 thousand. 585,000 / 4 = 146,250."
   },
   {
@@ -28,8 +38,13 @@
     "topic": "reverse percentages",
     "difficulty": "easy",
     "prompt": "A laptop is sold for $800 after a 20% discount. What was the original price?",
-    "options": ["$960", "$1,000", "$1,040", "$1,100"],
-    "answer": 1,
+    "options": [
+      "$960",
+      "$1,040",
+      "$1,100",
+      "$1,000"
+    ],
+    "answer": 3,
     "explanation": "$800 is 80% of the original price, so original = 800 / 0.8 = $1,000. Adding 20% to $800 ($960) is the classic trap: the 20% was taken off the original, not the sale price."
   },
   {
@@ -39,7 +54,12 @@
     "topic": "rates and work",
     "difficulty": "medium",
     "prompt": "A team of 4 developers closes 60 tickets in 5 days. Working at the same rate per developer, how many days would 6 developers need to close 108 tickets?",
-    "options": ["5 days", "6 days", "7 days", "9 days"],
+    "options": [
+      "5 days",
+      "6 days",
+      "7 days",
+      "9 days"
+    ],
     "answer": 1,
     "explanation": "Rate per developer per day = 60 / (4 x 5) = 3 tickets. 6 developers close 18 tickets/day. 108 / 18 = 6 days."
   },
@@ -50,8 +70,13 @@
     "topic": "percentages",
     "difficulty": "medium",
     "prompt": "A service promises 99.9% uptime over a 30-day month. What is the maximum downtime allowed in that month?",
-    "options": ["4.3 minutes", "43.2 minutes", "72 minutes", "432 minutes"],
-    "answer": 1,
+    "options": [
+      "4.3 minutes",
+      "72 minutes",
+      "432 minutes",
+      "43.2 minutes"
+    ],
+    "answer": 3,
     "explanation": "30 days x 24 h x 60 min = 43,200 minutes. Allowed downtime = 0.1% = 0.001 x 43,200 = 43.2 minutes."
   },
   {
@@ -61,8 +86,13 @@
     "topic": "ratios",
     "difficulty": "medium",
     "prompt": "The ratio of frontend to backend engineers in a 40-person team is 3:5. How many additional frontend engineers must be hired (with no other changes) for the ratio to become 1:1?",
-    "options": ["5", "8", "10", "15"],
-    "answer": 2,
+    "options": [
+      "5",
+      "10",
+      "8",
+      "15"
+    ],
+    "answer": 1,
     "explanation": "3 + 5 = 8 parts; 40 / 8 = 5 per part. Frontend = 15, backend = 25. To reach 1:1, frontend must equal 25, so hire 10."
   },
   {
@@ -72,8 +102,13 @@
     "topic": "unit costs",
     "difficulty": "medium",
     "prompt": "Cloud storage costs $0.023 per GB per month. How much does it cost to store 2.5 TB for 6 months? (Use 1 TB = 1,000 GB.)",
-    "options": ["$57.50", "$138.00", "$345.00", "$3,450.00"],
-    "answer": 2,
+    "options": [
+      "$57.50",
+      "$345.00",
+      "$138.00",
+      "$3,450.00"
+    ],
+    "answer": 1,
     "explanation": "2.5 TB = 2,500 GB. Monthly cost = 2,500 x 0.023 = $57.50. Over 6 months = $345.00."
   },
   {
@@ -83,8 +118,13 @@
     "topic": "data interpretation",
     "difficulty": "medium",
     "prompt": "Units sold by region:\n\n| Region | 2024 | 2025 |\n|---|---|---|\n| North | 240 | 300 |\n| South | 200 | 190 |\n| East | 160 | 216 |\n| West | 400 | 410 |\n\nWhich region had the largest percentage growth from 2024 to 2025?",
-    "options": ["North", "South", "East", "West"],
-    "answer": 2,
+    "options": [
+      "North",
+      "South",
+      "West",
+      "East"
+    ],
+    "answer": 3,
     "explanation": "North: 60/240 = 25%. South: -10/200 = -5%. East: 56/160 = 35%. West: 10/400 = 2.5%. North had the largest absolute increase (60 units), but East had the largest percentage growth."
   },
   {
@@ -94,8 +134,13 @@
     "topic": "data interpretation",
     "difficulty": "hard",
     "prompt": "Units sold by region:\n\n| Region | 2024 | 2025 |\n|---|---|---|\n| North | 240 | 300 |\n| South | 200 | 190 |\n| East | 160 | 216 |\n| West | 400 | 410 |\n\nBy what percentage did total units sold grow from 2024 to 2025?",
-    "options": ["10.6%", "11.6%", "12.0%", "16.0%"],
-    "answer": 1,
+    "options": [
+      "11.6%",
+      "10.6%",
+      "12.0%",
+      "16.0%"
+    ],
+    "answer": 0,
     "explanation": "2024 total = 240 + 200 + 160 + 400 = 1,000. 2025 total = 300 + 190 + 216 + 410 = 1,116. Growth = 116 / 1,000 = 11.6%. Averaging the regional percentages would be wrong because the regions are different sizes."
   },
   {
@@ -105,7 +150,12 @@
     "topic": "compound growth",
     "difficulty": "medium",
     "prompt": "An app has 5,000 users and grows by 10% each month (compounding). Approximately how many users will it have after 3 months?",
-    "options": ["6,500", "6,600", "6,655", "7,320"],
+    "options": [
+      "6,500",
+      "6,600",
+      "6,655",
+      "7,320"
+    ],
     "answer": 2,
     "explanation": "5,000 x 1.1 x 1.1 x 1.1 = 5,000 x 1.331 = 6,655. Simple growth (3 x 10% = 30%) gives 6,500, which ignores compounding."
   },
@@ -116,7 +166,12 @@
     "topic": "number series",
     "difficulty": "easy",
     "prompt": "What number comes next in the series?\n\n**3, 7, 15, 31, 63, ?**",
-    "options": ["95", "125", "127", "131"],
+    "options": [
+      "95",
+      "125",
+      "127",
+      "131"
+    ],
     "answer": 2,
     "explanation": "Each term is double the previous term plus 1: 63 x 2 + 1 = 127. (The differences 4, 8, 16, 32, 64 also double.)"
   },
@@ -127,8 +182,509 @@
     "topic": "capacity estimation",
     "difficulty": "hard",
     "prompt": "An API receives 1,200 requests per minute. Each request uses 250 ms of CPU time on one core. On average, how many CPU cores are kept fully busy?",
-    "options": ["3", "5", "20", "300"],
-    "answer": 1,
+    "options": [
+      "3",
+      "20",
+      "5",
+      "300"
+    ],
+    "answer": 2,
     "explanation": "1,200 requests/min = 20 requests/second. Each needs 0.25 core-seconds, so 20 x 0.25 = 5 core-seconds of work per second = 5 cores fully busy."
+  },
+  {
+    "id": "nr-013",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "percentages",
+    "difficulty": "easy",
+    "prompt": "A team has 40 engineers, and 35% of them work fully remotely. How many engineers work fully remotely?",
+    "options": [
+      "14",
+      "12",
+      "16",
+      "18"
+    ],
+    "answer": 0,
+    "explanation": "35% of 40 = 0.35 x 40 = 14."
+  },
+  {
+    "id": "nr-014",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "speed, distance and time",
+    "difficulty": "easy",
+    "prompt": "A train travels 180 km in 2.5 hours. What is its average speed?",
+    "options": [
+      "65 km/h",
+      "72 km/h",
+      "70 km/h",
+      "75 km/h"
+    ],
+    "answer": 1,
+    "explanation": "Average speed = distance / time = 180 / 2.5 = 72 km/h."
+  },
+  {
+    "id": "nr-015",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "number series",
+    "difficulty": "easy",
+    "prompt": "What number comes next?\n\n**2, 6, 18, 54, ?**",
+    "options": [
+      "108",
+      "148",
+      "216",
+      "162"
+    ],
+    "answer": 3,
+    "explanation": "Each term is multiplied by 3: 54 x 3 = 162."
+  },
+  {
+    "id": "nr-016",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "number series",
+    "difficulty": "easy",
+    "prompt": "What number comes next?\n\n**81, 72, 64, 57, 51, ?**",
+    "options": [
+      "44",
+      "45",
+      "46",
+      "47"
+    ],
+    "answer": 2,
+    "explanation": "The gaps shrink by one each time: -9, -8, -7, -6, so the next gap is -5. 51 - 5 = 46."
+  },
+  {
+    "id": "nr-017",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "percentage change",
+    "difficulty": "medium",
+    "prompt": "A product's price rises by 10% and then falls by 10%. What is the overall change from the original price?",
+    "options": [
+      "No change",
+      "1% decrease",
+      "1% increase",
+      "10% decrease"
+    ],
+    "answer": 1,
+    "explanation": "1.10 x 0.90 = 0.99, so the final price is 99% of the original: a 1% decrease. The second change applies to a bigger number."
+  },
+  {
+    "id": "nr-018",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "rates",
+    "difficulty": "medium",
+    "prompt": "A team has a backlog of 120 bugs. Each week it fixes 18 bugs, and 6 new bugs are reported. How many weeks until the backlog reaches zero?",
+    "options": [
+      "6.7 weeks",
+      "10 weeks",
+      "8 weeks",
+      "12 weeks"
+    ],
+    "answer": 1,
+    "explanation": "The backlog shrinks by 18 - 6 = 12 bugs a week. 120 / 12 = 10 weeks. Ignoring the new bugs gives the 6.7-week trap."
+  },
+  {
+    "id": "nr-019",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "currency conversion",
+    "difficulty": "medium",
+    "prompt": "The exchange rate is 1 USD = 1,550 NGN. A laptop costs $850. What is its price in naira?",
+    "options": [
+      "131,750 NGN",
+      "1,275,000 NGN",
+      "1,345,500 NGN",
+      "1,317,500 NGN"
+    ],
+    "answer": 3,
+    "explanation": "850 x 1,550 = 1,317,500 NGN."
+  },
+  {
+    "id": "nr-020",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "weighted averages",
+    "difficulty": "medium",
+    "prompt": "A course grade is 40% exam and 60% project. A student scores 70 on the exam and 85 on the project. What is their final grade?",
+    "options": [
+      "77.5",
+      "78",
+      "79",
+      "80"
+    ],
+    "answer": 2,
+    "explanation": "0.4 x 70 + 0.6 x 85 = 28 + 51 = 79. The simple average (77.5) ignores the weights."
+  },
+  {
+    "id": "nr-021",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "ratios",
+    "difficulty": "medium",
+    "prompt": "Three co-founders split a $36,000 profit in the ratio 2:3:4. How much is the largest share?",
+    "options": [
+      "$16,000",
+      "$12,000",
+      "$14,400",
+      "$18,000"
+    ],
+    "answer": 0,
+    "explanation": "2 + 3 + 4 = 9 parts; 36,000 / 9 = 4,000 per part. Largest share = 4 x 4,000 = $16,000."
+  },
+  {
+    "id": "nr-022",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "medium",
+    "prompt": "A product's sign-up funnel last month:\n\n| Stage | Users |\n|---|---|\n| Visited the site | 12,000 |\n| Created an account | 1,800 |\n| Became paying customers | 270 |\n\nWhat percentage of users who created an account became paying customers?",
+    "options": [
+      "1.5%",
+      "2.25%",
+      "15%",
+      "22.5%"
+    ],
+    "answer": 2,
+    "explanation": "270 / 1,800 = 0.15 = 15%. Watch which stage is the base of the percentage."
+  },
+  {
+    "id": "nr-023",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "hard",
+    "prompt": "A product's sign-up funnel last month:\n\n| Stage | Users |\n|---|---|\n| Visited the site | 12,000 |\n| Created an account | 1,800 |\n| Became paying customers | 270 |\n\nWhat percentage of site visitors became paying customers?",
+    "options": [
+      "2.25%",
+      "0.225%",
+      "15%",
+      "22.5%"
+    ],
+    "answer": 0,
+    "explanation": "270 / 12,000 = 0.0225 = 2.25%."
+  },
+  {
+    "id": "nr-024",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "time calculations",
+    "difficulty": "easy",
+    "prompt": "A meeting starts at 14:45 and lasts 1 hour 50 minutes. When does it end?",
+    "options": [
+      "15:35",
+      "16:25",
+      "16:45",
+      "16:35"
+    ],
+    "answer": 3,
+    "explanation": "14:45 + 1 h = 15:45; + 50 min = 16:35."
+  },
+  {
+    "id": "nr-025",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "averages",
+    "difficulty": "medium",
+    "prompt": "The average of five numbers is 18. Four of them are 12, 20, 15 and 25. What is the fifth number?",
+    "options": [
+      "16",
+      "20",
+      "22",
+      "18"
+    ],
+    "answer": 3,
+    "explanation": "The total is 5 x 18 = 90. The four known numbers sum to 72, so the fifth is 90 - 72 = 18."
+  },
+  {
+    "id": "nr-026",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "compound growth",
+    "difficulty": "hard",
+    "prompt": "$2,000 is invested at 5% interest per year, compounded annually. What is it worth after 2 years?",
+    "options": [
+      "$2,205",
+      "$2,100",
+      "$2,200",
+      "$2,210"
+    ],
+    "answer": 0,
+    "explanation": "2,000 x 1.05 x 1.05 = 2,000 x 1.1025 = $2,205. Simple interest would give $2,200."
+  },
+  {
+    "id": "nr-027",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "unit conversion",
+    "difficulty": "medium",
+    "prompt": "Each image is 2.5 MB. How much storage do 12,000 images need, in GB? (Use 1 GB = 1,000 MB.)",
+    "options": [
+      "3 GB",
+      "30 GB",
+      "25 GB",
+      "300 GB"
+    ],
+    "answer": 1,
+    "explanation": "12,000 x 2.5 MB = 30,000 MB = 30 GB."
+  },
+  {
+    "id": "nr-028",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "rates",
+    "difficulty": "medium",
+    "prompt": "3 identical servers process 900 jobs per hour in total. How many jobs can 5 such servers process in 30 minutes?",
+    "options": [
+      "600",
+      "750",
+      "900",
+      "1,500"
+    ],
+    "answer": 1,
+    "explanation": "Each server does 300 jobs/hour. 5 servers do 1,500/hour, so 750 in half an hour."
+  },
+  {
+    "id": "nr-029",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "percentage change",
+    "difficulty": "hard",
+    "prompt": "A website's conversion rate rose from 4% to 5%. By what percentage did the conversion rate increase?",
+    "options": [
+      "1%",
+      "25%",
+      "5%",
+      "20%"
+    ],
+    "answer": 1,
+    "explanation": "It rose by 1 percentage point, which is a 25% increase relative to 4% (1 / 4). Mixing up percentage points and percent is a common trap."
+  },
+  {
+    "id": "nr-030",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "medium",
+    "prompt": "A team's quarterly costs (in $ thousands):\n\n| Category | Q1 | Q2 |\n|---|---|---|\n| Cloud | 40 | 46 |\n| Salaries | 200 | 210 |\n| Tools | 10 | 9 |\n\nWhich category's cost grew the most in percentage terms from Q1 to Q2?",
+    "options": [
+      "Salaries",
+      "Tools",
+      "They all grew equally",
+      "Cloud"
+    ],
+    "answer": 3,
+    "explanation": "Cloud: +6/40 = +15%. Salaries: +10/200 = +5%. Tools: -10%. Salaries grew most in dollars, but Cloud grew most in percentage terms."
+  },
+  {
+    "id": "nr-031",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "hard",
+    "prompt": "A team's quarterly costs (in $ thousands):\n\n| Category | Q1 | Q2 |\n|---|---|---|\n| Cloud | 40 | 46 |\n| Salaries | 200 | 210 |\n| Tools | 10 | 9 |\n\nBy what percentage did total costs change from Q1 to Q2?",
+    "options": [
+      "5.0%",
+      "10.0%",
+      "6.0%",
+      "15.0%"
+    ],
+    "answer": 2,
+    "explanation": "Q1 total = 250, Q2 total = 265. (265 - 250) / 250 = 6.0%."
+  },
+  {
+    "id": "nr-032",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "medium",
+    "prompt": "A team's quarterly costs (in $ thousands):\n\n| Category | Q1 | Q2 |\n|---|---|---|\n| Cloud | 40 | 46 |\n| Salaries | 200 | 210 |\n| Tools | 10 | 9 |\n\nWhat share of Q2's total cost was spent on Cloud? (Nearest 0.1%.)",
+    "options": [
+      "17.4%",
+      "15.0%",
+      "18.4%",
+      "46.0%"
+    ],
+    "answer": 0,
+    "explanation": "Q2 total = 46 + 210 + 9 = 265. 46 / 265 = 17.4%."
+  },
+  {
+    "id": "nr-033",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "fractions and decimals",
+    "difficulty": "easy",
+    "prompt": "Which of these values is the largest?",
+    "options": [
+      "3/8",
+      "0.39",
+      "2/5",
+      "37%"
+    ],
+    "answer": 2,
+    "explanation": "3/8 = 0.375, 0.39, 37% = 0.37, 2/5 = 0.40. The largest is 2/5."
+  },
+  {
+    "id": "nr-034",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "work rates",
+    "difficulty": "medium",
+    "prompt": "Developer A can build a feature alone in 6 days. Developer B can build it alone in 3 days. Working together at the same rates, how long will it take?",
+    "options": [
+      "3 days",
+      "4.5 days",
+      "2 days",
+      "9 days"
+    ],
+    "answer": 2,
+    "explanation": "Together they do 1/6 + 1/3 = 1/2 of the feature per day, so 2 days."
+  },
+  {
+    "id": "nr-035",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "probability",
+    "difficulty": "hard",
+    "prompt": "Two independent servers each have a 2% chance of failing on a given day. What is the probability that both fail on the same day?",
+    "options": [
+      "0.4%",
+      "2%",
+      "4%",
+      "0.04%"
+    ],
+    "answer": 3,
+    "explanation": "Independent events multiply: 0.02 x 0.02 = 0.0004 = 0.04%."
+  },
+  {
+    "id": "nr-036",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "probability",
+    "difficulty": "hard",
+    "prompt": "Two independent servers each have a 2% chance of failing on a given day. What is the probability that at least one of them fails?",
+    "options": [
+      "2%",
+      "4%",
+      "0.04%",
+      "3.96%"
+    ],
+    "answer": 3,
+    "explanation": "P(at least one) = 1 - P(neither) = 1 - 0.98 x 0.98 = 1 - 0.9604 = 3.96%. Adding (4%) double-counts the case where both fail."
+  },
+  {
+    "id": "nr-037",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "discounts",
+    "difficulty": "easy",
+    "prompt": "A $200 item is reduced by 25%, and then a $20 coupon is applied. What is the final price?",
+    "options": [
+      "$125",
+      "$130",
+      "$140",
+      "$150"
+    ],
+    "answer": 1,
+    "explanation": "25% off $200 = $150. Then $150 - $20 = $130."
+  },
+  {
+    "id": "nr-038",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "comparing costs",
+    "difficulty": "medium",
+    "prompt": "Plan A costs $12 per month. Plan B costs $120 per year. How much do you save in a year by choosing Plan B?",
+    "options": [
+      "$12",
+      "$36",
+      "$24",
+      "$120"
+    ],
+    "answer": 2,
+    "explanation": "Plan A costs 12 x 12 = $144 a year. $144 - $120 = $24."
+  },
+  {
+    "id": "nr-039",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "average speed",
+    "difficulty": "hard",
+    "prompt": "A courier drives to a client at 60 km/h and returns along the same route at 40 km/h. What is the average speed for the round trip?",
+    "options": [
+      "45 km/h",
+      "48 km/h",
+      "50 km/h",
+      "52 km/h"
+    ],
+    "answer": 1,
+    "explanation": "Take a 120 km route: 2 h there + 3 h back = 5 h for 240 km, so 48 km/h. Averaging the speeds (50) is wrong because more time is spent at the slower speed."
+  },
+  {
+    "id": "nr-040",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "number series",
+    "difficulty": "hard",
+    "prompt": "What number comes next?\n\n**2, 3, 5, 9, 17, ?**",
+    "options": [
+      "33",
+      "25",
+      "31",
+      "35"
+    ],
+    "answer": 0,
+    "explanation": "Each term is double the previous term minus 1: 17 x 2 - 1 = 33. (The gaps 1, 2, 4, 8 also double.)"
+  },
+  {
+    "id": "nr-041",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "percentages of percentages",
+    "difficulty": "medium",
+    "prompt": "In a survey of 250 users, 60% use the mobile app. Of the mobile users, 30% use an iPhone. How many respondents use the app on an iPhone?",
+    "options": [
+      "45",
+      "75",
+      "90",
+      "150"
+    ],
+    "answer": 0,
+    "explanation": "Mobile users = 0.6 x 250 = 150. iPhone users = 0.3 x 150 = 45."
+  },
+  {
+    "id": "nr-042",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "break-even",
+    "difficulty": "hard",
+    "prompt": "A SaaS product has fixed costs of $9,000 per month. Each customer pays $50 per month and costs $20 per month to serve. How many customers are needed to break even?",
+    "options": [
+      "300",
+      "180",
+      "450",
+      "600"
+    ],
+    "answer": 0,
+    "explanation": "Each customer contributes 50 - 20 = $30. 9,000 / 30 = 300 customers."
+  },
+  {
+    "id": "nr-043",
+    "type": "mcq",
+    "category": "numerical_reasoning",
+    "topic": "data interpretation",
+    "difficulty": "medium",
+    "prompt": "Monthly sales were: January 120, February 150, March 135. What was the average month-on-month change?",
+    "options": [
+      "5",
+      "12.5",
+      "7.5",
+      "15"
+    ],
+    "answer": 2,
+    "explanation": "Changes: +30 (Jan to Feb) and -15 (Feb to Mar). Average = (30 - 15) / 2 = 7.5."
   }
 ]
