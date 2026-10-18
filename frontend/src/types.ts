@@ -3,6 +3,8 @@ export interface User {
   email: string
   name: string
   role: 'user' | 'admin'
+  /** False until the emailed code is entered; nothing else works before that. */
+  email_verified: boolean
 }
 
 export type AttemptMode = 'practice' | 'certification' | 'invite'

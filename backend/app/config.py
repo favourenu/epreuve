@@ -71,6 +71,12 @@ class Settings(BaseSettings):
 
     # Password reset links
     password_reset_minutes: int = 60
+    # Email confirmation codes: lifetime, wrong guesses allowed per code, the wait
+    # before another can be sent, and how many can be sent per account per day.
+    email_code_minutes: int = 15
+    email_code_max_attempts: int = 5
+    email_code_resend_seconds: int = 60
+    email_code_max_per_day: int = 10
     # Reset emails allowed per address (and per client IP) within the window.
     password_reset_max_requests: int = 3
     password_reset_window_seconds: int = 3600

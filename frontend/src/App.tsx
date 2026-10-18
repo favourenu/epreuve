@@ -15,6 +15,7 @@ import { ForgotPassword, ResetPassword } from './pages/PasswordPages'
 import { Results } from './pages/Results'
 import { TakeTest } from './pages/TakeTest'
 import { TestIntro } from './pages/TestIntro'
+import { VerifyEmail } from './pages/VerifyEmail'
 
 function UserMenu() {
   const { user, logout } = useAuth()
@@ -99,6 +100,8 @@ export default function App() {
       <Route path="/forgot-password" element={<GuestOnly><ForgotPassword /></GuestOnly>} />
       {/* Not guest-only: a signed-in user following a reset link should still be able to use it. */}
       <Route path="/reset-password" element={<ResetPassword />} />
+      {/* Signed in but not yet confirmed: RequireAuth and GuestOnly send people here. */}
+      <Route path="/verify-email" element={<VerifyEmail />} />
       {/* The test screen is full-focus, without navigation, like a real assessment. */}
       <Route path="/attempts/:attemptId" element={authed(<TakeTest />, false)} />
       <Route path="/dashboard" element={authed(<Dashboard />)} />

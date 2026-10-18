@@ -154,3 +154,37 @@ def invite_email(to: str, candidate_name: str, company: str, test_title: str, mi
 </body>
 </html>"""
     return Email(to=to, subject=f"{company} invited you to an assessment on Épreuve", html=body, text=text)
+
+
+def verification_email(to: str, name: str, code: str, minutes: int) -> Email:
+    first = name.split(" ")[0] if name.strip() else "there"
+    text = (
+        f"Hi {first},\n\n"
+        f"Your Épreuve confirmation code is: {code}\n\n"
+        f"Enter it on the sign-up page to finish creating your account. It expires in {minutes} minutes.\n\n"
+        "If you didn't sign up for Épreuve, you can ignore this email.\n\n"
+        "Épreuve"
+    )
+    body = f"""<!doctype html>
+<html lang="en">
+<body style="margin:0;padding:0;background:#f6f2ea;font-family:Arial,Helvetica,sans-serif;color:#1c1b18;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f2ea;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#fffdf8;border:1px solid #e2dbcc;border-radius:14px;">
+        <tr><td style="padding:28px 28px 8px;">
+          <span style="display:inline-block;background:#145c4a;color:#fffdf8;font-weight:bold;border-radius:8px;padding:4px 10px;font-size:18px;">É</span>
+          <span style="font-family:Georgia,serif;font-size:20px;font-weight:bold;vertical-align:middle;margin-left:6px;">Épreuve</span>
+        </td></tr>
+        <tr><td style="padding:8px 28px 0;">
+          <h1 style="font-family:Georgia,serif;font-size:22px;margin:12px 0;">Confirm your email</h1>
+          <p style="font-size:16px;line-height:1.6;margin:0 0 16px;">Hi {html.escape(first)}, enter this code to finish creating your Épreuve account:</p>
+          <p style="margin:20px 0;font-family:Courier,monospace;font-size:34px;font-weight:bold;letter-spacing:8px;background:#f6f2ea;border-radius:10px;padding:14px 0;text-align:center;">{html.escape(code)}</p>
+          <p style="font-size:14px;line-height:1.6;color:#5f594d;margin:0 0 16px;">It expires in {minutes} minutes. Never share it: Épreuve will never ask you for it.</p>
+          <p style="font-size:14px;line-height:1.6;color:#5f594d;margin:0 0 28px;">If you didn't sign up for Épreuve, ignore this email.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+    return Email(to=to, subject=f"{code} is your Épreuve confirmation code", html=body, text=text)

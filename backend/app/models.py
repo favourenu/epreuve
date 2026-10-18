@@ -50,10 +50,17 @@ class User(Base):
     # Practice attempts allowed per rolling 24 hours: None = platform default,
     # UNLIMITED (-1) = no limit, 0 = none at all. Set by admins.
     attempt_limit: Mapped[int | None] = mapped_column(Integer)
+    # Set once the user enters the code we emailed (or completes a password reset).
+    # Until then the account can only confirm its email or log out.
+    email_verified_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
 
     @property
     def is_admin(self) -> bool:
         return self.role == Role.ADMIN
+
+    @property
+    def email_verified(self) -> bool:
+        return self.email_verified_at is not None
 
 
 class UserSession(Base):
@@ -68,6 +75,20 @@ class UserSession(Base):
     expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
 
     user: Mapped[User] = relationship()
+
+
+class EmailVerificationCode(Base):
+    """A 6-digit code emailed to confirm an address. Only a keyed hash is stored."""
+
+    __tablename__ = "email_verification_codes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    code_hash: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
+    failed_attempts: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
+    used_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
 
 
 class PasswordResetToken(Base):

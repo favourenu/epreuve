@@ -63,7 +63,7 @@ def test_migrate_is_safe_to_run_on_every_startup():
     migrate(engine)
     migrate(engine)
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0004"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0005"
 
 
 def test_database_from_before_migrations_keeps_its_data():
@@ -85,7 +85,7 @@ def test_database_from_before_migrations_keeps_its_data():
     uid = "u1"
     migrate(engine)
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0004"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0005"
         assert conn.execute(text("SELECT id FROM users")).scalar() == uid
     assert _schema_diff(engine) == []
 
@@ -143,4 +143,6 @@ def test_upgrading_keeps_every_row_in_child_tables():
         assert conn.execute(text("SELECT count(*) FROM attempt_items")).scalar() == 2
         assert conn.execute(text("SELECT count(*) FROM sessions")).scalar() == 1
         assert conn.execute(text("SELECT mode FROM attempts")).scalar() == "practice"
+        # Accounts from before email confirmation existed count as confirmed.
+        assert conn.execute(text("SELECT email_verified_at FROM users")).scalar() is not None
         assert conn.execute(text("PRAGMA foreign_keys")).scalar() == 1  # switched back on

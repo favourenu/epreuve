@@ -14,6 +14,8 @@ interface AuthState {
   logout: () => Promise<void>
   /** Set a new password with a reset token; signs in on success. */
   completeReset: (token: string, password: string) => Promise<void>
+  /** Confirm the email with the emailed code. */
+  confirmEmail: (code: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -50,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async (token: string, password: string) => signedIn(await api.resetPassword(token, password)),
     [signedIn],
   )
+  const confirmEmail = useCallback(async (code: string) => setUser(await api.verifyEmail(code)), [])
   const logout = useCallback(async () => {
     try {
       await api.logout()
@@ -60,8 +63,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const value = useMemo(
-    () => ({ user, loggedOut, login, signup, logout, completeReset }),
-    [user, loggedOut, login, signup, logout, completeReset],
+    () => ({ user, loggedOut, login, signup, logout, completeReset, confirmEmail }),
+    [user, loggedOut, login, signup, logout, completeReset, confirmEmail],
   )
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
@@ -92,7 +95,13 @@ export function RequireAuth({ children }: { children: ReactNode }) {
     const next = location.pathname + location.search
     return <Navigate to={`/login?next=${encodeURIComponent(next)}`} replace />
   }
+  if (!user.email_verified) return <Navigate to={verifyPath(location.pathname + location.search)} replace />
   return <>{children}</>
+}
+
+/** The confirm-your-email page, then on to `next`. */
+function verifyPath(next: string | null) {
+  return `/verify-email?next=${encodeURIComponent(safeNext(next))}`
 }
 
 /** For pages only logged-out visitors should see (landing, log in, sign up). */
@@ -102,7 +111,9 @@ export function GuestOnly({ children }: { children: ReactNode }) {
   if (user === undefined) return <SessionCheck />
   // Signing in re-renders this before the page's own redirect runs, so honour ?next= here
   // too (e.g. back to an invitation), or the user would always land on the dashboard.
-  if (user) return <Navigate to={safeNext(new URLSearchParams(location.search).get('next'))} replace />
+  const next = new URLSearchParams(location.search).get('next')
+  if (user && !user.email_verified) return <Navigate to={verifyPath(next)} replace />
+  if (user) return <Navigate to={safeNext(next)} replace />
   return <>{children}</>
 }
 

@@ -6,7 +6,7 @@ from app.config import get_settings
 from app.db import SessionLocal
 from app.main import app
 from app.models import User, UserSession, utcnow
-from tests.conftest import PASSWORD
+from tests.conftest import PASSWORD, latest_code
 
 COOKIE = get_settings().session_cookie_name
 
@@ -49,10 +49,18 @@ def test_session_token_is_not_stored_in_plain_text(anon):
     assert token not in hashes
 
 
-def test_duplicate_email_is_rejected_case_insensitively(anon):
+def test_duplicate_email_is_rejected_case_insensitively(anon, outbox):
     assert signup(anon, email="dupe@example.com").status_code == 201
+    anon.post("/api/auth/email/verify", json={"code": latest_code(outbox, "dupe@example.com")})
     r = signup(anon, email="DUPE@example.com")
     assert r.status_code == 409
+
+
+def test_unconfirmed_signup_can_be_replaced_by_the_inbox_owner(make_client, outbox):
+    squatter = make_client("taken@example.com", confirm=False)
+    owner = make_client("taken@example.com")
+    assert owner.get("/api/auth/me").json()["email_verified"] is True
+    assert squatter.get("/api/auth/me").status_code == 401  # the unconfirmed account is gone
 
 
 def test_signup_validates_input(anon):

@@ -79,6 +79,9 @@ export const api = {
   signup: (name: string, email: string, password: string) =>
     post<User>('/api/auth/signup', { name, email, password }),
   logout: () => post<void>('/api/auth/logout'),
+  verifyEmail: (code: string) => post<User>('/api/auth/email/verify', { code }),
+  resendCode: () => post<{ detail: string; resend_after_seconds: number }>('/api/auth/email/resend'),
+  emailStatus: () => request<{ email_verified: boolean; resend_after_seconds: number }>('/api/auth/email/status'),
   forgotPassword: (email: string) => post<{ detail: string }>('/api/auth/password/forgot', { email }),
   checkResetToken: (token: string) => post<{ email: string }>('/api/auth/password/reset/check', { token }),
   resetPassword: (token: string, password: string) => post<User>('/api/auth/password/reset', { token, password }),

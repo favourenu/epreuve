@@ -1,4 +1,5 @@
 import os
+import re
 import tempfile
 from pathlib import Path
 
@@ -93,18 +94,28 @@ def anon(ai):
         yield c
 
 
+def latest_code(outbox, email: str) -> str:
+    """The confirmation code in the newest email sent to this address."""
+    mail = next(m for m in reversed(outbox.sent) if m.to == email and "confirmation code" in m.subject)
+    return re.match(r"(\d{6}) ", mail.subject).group(1)
+
+
 @pytest.fixture
-def make_client(ai):
-    """Factory: a new client signed in as a brand-new user."""
+def make_client(ai, outbox):
+    """Factory: a new client signed in as a brand-new user with a confirmed email."""
     clients = []
 
-    def make(email: str | None = None) -> TestClient:
+    def make(email: str | None = None, confirm: bool = True) -> TestClient:
         c = TestClient(app)
         c.__enter__()
         clients.append(c)
         email = email or f"user{next(_ids)}@example.com"
         r = c.post("/api/auth/signup", json={"email": email, "password": PASSWORD, "name": "Test User"})
         assert r.status_code == 201, r.text
+        if confirm:
+            r = c.post("/api/auth/email/verify", json={"code": latest_code(outbox, email)})
+            assert r.status_code == 200 and r.json()["email_verified"], r.text
+            outbox.sent.clear()  # tests start with an empty outbox
         c.email = email
         return c
 

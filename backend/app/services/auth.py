@@ -58,10 +58,11 @@ class AccountSuspended(AuthError):
 
 
 def sync_admin_role(db: Session, user: User) -> None:
-    """Promote accounts listed in ADMIN_EMAILS. Never demotes: admins can also be
-    promoted from the dashboard."""
+    """Promote accounts listed in ADMIN_EMAILS once they have confirmed the address
+    (so nobody can claim admin by signing up with it first). Never demotes: admins
+    can also be promoted from the dashboard."""
     admins = {normalize_email(e) for e in get_settings().admin_emails}
-    if user.email in admins and user.role != Role.ADMIN:
+    if user.email in admins and user.role != Role.ADMIN and user.email_verified:
         user.role = Role.ADMIN
         db.commit()
 
@@ -153,8 +154,14 @@ def get_reset_throttle() -> LoginThrottle:
 def signup(db: Session, email: str, password: str, name: str) -> User:
     email = normalize_email(email)
     validate_password(password)
-    if db.scalar(select(User.id).where(User.email == email)):
-        raise EmailTaken("An account with this email already exists. Log in instead.")
+    existing = db.scalar(select(User).where(User.email == email))
+    if existing is not None:
+        if existing.email_verified:
+            raise EmailTaken("An account with this email already exists. Log in instead.")
+        # Never confirmed, so it can't have been used: let whoever owns the inbox start
+        # again (otherwise anyone could block an address by signing up with it).
+        db.delete(existing)
+        db.flush()
     is_first_user = db.scalar(select(User.id).limit(1)) is None
     user = User(email=email, name=name.strip(), password_hash=_hasher.hash(password))
     db.add(user)
@@ -280,6 +287,8 @@ def reset_password(db: Session, token: str, new_password: str) -> User:
     validate_password(new_password)
     user = reset.user
     user.password_hash = _hasher.hash(new_password)
+    # The link arrived in their inbox, which also confirms the address.
+    user.email_verified_at = user.email_verified_at or utcnow()
     reset.used_at = utcnow()
     db.execute(delete(UserSession).where(UserSession.user_id == user.id))
     db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id, PasswordResetToken.id != reset.id))

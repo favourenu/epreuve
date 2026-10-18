@@ -696,3 +696,7 @@ details summary { cursor: pointer; font-weight: 700; margin: 0.6rem 0; min-heigh
 .limit-form .field { margin: 0; }
 .limit-form input { width: 8rem; }
 .limit-form .btn { margin-bottom: 0.15rem; }
+
+/* ---------- Email confirmation ---------- */
+.field .code-input { font-family: var(--font-mono, ui-monospace, monospace); font-size: 1.6rem; letter-spacing: 0.4em; text-align: center; font-variant-numeric: tabular-nums; }
+.verify-actions { display: flex; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
