@@ -1,0 +1,42 @@
+# Render Blueprint: one free web service that serves the API and the built React app.
+# The database is Neon's free Postgres (see README, "Deploying for free").
+# Values marked `sync: false` are asked for once, when the Blueprint is created.
+services:
+  - type: web
+    name: epreuve
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: pip install -r backend/requirements.txt && cd frontend && npm ci && npm run build
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: NODE_VERSION
+        value: 22.17.1
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: APP_BASE_URL
+        value: https://epreuve.site
+      - key: CORS_ORIGINS
+        value: '["https://epreuve.site"]'
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: OLLAMA_ENABLED
+        value: "false"
+      - key: ADMIN_EMAILS
+        sync: false
+      - key: EMAIL_FROM
+        value: Épreuve <noreply@epreuve.site>
+      - key: RESEND_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: PAYSTACK_SECRET_KEY
+        sync: false

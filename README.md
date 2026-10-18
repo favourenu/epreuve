@@ -146,10 +146,8 @@ Audit hooks raise the bar a lot but aren't a perfect boundary (CPython's docs sa
 
 ## Deploying for free (Render + Neon)
 
-Not yet tried on a live Render service; these are the intended settings.
-
 1. **Database:** create a free Postgres project on [Neon](https://neon.tech) (its free tier doesn't expire, unlike Render's free Postgres) and copy the connection string.
-2. **Web service:** on [Render](https://render.com), create a free *Web Service* from this repo:
+2. **Web service:** on [Render](https://render.com), choose *New → Blueprint* and pick this repo. [render.yaml](render.yaml) sets up a free web service with the settings below and asks for the secrets (`DATABASE_URL`, `ADMIN_EMAILS`, and the Resend, AI and Paystack keys). To set it up by hand instead, create a free *Web Service* with:
    - Build command: `pip install -r backend/requirements.txt && cd frontend && npm ci && npm run build`
    - Start command: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"`
    - Environment: `DATABASE_URL` (from Neon), `SECRET_KEY`, `APP_BASE_URL=https://epreuve.site`, `CORS_ORIGINS=["https://epreuve.site"]`, `SESSION_COOKIE_SECURE=true`, `RESEND_API_KEY`, `ADMIN_EMAILS`, `PAYSTACK_SECRET_KEY`, your AI keys, and `OLLAMA_ENABLED=false`.
