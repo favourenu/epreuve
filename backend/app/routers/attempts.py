@@ -22,7 +22,7 @@ from app.schemas import (
     StartAttemptRequest,
 )
 from app.services import attempts as svc
-from app.services import integrity
+from app.services import integrity, limits
 from app.services.certification import certificate_out
 from app.services.ai.service import AIService
 
@@ -145,12 +145,18 @@ def start(body: StartAttemptRequest, response: Response, ctx: _Ctx = Depends(), 
     if body.mode == AttemptMode.CERTIFICATION and not body.agree_to_rules:
         raise HTTPException(400, "Please confirm the certification rules before starting.")
     try:
-        attempt, created = svc.start_attempt(ctx.db, bank, body.test_id, ctx.user.id, mode=body.mode)
+        attempt, created = svc.start_attempt(ctx.db, bank, body.test_id, ctx.user.id, mode=body.mode, user=ctx.user)
     except svc.AttemptError as exc:
         _raise(exc)
     if not created:
         response.status_code = 200
     return _state(attempt)
+
+
+@router.get("/quota")
+def practice_quota(ctx: _Ctx = Depends()):
+    """How many practice attempts the user has left in the rolling 24-hour window."""
+    return limits.quota(ctx.db, ctx.user)
 
 
 @router.get("", response_model=list[AttemptListItem])

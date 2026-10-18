@@ -1,7 +1,8 @@
 import { api } from '../../api'
-import type { AttemptListItem, AttemptMode, AttemptReview, Certificate, CertificateStatus } from '../../types'
+import type { AttemptListItem, AttemptMode, AttemptReview, Certificate, CertificateStatus, Quota } from '../../types'
 
 export type Risk = 'none' | 'low' | 'high'
+export type ReviewAction = 'approve' | 'reject' | 'revoke' | 'reinstate' | 'waive'
 
 export interface AdminUser {
   id: string
@@ -10,6 +11,10 @@ export interface AdminUser {
   role: 'user' | 'admin'
   disabled: boolean
   created_at: string
+  /** null = platform default, -1 = unlimited, otherwise practice attempts per 24 hours. */
+  attempt_limit: number | null
+  /** What applies now; null = unlimited. */
+  effective_limit: number | null
 }
 
 export interface AdminUserRow extends AdminUser {
@@ -49,6 +54,9 @@ export interface Overview {
   attempts_in_progress: number
   certificates_issued: number
   certificates_pending_review: number
+  certificates_awaiting_payment: number
+  revenue_kobo: number
+  payments: number
   invites_open: number
   daily: { date: string; started: number; completed: number }[]
   by_test: { test_id: string; title: string; attempts: number; average_percent: number }[]
@@ -101,15 +109,15 @@ export const adminApi = {
   users: (q: string, limit: number, offset: number) =>
     get<{ total: number; users: AdminUserRow[] }>(`/users${qs({ q, limit, offset })}`),
   user: (id: string) =>
-    get<{ user: AdminUser; attempts: AdminAttemptRow[]; certificates: Certificate[] }>(`/users/${id}`),
-  updateUser: (id: string, patch: { role?: 'user' | 'admin'; disabled?: boolean }) =>
+    get<{ user: AdminUser; quota: Quota; attempts: AdminAttemptRow[]; certificates: Certificate[] }>(`/users/${id}`),
+  updateUser: (id: string, patch: { role?: 'user' | 'admin'; disabled?: boolean; attempt_limit?: number | null }) =>
     send<AdminUser>('PATCH', `/users/${id}`, patch),
   attempts: (f: { mode?: AttemptMode | ''; status?: string; risk?: 'high' | ''; test_id?: string; limit: number; offset: number }) =>
     get<{ total: number; attempts: AdminAttemptRow[] }>(`/attempts${qs(f)}`),
   attempt: (id: string) => get<AdminAttemptDetail>(`/attempts/${id}`),
   leaderboard: (f: { test_id?: string; period: string; mode: string }) => get<LeaderRow[]>(`/leaderboard${qs(f)}`),
   certificates: (status?: CertificateStatus | '') => get<AdminCertificate[]>(`/certificates${qs({ status })}`),
-  reviewCertificate: (id: string, action: 'approve' | 'reject' | 'revoke' | 'reinstate', note?: string) =>
+  reviewCertificate: (id: string, action: ReviewAction, note?: string) =>
     send<Certificate>('POST', `/certificates/${id}/review`, { action, note }),
   invites: (company?: string) => get<InviteRow[]>(`/invites${qs({ company })}`),
   createInvite: (body: {

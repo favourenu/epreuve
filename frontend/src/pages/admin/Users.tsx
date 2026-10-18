@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { Card, EmptyState, ErrorBox, ScoreBadge, Spinner } from '../../components/ui'
 import { formatDate } from '../../format'
 import { useAsync } from '../../hooks'
-import { adminApi } from './adminApi'
+import { adminApi, type AdminUser } from './adminApi'
+import type { Quota } from '../../types'
 import { AttemptsTable, Pager } from './shared'
 
 const PAGE = 25
@@ -147,6 +148,8 @@ export function UserDetail() {
         {actionError && <ErrorBox message={actionError} />}
       </Card>
 
+      <PracticeLimit user={user} quota={data.quota} onSaved={reload} />
+
       <Card title={`Attempts (${data.attempts.length})`}>
         <AttemptsTable rows={data.attempts} showUser={false} />
       </Card>
@@ -166,5 +169,82 @@ export function UserDetail() {
         )}
       </Card>
     </div>
+  )
+}
+
+type LimitChoice = 'default' | 'custom' | 'unlimited'
+
+/** Admin control for one user's daily practice allowance. */
+function PracticeLimit({ user, quota, onSaved }: { user: AdminUser; quota: Quota; onSaved: () => void }) {
+  const initial: LimitChoice = user.attempt_limit == null ? 'default' : user.attempt_limit === -1 ? 'unlimited' : 'custom'
+  const [choice, setChoice] = useState<LimitChoice>(initial)
+  const [custom, setCustom] = useState(String(user.attempt_limit != null && user.attempt_limit >= 0 ? user.attempt_limit : 10))
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
+
+  const value = choice === 'default' ? null : choice === 'unlimited' ? -1 : Number(custom)
+  const invalid = choice === 'custom' && (!Number.isInteger(value) || (value as number) < 0 || (value as number) > 1000)
+  const unchanged = value === user.attempt_limit
+
+  async function save(e: FormEvent) {
+    e.preventDefault()
+    setBusy(true)
+    setError(null)
+    setSaved(false)
+    try {
+      await adminApi.updateUser(user.id, { attempt_limit: value })
+      setSaved(true)
+      onSaved()
+    } catch (err) {
+      setError((err as Error).message)
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  return (
+    <Card title="Practice allowance">
+      <p className="muted small">
+        {user.role === 'admin'
+          ? 'Admins are never limited.'
+          : quota.limit == null
+            ? `Unlimited. ${quota.used} practice attempt${quota.used === 1 ? '' : 's'} in the last 24 hours.`
+            : `${quota.used} of ${quota.limit} practice attempts used in the last 24 hours${
+                quota.resets_at ? `; the next frees up ${formatDate(quota.resets_at)}` : ''
+              }.`}{' '}
+        Certification and company assessments are not counted.
+      </p>
+      <form className="limit-form" onSubmit={save}>
+        <div className="field">
+          <label htmlFor="limit-choice">Allowance</label>
+          <select id="limit-choice" value={choice} onChange={(e) => setChoice(e.target.value as LimitChoice)}>
+            <option value="default">Platform default</option>
+            <option value="custom">Custom per day</option>
+            <option value="unlimited">Unlimited</option>
+          </select>
+        </div>
+        {choice === 'custom' && (
+          <div className="field">
+            <label htmlFor="limit-value">Attempts per 24 hours</label>
+            <input
+              id="limit-value"
+              type="number"
+              min={0}
+              max={1000}
+              inputMode="numeric"
+              value={custom}
+              onChange={(e) => setCustom(e.target.value)}
+              aria-invalid={invalid}
+            />
+          </div>
+        )}
+        <button className="btn btn-sm btn-primary" disabled={busy || invalid || unchanged}>
+          {busy ? 'Saving...' : 'Save'}
+        </button>
+        {saved && unchanged && <span className="small muted" role="status">Saved</span>}
+      </form>
+      {error && <ErrorBox message={error} />}
+    </Card>
   )
 }

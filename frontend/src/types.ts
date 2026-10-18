@@ -6,7 +6,7 @@ export interface User {
 }
 
 export type AttemptMode = 'practice' | 'certification' | 'invite'
-export type CertificateStatus = 'issued' | 'under_review' | 'rejected' | 'revoked'
+export type CertificateStatus = 'issued' | 'under_review' | 'awaiting_payment' | 'rejected' | 'revoked'
 
 export interface Certificate {
   id: string
@@ -20,6 +20,17 @@ export interface Certificate {
   created_at: string
   issued_at: string | null
   review_note?: string | null
+  /** The fee to claim it, in kobo, while it is awaiting payment. */
+  price_kobo?: number | null
+}
+
+/** Practice attempts left in the rolling 24-hour window. limit null = unlimited. */
+export interface Quota {
+  limit: number | null
+  used: number
+  remaining: number | null
+  resets_at: string | null
+  custom: boolean
 }
 
 export interface PublicCertificate {

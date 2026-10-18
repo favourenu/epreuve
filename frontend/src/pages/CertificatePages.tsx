@@ -1,18 +1,56 @@
-import { useState, type FormEvent } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { ApiError, api } from '../api'
 import { AuthShell } from '../components/AuthShell'
 import { Logo, LogoMark } from '../components/Logo'
 import { Card, EmptyState, ErrorBox, Spinner } from '../components/ui'
-import { formatDay } from '../format'
+import { formatDay, formatNaira } from '../format'
 import { useAsync } from '../hooks'
 import type { Certificate } from '../types'
 
 const STATUS_TEXT: Record<Certificate['status'], string> = {
   issued: 'Issued',
   under_review: 'Under review',
+  awaiting_payment: 'Ready to claim',
   rejected: 'Not approved',
   revoked: 'Revoked',
+}
+
+const BADGE: Record<Certificate['status'], string> = {
+  issued: 'badge-good',
+  under_review: 'badge-ok',
+  awaiting_payment: 'badge-ok',
+  rejected: 'badge-bad',
+  revoked: 'badge-bad',
+}
+
+/** Sends the user to Paystack to pay the certificate fee. */
+export function ClaimButton({ cert, className = 'btn btn-sm btn-primary' }: { cert: Certificate; className?: string }) {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  async function claim() {
+    setBusy(true)
+    setError(null)
+    try {
+      const { authorization_url } = await api.payForCertificate(cert.id)
+      window.location.assign(authorization_url)
+    } catch (e) {
+      setError((e as Error).message)
+      setBusy(false)
+    }
+  }
+  return (
+    <>
+      <button className={className} onClick={claim} disabled={busy}>
+        {busy ? 'Opening checkout...' : `Claim for ${formatNaira(cert.price_kobo ?? 0)}`}
+      </button>
+      {error && (
+        <span className="small error-text" role="alert">
+          {error}
+        </span>
+      )}
+    </>
+  )
 }
 
 function verifyUrl(code: string) {
@@ -87,10 +125,16 @@ export function MyCertificates() {
                     Your attempt had integrity flags, so a person is reviewing it before the certificate is issued.
                   </p>
                 )}
+                {c.status === 'awaiting_payment' && (
+                  <p className="small">
+                    You passed. Pay the one-time {formatNaira(c.price_kobo ?? 0)} fee to issue it with a public link
+                    employers can verify.
+                  </p>
+                )}
                 {c.review_note && c.status !== 'issued' && <p className="small">Reviewer note: {c.review_note}</p>}
               </div>
               <div className="cert-row-actions">
-                <span className={`badge ${c.status === 'issued' ? 'badge-good' : c.status === 'under_review' ? 'badge-ok' : 'badge-bad'}`}>
+                <span className={`badge ${BADGE[c.status]}`}>
                   {STATUS_TEXT[c.status]}
                 </span>
                 {c.status === 'issued' && (
@@ -101,6 +145,7 @@ export function MyCertificates() {
                     <CopyLink code={c.code} />
                   </>
                 )}
+                {c.status === 'awaiting_payment' && <ClaimButton cert={c} />}
               </div>
             </article>
           ))}
@@ -217,5 +262,74 @@ export function VerifyLookup() {
     <AuthShell title="Verify a certificate" intro="Enter the code printed on an Épreuve certificate.">
       <VerifyForm />
     </AuthShell>
+  )
+}
+
+/** Paystack sends the user back here with ?reference=... after checkout. */
+export function ClaimedPage() {
+  const [params] = useSearchParams()
+  const reference = params.get('reference') ?? params.get('trxref') ?? ''
+  const [cert, setCert] = useState<Certificate | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const asked = useRef(false)
+
+  useEffect(() => {
+    if (asked.current) return // React StrictMode runs effects twice in development
+    asked.current = true
+    if (!reference) {
+      setError('This page needs a payment reference.')
+      return
+    }
+    api.verifyPayment(reference).then(setCert, (e) => setError((e as Error).message))
+  }, [reference])
+
+  if (error) {
+    return (
+      <div className="narrow stack">
+        <ErrorBox message={error} />
+        <Link to="/certificates" className="btn">
+          Back to certificates
+        </Link>
+      </div>
+    )
+  }
+  if (!cert) return <Spinner />
+  if (cert.status === 'issued') {
+    return (
+      <div className="narrow">
+        <Card>
+          <EmptyState
+            icon="★"
+            title="Your certificate is issued"
+            action={
+              <Link to={`/verify/${cert.code}`} className="btn btn-primary">
+                View certificate
+              </Link>
+            }
+          >
+            Thank you. {cert.test_title} ({cert.level === 'distinction' ? 'distinction' : 'pass'}) is now public at its
+            verification link, and you can print or save it as a PDF.
+          </EmptyState>
+        </Card>
+      </div>
+    )
+  }
+  return (
+    <div className="narrow">
+      <Card>
+        <EmptyState
+          icon="…"
+          title="We haven't received the payment yet"
+          action={
+            <Link to="/certificates" className="btn btn-primary">
+              Back to certificates
+            </Link>
+          }
+        >
+          If you completed the payment, it can take a minute to confirm; the certificate is issued automatically when
+          it does. If you cancelled, you can claim it again from your certificates.
+        </EmptyState>
+      </Card>
+    </div>
   )
 }

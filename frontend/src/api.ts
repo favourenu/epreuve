@@ -4,6 +4,7 @@ import type {
   IntegrityEventIn,
   InviteView,
   PublicCertificate,
+  Quota,
   User,
   AttemptListItem,
   AttemptReview,
@@ -96,6 +97,10 @@ export const api = {
       keepalive: true, // still delivered if the page is closing
     }),
   certificates: () => request<Certificate[]>('/api/certificates'),
+  quota: () => request<Quota>('/api/attempts/quota'),
+  payForCertificate: (id: string) => post<{ authorization_url: string }>(`/api/certificates/${id}/pay`),
+  verifyPayment: (reference: string) =>
+    post<Certificate>(`/api/payments/${encodeURIComponent(reference)}/verify`),
   verifyCertificate: (code: string) => request<PublicCertificate>(`/api/public/certificates/${encodeURIComponent(code)}`),
   invite: (token: string) => request<InviteView>(`/api/invites/${encodeURIComponent(token)}`),
   startInvite: (token: string) =>

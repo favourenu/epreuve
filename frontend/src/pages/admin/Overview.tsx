@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom'
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { Card, ErrorBox, ScoreBadge, Spinner } from '../../components/ui'
+import { formatNaira } from '../../format'
 import { useAsync } from '../../hooks'
 import { adminApi } from './adminApi'
 
-function Stat({ label, value, to }: { label: string; value: number; to?: string }) {
+function Stat({ label, value, to }: { label: string; value: number | string; to?: string }) {
   const body = (
     <>
       <span className="stat-label">{label}</span>
@@ -37,6 +38,8 @@ export function OverviewPage() {
         <Stat label="Completed this week" value={data.attempts_completed_7d} />
         <Stat label="Certificates issued" value={data.certificates_issued} to="/admin/certificates" />
         <Stat label="Awaiting review" value={data.certificates_pending_review} to="/admin/certificates" />
+        <Stat label="Awaiting payment" value={data.certificates_awaiting_payment} />
+        <Stat label={`Revenue (${data.payments} paid)`} value={formatNaira(data.revenue_kobo)} />
         <Stat label="Open invites" value={data.invites_open} to="/admin/invites" />
       </div>
 

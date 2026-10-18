@@ -29,7 +29,7 @@ from app.models import (
 )
 from app.question_bank import QuestionBank, get_bank
 from app.routers.attempts import _list_item, _percent, build_review
-from app.services import certification, integrity, invites
+from app.services import certification, integrity, invites, limits, payments
 from app.services.email import EmailSender, get_email_sender, invite_email
 
 router = APIRouter(prefix="/api/admin", tags=["admin"], dependencies=[Depends(get_admin_user)])
@@ -47,6 +47,9 @@ def _user_row(u: User) -> dict:
         "role": u.role,
         "disabled": u.disabled_at is not None,
         "created_at": u.created_at,
+        # None = platform default, -1 = unlimited, otherwise attempts per 24 hours.
+        "attempt_limit": u.attempt_limit,
+        "effective_limit": limits.effective_limit(u),
     }
 
 
@@ -104,6 +107,10 @@ def overview(db: Session = Depends(get_db), bank: QuestionBank = Depends(get_ban
             select(func.count(Certificate.id)).where(Certificate.status == CertificateStatus.UNDER_REVIEW)
         ),
         "invites_open": open_invites,
+        "certificates_awaiting_payment": count(
+            select(func.count(Certificate.id)).where(Certificate.status == CertificateStatus.AWAITING_PAYMENT)
+        ),
+        **payments.revenue(db),
         "daily": [{"date": d, **v} for d, v in daily.items()],
         "by_test": sorted(
             (
@@ -178,6 +185,7 @@ def user_detail(user_id: str, db: Session = Depends(get_db)):
     certs = db.scalars(select(Certificate).where(Certificate.user_id == user_id).order_by(Certificate.created_at.desc()))
     return {
         "user": _user_row(user),
+        "quota": limits.quota(db, user),
         "attempts": [_attempt_row(a, summaries.get(a.id)) for a in attempts],
         "certificates": [certification.certificate_out(c) for c in certs],
     }
@@ -186,6 +194,8 @@ def user_detail(user_id: str, db: Session = Depends(get_db)):
 class UserUpdate(BaseModel):
     role: Literal["user", "admin"] | None = None
     disabled: bool | None = None
+    # Send null to return to the platform default, -1 for unlimited.
+    attempt_limit: int | None = Field(default=None, ge=-1, le=1000)
 
 
 @router.patch("/users/{user_id}")
@@ -193,8 +203,10 @@ def update_user(user_id: str, body: UserUpdate, db: Session = Depends(get_db), a
     user = db.get(User, user_id)
     if user is None:
         raise HTTPException(404, "User not found")
-    if user.id == admin.id:
+    if user.id == admin.id and ({"role", "disabled"} & body.model_fields_set):
         raise HTTPException(409, "You can't change your own role or suspend yourself.")
+    if "attempt_limit" in body.model_fields_set:
+        user.attempt_limit = body.attempt_limit
     if body.role is not None:
         user.role = Role.ADMIN if body.role == "admin" else Role.USER
     if body.disabled is not None:
@@ -307,7 +319,7 @@ def leaderboard(
 
 @router.get("/certificates")
 def list_certificates(
-    status: Literal["issued", "under_review", "rejected", "revoked"] | None = None,
+    status: Literal["issued", "under_review", "awaiting_payment", "rejected", "revoked"] | None = None,
     db: Session = Depends(get_db),
 ):
     query = select(Certificate).order_by(Certificate.created_at.desc())
@@ -326,7 +338,7 @@ def list_certificates(
 
 
 class CertificateReview(BaseModel):
-    action: Literal["approve", "reject", "revoke", "reinstate"]
+    action: Literal["approve", "reject", "revoke", "reinstate", "waive"]
     note: str | None = Field(default=None, max_length=1000)
 
 

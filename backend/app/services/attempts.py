@@ -15,11 +15,12 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import get_settings
-from app.models import Attempt, AttemptItem, AttemptMode, AttemptStatus, FeedbackStatus, utcnow
+from app.models import Attempt, AttemptItem, AttemptMode, AttemptStatus, FeedbackStatus, User, utcnow
 from app.question_bank import CodeQuestion, QuestionBank, public_question, question_from_snapshot
 from app.services import grading
 from app.services.ai.service import AIService, AIUnavailableError
 from app.services.code_runner import run_tests
+from app.services.limits import quota
 from app.services.feedback import (
     SYSTEM_PROMPT,
     FeedbackReport,
@@ -42,6 +43,10 @@ class NotFoundError(AttemptError):
 
 class ConflictError(AttemptError):
     status_code = 409
+
+
+class LimitReached(AttemptError):
+    status_code = 429
 
 
 def get_attempt(db: Session, attempt_id: str, user_id: str | None) -> Attempt:
@@ -88,6 +93,7 @@ def start_attempt(
     user_id: str,
     mode: str = AttemptMode.PRACTICE,
     invite_id: str | None = None,
+    user: User | None = None,
 ) -> tuple[Attempt, bool]:
     """Start a test, or resume the one already running in the same mode.
 
@@ -106,6 +112,14 @@ def start_attempt(
             f"You already have a {MODE_NAMES.get(existing.mode, existing.mode)} attempt at {test.title} in progress. "
             "Finish it first."
         )
+    if mode == AttemptMode.PRACTICE and user is not None:
+        q = quota(db, user)
+        if q["remaining"] == 0:
+            when = f" Your next one is available at {q['resets_at']:%H:%M} UTC." if q["resets_at"] else ""
+            raise LimitReached(
+                f"You've used all {q['limit']} practice attempts for the last 24 hours.{when} "
+                "Unfinished tests can still be resumed."
+            )
     if mode == AttemptMode.CERTIFICATION and (available := next_certification_at(db, user_id, test_id)):
         raise ConflictError(
             f"You can take the {test.title} certification again on {available:%d %B %Y at %H:%M} UTC. "

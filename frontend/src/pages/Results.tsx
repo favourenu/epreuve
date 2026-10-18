@@ -4,8 +4,9 @@ import { api } from '../api'
 import { CodeEditor } from '../components/LazyCodeEditor'
 import { Markdown } from '../components/Markdown'
 import { Card, CategoryBars, DifficultyTag, EmptyState, ErrorBox, ScoreRing, Spinner } from '../components/ui'
-import { categoryLabel, formatDate, formatDuration, formatValue } from '../format'
+import { categoryLabel, formatDate, formatDuration, formatNaira, formatValue } from '../format'
 import { useAsync } from '../hooks'
+import { ClaimButton } from './CertificatePages'
 import type { AttemptReview, Certificate, ReviewItem } from '../types'
 
 const POLL_MS = 3000
@@ -354,6 +355,17 @@ function CertificationResult({
         <Link className="btn btn-primary btn-sm" to={`/verify/${certificate.code}`}>
           View certificate
         </Link>
+      </div>
+    )
+  }
+  if (certificate?.status === 'awaiting_payment') {
+    return (
+      <div className="banner banner-cert" role="status">
+        <span>
+          <strong>You passed and earned a {certificate.level === 'distinction' ? 'distinction' : 'pass'} certificate.</strong>{' '}
+          Claim it for a one-time {formatNaira(certificate.price_kobo ?? 0)} to get a public link employers can verify.
+        </span>
+        <ClaimButton cert={certificate} />
       </div>
     )
   }

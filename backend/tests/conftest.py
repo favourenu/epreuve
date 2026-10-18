@@ -4,6 +4,14 @@ from pathlib import Path
 
 # Configure before the app (and its engine) is imported.
 _tmp = Path(tempfile.mkdtemp(prefix="epreuve-test-"))
+# These must be set before anything imports app.config (settings are cached).
+os.environ["CODE_RUN_TIMEOUT_SECONDS"] = "2"
+os.environ["OPENROUTER_API_KEY"] = ""
+os.environ["GEMINI_API_KEY"] = ""
+os.environ["OLLAMA_ENABLED"] = "false"
+os.environ["PAYSTACK_SECRET_KEY"] = ""  # tests never use real payment keys; see test_payments.py
+os.environ["ADMIN_EMAILS"] = "[]"
+os.environ["SECRET_KEY"] = "test-secret-key-that-is-long-enough-1234567890"
 # Set TEST_DATABASE_URL to run the whole suite against Postgres instead (its schema is wiped).
 os.environ["DATABASE_URL"] = os.environ.get("TEST_DATABASE_URL") or f"sqlite:///{(_tmp / 'test.db').as_posix()}"
 if os.environ.get("TEST_DATABASE_URL"):
@@ -13,11 +21,6 @@ if os.environ.get("TEST_DATABASE_URL"):
 
     with create_engine(normalize_url(os.environ["TEST_DATABASE_URL"])).begin() as _conn:
         _conn.execute(text("DROP SCHEMA public CASCADE; CREATE SCHEMA public"))
-os.environ["CODE_RUN_TIMEOUT_SECONDS"] = "2"
-os.environ["OPENROUTER_API_KEY"] = ""
-os.environ["GEMINI_API_KEY"] = ""
-os.environ["OLLAMA_ENABLED"] = "false"
-os.environ["SECRET_KEY"] = "test-secret-key-that-is-long-enough-1234567890"
 
 import itertools  # noqa: E402
 

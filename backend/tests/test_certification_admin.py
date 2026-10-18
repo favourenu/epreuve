@@ -272,3 +272,42 @@ def test_certificate_waits_for_ai_grading_of_written_answers(client, ai):
     review = client.get(f"/api/attempts/{state['id']}/review").json()
     assert review["attempt"]["percent"] == 75.0
     assert review["certificate"]["level"] == "pass" and review["certificate"]["status"] == "issued"
+
+
+# ------------------------------------------------------------ practice limits
+
+
+def test_practice_is_limited_per_day_and_admins_can_override(make_client, admin, monkeypatch):
+    monkeypatch.setattr(get_settings(), "practice_daily_limit", 2)
+    user = make_client()
+    tests = ["critical-thinking", "attention-to-detail", "numerical-reasoning"]
+    for t in tests[:2]:
+        s = start(user, test_id=t, mode="practice").json()
+        user.post(f"/api/attempts/{s['id']}/finish")
+    q = user.get("/api/attempts/quota").json()
+    assert q["limit"] == 2 and q["used"] == 2 and q["remaining"] == 0 and q["resets_at"]
+
+    r = start(user, test_id=tests[2], mode="practice")
+    assert r.status_code == 429 and "practice attempts" in r.json()["detail"]
+    assert start(user, test_id=tests[2]).status_code == 201  # certification isn't rationed this way
+
+    uid = user.get("/api/auth/me").json()["id"]
+    assert admin.patch(f"/api/admin/users/{uid}", json={"attempt_limit": -1}).json()["effective_limit"] is None
+    user.post(f"/api/attempts/{start(user, test_id=tests[2]).json()['id']}/finish")  # finish the cert one
+    assert start(user, test_id="python-knowledge", mode="practice").status_code == 201
+
+    row = admin.patch(f"/api/admin/users/{uid}", json={"attempt_limit": None}).json()
+    assert row["attempt_limit"] is None and row["effective_limit"] == 2
+
+
+def test_resuming_a_running_attempt_doesnt_need_a_free_slot(client, monkeypatch):
+    monkeypatch.setattr(get_settings(), "practice_daily_limit", 1)
+    first = start(client, mode="practice")
+    again = start(client, mode="practice")
+    assert again.status_code == 200 and again.json()["id"] == first.json()["id"]
+
+
+def test_admins_are_never_limited(admin, monkeypatch):
+    monkeypatch.setattr(get_settings(), "practice_daily_limit", 0)
+    assert admin.get("/api/attempts/quota").json()["limit"] is None
+    assert start(admin, mode="practice").status_code == 201

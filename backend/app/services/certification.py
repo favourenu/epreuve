@@ -80,17 +80,30 @@ def evaluate(db: Session, attempt: Attempt) -> Certificate | None:
         test_title=attempt.test_title,
         percent=percent,
         level=level,
-        status=CertificateStatus.UNDER_REVIEW if flagged else CertificateStatus.ISSUED,
-        issued_at=None if flagged else utcnow(),
+        status=CertificateStatus.UNDER_REVIEW,
     )
     db.add(cert)
+    db.flush()
+    if not flagged:
+        _clear(db, cert)
     db.commit()
     return cert
 
 
+def _clear(db: Session, cert: Certificate) -> None:
+    """Cleared by integrity (automatically or by an admin): issue it, or wait for the fee."""
+    from app.services.payments import status_after_approval
+
+    cert.status = status_after_approval(db, cert)
+    if cert.status == CertificateStatus.ISSUED:
+        cert.issued_at = cert.issued_at or utcnow()
+
+
 def certificate_out(c: Certificate) -> dict:
     """The owner's (and admins') view of a certificate."""
+    awaiting = c.status == CertificateStatus.AWAITING_PAYMENT
     return {
+        "price_kobo": get_settings().certificate_price_kobo if awaiting else None,
         "id": c.id,
         "code": c.code,
         "test_id": c.test_id,
@@ -130,15 +143,19 @@ class ReviewError(Exception):
 def review(db: Session, cert: Certificate, action: str, admin: User, note: str | None) -> Certificate:
     allowed = {
         "approve": (CertificateStatus.UNDER_REVIEW, CertificateStatus.REJECTED),
-        "reject": (CertificateStatus.UNDER_REVIEW,),
+        "reject": (CertificateStatus.UNDER_REVIEW, CertificateStatus.AWAITING_PAYMENT),
         "revoke": (CertificateStatus.ISSUED,),
         "reinstate": (CertificateStatus.REVOKED,),
+        # Issue without the fee (e.g. a scholarship, or a payment confirmed by hand).
+        "waive": (CertificateStatus.AWAITING_PAYMENT,),
     }
     if action not in allowed:
         raise ReviewError(f"Unknown action '{action}'")
     if cert.status not in allowed[action]:
         raise ReviewError(f"Can't {action} a certificate that is {cert.status.replace('_', ' ')}")
-    if action in ("approve", "reinstate"):
+    if action == "approve":
+        _clear(db, cert)
+    elif action in ("reinstate", "waive"):
         cert.status = CertificateStatus.ISSUED
         cert.issued_at = cert.issued_at or utcnow()
     elif action == "reject":

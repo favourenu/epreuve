@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Logo } from '../components/Logo'
+import { SiteFooter } from '../components/SiteFooter'
 
 const TEST_TYPES = [
   {
@@ -166,12 +167,7 @@ export function Landing() {
         </section>
       </main>
 
-      <footer className="landing-footer">
-        <Logo size={22} />
-        <span className="muted small">
-          <Link to="/verify">Verify a certificate</Link> · Épreuve is French for "test".
-        </span>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

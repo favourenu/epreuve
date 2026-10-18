@@ -9,10 +9,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from app import docs
 from app.config import get_settings
 from app.db import SessionLocal, init_db
 from app.question_bank import get_bank
-from app.routers import admin, attempts, auth, certificates, invites, stats, tests
+from app.routers import admin, attempts, auth, certificates, invites, payments, stats, tests
 from app.services.auth import secret_key
 from app.services.attempts import recover_interrupted_feedback
 
@@ -34,7 +35,8 @@ async def lifespan(_app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Épreuve API", version="0.1.0", lifespan=lifespan)
+    # The default /docs and /openapi.json are replaced by the public and internal editions in app.docs.
+    app = FastAPI(title="Épreuve API", version="0.1.0", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
     settings = get_settings()
 
     @app.middleware("http")
@@ -61,11 +63,14 @@ def create_app() -> FastAPI:
     app.include_router(stats.router)
     app.include_router(certificates.router)
     app.include_router(invites.router)
+    app.include_router(payments.router)
     app.include_router(admin.router)
 
     @app.get("/api/health", tags=["meta"])
     def health():
         return {"status": "ok"}
+
+    docs.install(app)
 
     serve_frontend(app, Path(settings.frontend_dist_dir))
     return app

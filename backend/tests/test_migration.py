@@ -63,7 +63,7 @@ def test_migrate_is_safe_to_run_on_every_startup():
     migrate(engine)
     migrate(engine)
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0003"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0004"
 
 
 def test_database_from_before_migrations_keeps_its_data():
@@ -85,7 +85,7 @@ def test_database_from_before_migrations_keeps_its_data():
     uid = "u1"
     migrate(engine)
     with engine.connect() as conn:
-        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0003"
+        assert conn.execute(text("SELECT version_num FROM alembic_version")).scalar() == "0004"
         assert conn.execute(text("SELECT id FROM users")).scalar() == uid
     assert _schema_diff(engine) == []
 

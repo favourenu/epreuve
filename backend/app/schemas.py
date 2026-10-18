@@ -16,6 +16,7 @@ class CertificateOut(BaseModel):
     created_at: datetime
     issued_at: datetime | None
     review_note: str | None = None
+    price_kobo: int | None = None  # the fee to claim it, when awaiting payment
 
 
 class TestSummary(BaseModel):

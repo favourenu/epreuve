@@ -10,6 +10,7 @@ export function TestIntro() {
   const { testId = '' } = useParams()
   const navigate = useNavigate()
   const { data: test, error, loading, reload } = useAsync(() => api.test(testId), [testId])
+  const { data: quota } = useAsync(() => api.quota(), [testId])
   const [starting, setStarting] = useState<'practice' | 'certification' | null>(null)
   const [startError, setStartError] = useState<string | null>(null)
   const [showRules, setShowRules] = useState(false)
@@ -71,7 +72,20 @@ export function TestIntro() {
         <div className="mode-grid">
           <section className="mode-card" aria-labelledby="practice-title">
             <h2 id="practice-title">Practice</h2>
-            <p className="muted">Take it as often as you like. You'll get a score, explanations and an AI study plan.</p>
+            <p className="muted">
+              {quota?.limit == null
+                ? "Take it as often as you like. You'll get a score, explanations and an AI study plan."
+                : `Up to ${quota.limit} practice attempts a day. You'll get a score, explanations and an AI study plan.`}
+            </p>
+            {quota?.remaining != null && (
+              <p className="hint">
+                {quota.remaining > 0
+                  ? `${quota.remaining} of ${quota.limit} left in the last 24 hours.`
+                  : quota.resets_at
+                    ? `You've used today's practice attempts. The next one is available ${formatDate(quota.resets_at)}.`
+                    : "Practice attempts aren't available on your account."}
+              </p>
+            )}
             <button className="btn btn-lg" onClick={() => start('practice')} disabled={starting !== null}>
               {starting === 'practice' ? 'Starting...' : 'Start practice'}
             </button>
@@ -87,7 +101,9 @@ export function TestIntro() {
               <p className={`cert-held cert-${cert.status}`}>
                 {cert.status === 'issued'
                   ? `You hold a ${cert.level === 'distinction' ? 'distinction' : 'pass'} certificate (${Math.round(cert.percent)}%).`
-                  : 'Your certificate is being reviewed.'}{' '}
+                  : cert.status === 'awaiting_payment'
+                    ? `You passed (${Math.round(cert.percent)}%). Your certificate is ready to claim.`
+                    : 'Your certificate is being reviewed.'}{' '}
                 <Link to="/certificates">View</Link>
               </p>
             )}

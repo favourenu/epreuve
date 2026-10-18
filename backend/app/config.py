@@ -45,6 +45,15 @@ class Settings(BaseSettings):
     # Wait between certification attempts at the same test, so the question pool can't be farmed.
     certification_cooldown_days: int = 7
 
+    # Fee to claim an earned certificate, in kobo (50000 = NGN 500). Payments are only
+    # required when PAYSTACK_SECRET_KEY is set; without it certificates are free (dev).
+    certificate_price_kobo: int = 50000
+    paystack_secret_key: str = ""
+    paystack_base_url: str = "https://api.paystack.co"
+
+    # Practice attempts per user per rolling 24 hours (admins can override per user).
+    practice_daily_limit: int = 5
+
     # Company invitations to take an assessment
     invite_valid_days: int = 14
 

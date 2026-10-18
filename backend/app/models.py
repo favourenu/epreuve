@@ -47,6 +47,9 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(20), default="user", server_default="user")
     # Suspended accounts can't log in, and their sessions stop working.
     disabled_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+    # Practice attempts allowed per rolling 24 hours: None = platform default,
+    # UNLIMITED (-1) = no limit, 0 = none at all. Set by admins.
+    attempt_limit: Mapped[int | None] = mapped_column(Integer)
 
     @property
     def is_admin(self) -> bool:
@@ -80,6 +83,9 @@ class PasswordResetToken(Base):
     used_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
 
     user: Mapped[User] = relationship()
+
+
+UNLIMITED = -1
 
 
 class Role:
@@ -199,6 +205,7 @@ class IntegrityEvent(Base):
 class CertificateStatus:
     ISSUED = "issued"
     UNDER_REVIEW = "under_review"  # integrity concerns: an admin decides
+    AWAITING_PAYMENT = "awaiting_payment"  # earned; issued once the claim fee is paid
     REJECTED = "rejected"
     REVOKED = "revoked"
 
@@ -242,3 +249,27 @@ class Invite(Base):
     expires_at: Mapped[datetime] = mapped_column(UTCDateTime())
     opened_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
     cancelled_at: Mapped[datetime | None] = mapped_column(UTCDateTime())
+
+
+class PaymentStatus:
+    PENDING = "pending"
+    SUCCESS = "success"
+    FAILED = "failed"
+
+
+class Payment(Base):
+    """A payment to claim a certificate. Amounts are in kobo (₦1 = 100 kobo)."""
+
+    __tablename__ = "payments"
+
+    id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
+    reference: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    certificate_id: Mapped[str] = mapped_column(ForeignKey("certificates.id", ondelete="CASCADE"), index=True)
+    amount_kobo: Mapped[int] = mapped_column(Integer)
+    currency: Mapped[str] = mapped_column(String(3), default="NGN")
+    provider: Mapped[str] = mapped_column(String(20), default="paystack")
+    status: Mapped[str] = mapped_column(String(20), default=PaymentStatus.PENDING, index=True)
+    channel: Mapped[str | None] = mapped_column(String(30))
+    created_at: Mapped[datetime] = mapped_column(UTCDateTime(), default=utcnow)
+    paid_at: Mapped[datetime | None] = mapped_column(UTCDateTime())

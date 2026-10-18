@@ -91,3 +91,9 @@ export const draftStore = {
     }
   },
 }
+
+/** Kobo to a naira amount, e.g. 50000 -> "₦500". */
+export function formatNaira(kobo: number): string {
+  const naira = kobo / 100
+  return `₦${naira.toLocaleString('en-NG', { maximumFractionDigits: Number.isInteger(naira) ? 0 : 2 })}`
+}

@@ -4,24 +4,29 @@ import { Card, EmptyState, ErrorBox, Spinner } from '../../components/ui'
 import { formatDate } from '../../format'
 import { useAsync } from '../../hooks'
 import type { CertificateStatus } from '../../types'
-import { adminApi, type AdminCertificate } from './adminApi'
+import { adminApi, type AdminCertificate, type ReviewAction } from './adminApi'
 import { RiskBadge } from './shared'
 
 const FILTERS: { value: CertificateStatus | ''; label: string }[] = [
   { value: 'under_review', label: 'Needs review' },
   { value: 'issued', label: 'Issued' },
+  { value: 'awaiting_payment', label: 'Awaiting payment' },
   { value: 'rejected', label: 'Rejected' },
   { value: 'revoked', label: 'Revoked' },
   { value: '', label: 'All' },
 ]
 
-type Action = 'approve' | 'reject' | 'revoke' | 'reinstate'
-const ACTIONS: Record<CertificateStatus, { action: Action; label: string; danger?: boolean }[]> = {
+const ACTIONS: Record<CertificateStatus, { action: ReviewAction; label: string; danger?: boolean }[]> = {
   under_review: [
     { action: 'approve', label: 'Approve' },
     { action: 'reject', label: 'Reject', danger: true },
   ],
   issued: [{ action: 'revoke', label: 'Revoke', danger: true }],
+  // Waive issues it without the fee, e.g. a scholarship or a payment confirmed by hand.
+  awaiting_payment: [
+    { action: 'waive', label: 'Waive fee and issue' },
+    { action: 'reject', label: 'Reject', danger: true },
+  ],
   rejected: [{ action: 'approve', label: 'Approve' }],
   revoked: [{ action: 'reinstate', label: 'Reinstate' }],
 }
@@ -31,7 +36,7 @@ function Row({ cert, onChanged }: { cert: AdminCertificate; onChanged: () => voi
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  async function act(action: Action) {
+  async function act(action: ReviewAction) {
     setBusy(true)
     setError(null)
     try {

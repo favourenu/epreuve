@@ -6,7 +6,9 @@ import { Landing } from './pages/Landing'
 import { Logo } from './components/Logo'
 import { EmptyState } from './components/ui'
 import { History } from './pages/History'
-import { MyCertificates, VerifyCertificate, VerifyLookup } from './pages/CertificatePages'
+import { ClaimedPage, MyCertificates, VerifyCertificate, VerifyLookup } from './pages/CertificatePages'
+import { ContactPage, PrivacyPage, RefundsPage, TermsPage } from './pages/LegalPages'
+import { SiteFooter } from './components/SiteFooter'
 import { InvitePage, SubmittedPage } from './pages/InvitePages'
 import { AdminPage } from './pages/admin/AdminPage'
 import { ForgotPassword, ResetPassword } from './pages/PasswordPages'
@@ -56,6 +58,7 @@ function Layout({ children }: { children: React.ReactNode }) {
         <UserMenu />
       </header>
       <main className="container">{children}</main>
+      <SiteFooter />
     </div>
   )
 }
@@ -104,11 +107,17 @@ export default function App() {
       <Route path="/attempts/:attemptId/results" element={authed(<Results />)} />
       <Route path="/attempts/:attemptId/submitted" element={authed(<SubmittedPage />, false)} />
       <Route path="/certificates" element={authed(<MyCertificates />)} />
+      {/* Paystack returns here after checkout. */}
+      <Route path="/certificates/claimed" element={authed(<ClaimedPage />)} />
       <Route path="/admin/*" element={authed(<AdminOnly><AdminPage /></AdminOnly>)} />
       {/* Public pages: certificate verification and company invitations. */}
       <Route path="/verify" element={<VerifyLookup />} />
       <Route path="/verify/:code" element={<VerifyCertificate />} />
       <Route path="/invite/:token" element={<InvitePage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/privacy" element={<PrivacyPage />} />
+      <Route path="/refunds" element={<RefundsPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )

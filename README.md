@@ -17,7 +17,11 @@ Built for preparing for the Learn2Earn job-readiness assessment, covering techni
 - **Certification.** Every assessment can be taken as practice or for certification. Certification attempts are proctored, limited to one every 7 days per assessment, and earn a certificate at 75% (distinction at 90%). Each certificate has a public verification page (`/verify/EPR-XXXX-XXXX`) that employers can check and print.
 - **Proctoring.** Certification and company assessments run in full screen and record leaving the window (and for how long), exiting full screen, a second screen (Chrome and Edge), copying and pasting (which are blocked), and reloads. A clean or minor record issues the certificate automatically; serious flags send it to an admin for review. No camera or microphone is used.
 - **Company invitations.** Admins invite a candidate by email to a specific assessment for a named company. The candidate must use the invited email address, gets one proctored attempt, and doesn't see their score; the admin sees the results, the integrity report and a CSV export.
-- **Admin dashboard** (`/admin`): platform overview, user search with suspend and promote, every attempt with its integrity timeline, leaderboards by assessment and period, the certificate review queue, and company invitations. Admins are set with `ADMIN_EMAILS`.
+- **Certificate fee.** Practice and certification are free; claiming an earned certificate costs ₦500 through Paystack. The certificate is issued only after the server verifies the payment with Paystack (or a signed webhook arrives), so the amount can't be tampered with in the browser. Admins can waive the fee. Without `PAYSTACK_SECRET_KEY`, certificates are free.
+- **Fair-use limits.** 5 practice attempts per rolling 24 hours by default (`PRACTICE_DAILY_LIMIT`), since each one uses an AI request. Admins can give any user a custom or unlimited allowance. Certification has its own cooldown; company invites and admins are never limited.
+- **Admin dashboard** (`/admin`): platform overview with revenue, user search with suspend, promote and practice allowances, every attempt with its integrity timeline, leaderboards by assessment and period, the certificate review queue (including fee waivers), and company invitations. Admins are set with `ADMIN_EMAILS`.
+- **API documentation** in two editions: public at `/api/docs` (read-only, no admin endpoints) and internal at `/api/internal/docs` (everything, with "Try it out", admins only).
+- **Legal pages**: terms, privacy, refunds and contact, linked from the footer. Have them checked before taking real payments.
 - **Progress tracking.** Score trend, per-skill accuracy across all attempts, a "recommended next" test, and full question review with explanations and reference solutions.
 
 ## Design
@@ -92,7 +96,7 @@ Start the API and the web app in two terminals:
 npm run dev
 ```
 
-Open http://localhost:5173. API docs are at http://localhost:8000/docs.
+Open http://localhost:5173. API docs are at http://localhost:5173/api/docs (and `/api/internal/docs` when signed in as an admin).
 
 Locally, with no `RESEND_API_KEY`, password reset emails are printed in the API terminal, link included.
 
@@ -148,8 +152,9 @@ Not yet tried on a live Render service; these are the intended settings.
 2. **Web service:** on [Render](https://render.com), create a free *Web Service* from this repo:
    - Build command: `pip install -r backend/requirements.txt && cd frontend && npm ci && npm run build`
    - Start command: `cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"`
-   - Environment: `DATABASE_URL` (from Neon), `SECRET_KEY`, `APP_BASE_URL=https://epreuve.site`, `CORS_ORIGINS=["https://epreuve.site"]`, `SESSION_COOKIE_SECURE=true`, `RESEND_API_KEY`, your AI keys, and `OLLAMA_ENABLED=false`.
+   - Environment: `DATABASE_URL` (from Neon), `SECRET_KEY`, `APP_BASE_URL=https://epreuve.site`, `CORS_ORIGINS=["https://epreuve.site"]`, `SESSION_COOKIE_SECURE=true`, `RESEND_API_KEY`, `ADMIN_EMAILS`, `PAYSTACK_SECRET_KEY`, your AI keys, and `OLLAMA_ENABLED=false`.
 3. **Domain:** add `epreuve.site` as a custom domain on the service and point your DNS at it as Render instructs.
+4. **Paystack:** in the Paystack dashboard, set the webhook URL to `https://epreuve.site/api/payments/paystack/webhook`. Test with an `sk_test_` key first; switch to the live key once your business is verified.
 
 Free Render services sleep after about 15 minutes without traffic, so the first request afterwards takes a little while.
 
