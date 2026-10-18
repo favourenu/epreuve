@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { ApiError, api } from '../api'
 import { CodeEditor } from '../components/LazyCodeEditor'
 import { Markdown } from '../components/Markdown'
+import { FullscreenGate, useProctoring } from '../components/Proctoring'
 import { DifficultyTag, ErrorBox, ProgressBar, Spinner } from '../components/ui'
 import { categoryLabel, draftStore, formatDuration, formatValue, wordCount } from '../format'
 import type { AttemptState, PublicQuestion, RunResult } from '../types'
@@ -63,11 +64,22 @@ export function TakeTest() {
   const [running, setRunning] = useState(false)
   const closingRef = useRef(false)
   const remaining = useCountdown(attempt)
+  const proctor = useProctoring(attempt?.id, !!attempt?.proctored && attempt.status === 'in_progress')
+  const [enteredFullscreen, setEnteredFullscreen] = useState(false)
+  const modeRef = useRef<AttemptState['mode']>('practice')
 
-  const goToResults = useCallback(() => navigate(`/attempts/${attemptId}/results`, { replace: true }), [attemptId, navigate])
+  // Invited candidates don't see scores: their results go to the inviting company.
+  const goToResults = useCallback(
+    () =>
+      navigate(modeRef.current === 'invite' ? `/attempts/${attemptId}/submitted` : `/attempts/${attemptId}/results`, {
+        replace: true,
+      }),
+    [attemptId, navigate],
+  )
 
   const applyState = useCallback(
     (state: AttemptState) => {
+      modeRef.current = state.mode
       if (state.status === 'completed') {
         goToResults()
         return
@@ -212,6 +224,7 @@ export function TakeTest() {
           <strong>{attempt.test_title}</strong>
           <span className="muted">
             Question {attempt.position + 1} of {attempt.total_questions}
+            {attempt.proctored && <span className="proctor-chip">Proctored</span>}
           </span>
         </div>
         <div className={`timer ${lowTime ? 'timer-low' : ''}`} role="timer" aria-label="Time left">
@@ -312,6 +325,26 @@ export function TakeTest() {
         </div>
         <p className="muted small center">You can't return to a question after moving on.</p>
       </main>
+
+      {attempt.proctored && proctor.extraScreen && (
+        <div className="proctor-banner" role="alert">
+          A second screen is connected. This has been recorded; disconnect it to continue.
+        </div>
+      )}
+      {attempt.proctored && proctor.notice && (
+        <div className="proctor-toast" role="status">
+          <span>{proctor.notice}</span>
+          <button className="btn btn-ghost btn-sm" onClick={proctor.dismissNotice}>
+            OK
+          </button>
+        </div>
+      )}
+      {attempt.proctored && !proctor.fullscreen && (
+        <FullscreenGate
+          first={!enteredFullscreen}
+          onEnter={() => proctor.enterFullscreen().then(() => setEnteredFullscreen(true))}
+        />
+      )}
 
       {confirmFinish && (
         <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="finish-title">

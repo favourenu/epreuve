@@ -19,7 +19,14 @@ function TestCard({ test, featured = false }: { test: TestSummary; featured?: bo
     <Link to={`/tests/${test.id}`} className={`test-card ${featured ? 'featured-test' : ''}`}>
       <div className="test-card-head">
         <h3>{test.title}</h3>
-        {test.best_percent != null && <ScoreBadge percent={test.best_percent} />}
+        <span className="card-badges">
+          {test.certificate?.status === 'issued' && (
+            <span className="badge badge-good" title={`Certificate ${test.certificate.code}`}>
+              Certified
+            </span>
+          )}
+          {test.best_percent != null && <ScoreBadge percent={test.best_percent} />}
+        </span>
       </div>
       <p>{test.description}</p>
       <div className="test-meta">

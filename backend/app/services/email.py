@@ -111,3 +111,46 @@ def password_reset_email(to: str, name: str, link: str, minutes: int) -> Email:
 </body>
 </html>"""
     return Email(to=to, subject="Reset your Épreuve password", html=body, text=text)
+
+
+def invite_email(to: str, candidate_name: str, company: str, test_title: str, minutes: int,
+                 link: str, expires: str, message: str | None) -> Email:
+    first = candidate_name.split(" ")[0] or "there"
+    note_text = f"\nMessage from {company}:\n{message}\n" if message else ""
+    text = (
+        f"Hi {first},\n\n{company} has invited you to take the {test_title} assessment on Épreuve.\n"
+        f"It takes about {minutes} minutes and is proctored: you'll need a computer with one screen, "
+        "and you should complete it in one sitting.\n"
+        f"{note_text}\nStart here (the link expires on {expires}):\n{link}\n\n"
+        f"You'll log in or create a free account using this email address ({to}).\n\nÉpreuve"
+    )
+    note_html = (
+        f'<p style="font-size:15px;line-height:1.6;margin:0 0 16px;padding:12px 14px;background:#f6f2ea;border-radius:8px;">'
+        f"<strong>Message from {html.escape(company)}:</strong><br>{html.escape(message)}</p>"
+        if message else ""
+    )
+    safe_link = html.escape(link, quote=True)
+    body = f"""<!doctype html>
+<html lang="en">
+<body style="margin:0;padding:0;background:#f6f2ea;font-family:Arial,Helvetica,sans-serif;color:#1c1b18;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f2ea;padding:32px 16px;">
+    <tr><td align="center">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#fffdf8;border:1px solid #e2dbcc;border-radius:14px;">
+        <tr><td style="padding:28px 28px 8px;">
+          <span style="display:inline-block;background:#145c4a;color:#fffdf8;font-weight:bold;border-radius:8px;padding:4px 10px;font-size:18px;">É</span>
+          <span style="font-family:Georgia,serif;font-size:20px;font-weight:bold;vertical-align:middle;margin-left:6px;">Épreuve</span>
+        </td></tr>
+        <tr><td style="padding:8px 28px 0;">
+          <h1 style="font-family:Georgia,serif;font-size:22px;margin:12px 0;">{html.escape(company)} invited you to an assessment</h1>
+          <p style="font-size:16px;line-height:1.6;margin:0 0 16px;">Hi {html.escape(first)}, you've been invited to take <strong>{html.escape(test_title)}</strong>. It takes about {minutes} minutes.</p>
+          {note_html}
+          <p style="font-size:15px;line-height:1.6;margin:0 0 16px;">The assessment is proctored: use a computer with a single screen, close other tabs, and complete it in one sitting.</p>
+          <p style="margin:24px 0;"><a href="{safe_link}" style="background:#145c4a;color:#fffdf8;text-decoration:none;font-weight:bold;padding:12px 22px;border-radius:10px;display:inline-block;">View the invitation</a></p>
+          <p style="font-size:14px;line-height:1.6;color:#5f594d;margin:0 0 28px;">The link expires on {html.escape(expires)}. You'll log in or sign up with {html.escape(to)}.<br><a href="{safe_link}" style="color:#145c4a;word-break:break-all;">{safe_link}</a></p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+    return Email(to=to, subject=f"{company} invited you to an assessment on Épreuve", html=body, text=text)

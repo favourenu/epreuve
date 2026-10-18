@@ -134,6 +134,8 @@ class Attempt(Base):
     feedback_provider: Mapped[str | None] = mapped_column(String(100))
     feedback_error: Mapped[str | None] = mapped_column(Text)
 
+    invite: Mapped["Invite | None"] = relationship(lazy="joined")
+    user: Mapped[User] = relationship(lazy="joined")
     items: Mapped[list["AttemptItem"]] = relationship(
         back_populates="attempt",
         order_by="AttemptItem.position",

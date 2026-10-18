@@ -1,7 +1,21 @@
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+
+
+class CertificateOut(BaseModel):
+    id: str
+    code: str
+    test_id: str
+    test_title: str
+    percent: float
+    level: str
+    status: str
+    attempt_id: str
+    created_at: datetime
+    issued_at: datetime | None
+    review_note: str | None = None
 
 
 class TestSummary(BaseModel):
@@ -15,10 +29,19 @@ class TestSummary(BaseModel):
     attempts: int = 0
     best_percent: float | None = None
     last_percent: float | None = None
+    # Certification
+    certification_pass_percent: float
+    certification_distinction_percent: float
+    certification_cooldown_days: int
+    certification_available_at: datetime | None = None  # None = can start now
+    certificate: CertificateOut | None = None  # best certificate held for this test
 
 
 class StartAttemptRequest(BaseModel):
     test_id: str
+    mode: Literal["practice", "certification"] = "practice"
+    # Proctored attempts require agreeing to the rules (one screen, no help, full screen...).
+    agree_to_rules: bool = False
 
 
 class AnswerRequest(BaseModel):
@@ -36,6 +59,9 @@ class AttemptState(BaseModel):
     id: str
     test_id: str
     test_title: str
+    mode: str
+    proctored: bool
+    company: str | None = None  # for invited attempts
     status: str
     started_at: datetime
     deadline: datetime
@@ -56,6 +82,8 @@ class AttemptListItem(BaseModel):
     id: str
     test_id: str
     test_title: str
+    mode: str = "practice"
+    company: str | None = None
     status: str
     started_at: datetime
     submitted_at: datetime | None
@@ -87,6 +115,7 @@ class CategoryScore(BaseModel):
 
 class AttemptReview(BaseModel):
     attempt: AttemptListItem
+    certificate: CertificateOut | None = None
     duration_seconds: int | None
     categories: list[CategoryScore]
     items: list[ReviewItem]

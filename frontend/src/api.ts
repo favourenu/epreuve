@@ -1,5 +1,9 @@
 import type {
   AIStatus,
+  Certificate,
+  IntegrityEventIn,
+  InviteView,
+  PublicCertificate,
   User,
   AttemptListItem,
   AttemptReview,
@@ -67,6 +71,8 @@ const post = <T>(path: string, body?: unknown) =>
   request<T>(path, { method: 'POST', body: body === undefined ? undefined : JSON.stringify(body) })
 
 export const api = {
+  /** Any JSON endpoint (used by the admin client). */
+  raw: <T,>(path: string, init?: RequestInit) => request<T>(path, init),
   me: () => request<User>('/api/auth/me'),
   login: (email: string, password: string) => post<User>('/api/auth/login', { email, password }),
   signup: (name: string, email: string, password: string) =>
@@ -81,7 +87,19 @@ export const api = {
   aiStatus: () => request<AIStatus>('/api/ai/status'),
   attempts: (status?: string) =>
     request<AttemptListItem[]>(`/api/attempts?limit=200${status ? `&status=${status}` : ''}`),
-  start: (testId: string) => post<AttemptState>('/api/attempts', { test_id: testId }),
+  start: (testId: string, mode: 'practice' | 'certification' = 'practice', agreeToRules = false) =>
+    post<AttemptState>('/api/attempts', { test_id: testId, mode, agree_to_rules: agreeToRules }),
+  reportIntegrity: (id: string, events: IntegrityEventIn[]) =>
+    request<{ recorded: number }>(`/api/attempts/${id}/integrity`, {
+      method: 'POST',
+      body: JSON.stringify({ events }),
+      keepalive: true, // still delivered if the page is closing
+    }),
+  certificates: () => request<Certificate[]>('/api/certificates'),
+  verifyCertificate: (code: string) => request<PublicCertificate>(`/api/public/certificates/${encodeURIComponent(code)}`),
+  invite: (token: string) => request<InviteView>(`/api/invites/${encodeURIComponent(token)}`),
+  startInvite: (token: string) =>
+    post<AttemptState>(`/api/invites/${encodeURIComponent(token)}/start`, { agree_to_rules: true }),
   attempt: (id: string) => request<AttemptState>(`/api/attempts/${id}`),
   answer: (id: string, position: number, answer: unknown) =>
     post<AttemptState>(`/api/attempts/${id}/answer`, { position, answer }),

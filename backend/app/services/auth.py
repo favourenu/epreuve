@@ -21,7 +21,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from app.config import Settings, get_settings
-from app.models import Attempt, PasswordResetToken, User, UserSession, utcnow
+from app.models import Attempt, PasswordResetToken, Role, User, UserSession, utcnow
 
 log = logging.getLogger(__name__)
 
@@ -48,6 +48,22 @@ class EmailTaken(AuthError):
 
 class TooManyAttempts(AuthError):
     status_code = 429
+
+
+class AccountSuspended(AuthError):
+    status_code = 403
+
+    def __init__(self):
+        super().__init__("This account has been suspended. Contact support if you think this is a mistake.")
+
+
+def sync_admin_role(db: Session, user: User) -> None:
+    """Promote accounts listed in ADMIN_EMAILS. Never demotes: admins can also be
+    promoted from the dashboard."""
+    admins = {normalize_email(e) for e in get_settings().admin_emails}
+    if user.email in admins and user.role != Role.ADMIN:
+        user.role = Role.ADMIN
+        db.commit()
 
 
 @lru_cache
@@ -147,6 +163,7 @@ def signup(db: Session, email: str, password: str, name: str) -> User:
         # Attempts made before accounts existed belong to whoever set the app up.
         db.execute(update(Attempt).where(Attempt.user_id.is_(None)).values(user_id=user.id))
     db.commit()
+    sync_admin_role(db, user)
     return user
 
 
@@ -166,9 +183,12 @@ def authenticate(db: Session, email: str, password: str, client_ip: str) -> User
         raise InvalidCredentials("Incorrect email or password") from None
 
     throttle.reset(f"email:{email}")
+    if user.disabled_at is not None:
+        raise AccountSuspended()
     if _hasher.check_needs_rehash(user.password_hash):
         user.password_hash = _hasher.hash(password)
         db.commit()
+    sync_admin_role(db, user)
     return user
 
 
@@ -194,6 +214,8 @@ def user_for_token(db: Session, token: str) -> User | None:
     if session.expires_at < utcnow():
         db.delete(session)
         db.commit()
+        return None
+    if session.user.disabled_at is not None:
         return None
     return session.user
 
@@ -223,7 +245,7 @@ def request_password_reset(db: Session, email: str, client_ip: str, settings: Se
     throttle.fail(*keys)  # every request counts toward the limit, not just failures
 
     user = db.scalar(select(User).where(User.email == email))
-    if user is None:
+    if user is None or user.disabled_at is not None:
         return None
     # Only the newest link works: older unused links are invalidated.
     db.execute(delete(PasswordResetToken).where(PasswordResetToken.user_id == user.id, PasswordResetToken.used_at.is_(None)))

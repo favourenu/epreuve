@@ -65,17 +65,32 @@ def migrate(bind: Engine | None = None) -> None:
     from app import models  # noqa: F401  (registers tables)
 
     bind = bind or engine
-    with bind.begin() as conn:
-        cfg = Config()
-        cfg.set_main_option("script_location", str(MIGRATIONS_DIR))
-        cfg.attributes["connection"] = conn
-        tables = set(inspect(conn).get_table_names())
-        if "alembic_version" not in tables and tables & set(BASELINE_TABLES):
-            # Created before migrations existed: complete the baseline schema, then
-            # record it as revision 0001 so later migrations apply on top.
-            _upgrade_pre_migration_db(conn)
-            command.stamp(cfg, BASELINE_REVISION)
-        command.upgrade(cfg, "head")
+    sqlite = bind.dialect.name == "sqlite"
+    with bind.connect() as conn:
+        if sqlite:
+            # SQLite migrations rebuild tables (copy, drop, rename). With foreign keys on,
+            # dropping the old table would cascade-delete child rows such as saved answers.
+            # The pragma only works outside a transaction, so set it before beginning.
+            conn.exec_driver_sql("PRAGMA foreign_keys=OFF")
+            conn.commit()
+        try:
+            with conn.begin():
+                cfg = Config()
+                cfg.set_main_option("script_location", str(MIGRATIONS_DIR))
+                cfg.attributes["connection"] = conn
+                tables = set(inspect(conn).get_table_names())
+                if "alembic_version" not in tables and tables & set(BASELINE_TABLES):
+                    # Created before migrations existed: complete the baseline schema, then
+                    # record it as revision 0001 so later migrations apply on top.
+                    _upgrade_pre_migration_db(conn)
+                    command.stamp(cfg, BASELINE_REVISION)
+                command.upgrade(cfg, "head")
+                if sqlite and (broken := conn.exec_driver_sql("PRAGMA foreign_key_check").fetchall()):
+                    raise RuntimeError(f"Migration left broken foreign keys: {broken[:5]}")
+        finally:
+            if sqlite:
+                conn.exec_driver_sql("PRAGMA foreign_keys=ON")
+                conn.commit()
 
 
 # Kept for callers and tests that predate migrations.

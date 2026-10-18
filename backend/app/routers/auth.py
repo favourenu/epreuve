@@ -46,10 +46,11 @@ class UserOut(BaseModel):
     id: str
     email: str
     name: str
+    role: str
 
 
 def _out(user: User) -> UserOut:
-    return UserOut(id=user.id, email=user.email, name=user.name)
+    return UserOut(id=user.id, email=user.email, name=user.name, role=user.role)
 
 
 def _set_cookie(response: Response, token: str) -> None:

@@ -47,7 +47,14 @@ export function History() {
               <tbody>
                 {data.map((a) => (
                   <tr key={a.id}>
-                    <td>{a.test_title}</td>
+                    <td>
+                      {a.test_title}
+                      {a.mode !== 'practice' && (
+                        <span className={`mode-chip mode-${a.mode}`}>
+                          {a.mode === 'certification' ? 'Certification' : `For ${a.company ?? 'a company'}`}
+                        </span>
+                      )}
+                    </td>
                     <td className="muted">{formatDate(a.started_at)}</td>
                     <td className="muted tabular">
                       {a.submitted_at
@@ -55,11 +62,25 @@ export function History() {
                         : '-'}
                       {a.timed_out && ' (timed out)'}
                     </td>
-                    <td>{a.status === 'completed' ? <ScoreBadge percent={a.percent} /> : <span className="chip">In progress</span>}</td>
+                    <td>
+                      {a.status !== 'completed' ? (
+                        <span className="chip">In progress</span>
+                      ) : a.mode === 'invite' ? (
+                        <span className="chip">Submitted</span>
+                      ) : (
+                        <ScoreBadge percent={a.percent} />
+                      )}
+                    </td>
                     <td className="right">
                       <Link
                         className="btn btn-sm"
-                        to={a.status === 'completed' ? `/attempts/${a.id}/results` : `/attempts/${a.id}`}
+                        to={
+                          a.status !== 'completed'
+                            ? `/attempts/${a.id}`
+                            : a.mode === 'invite'
+                              ? `/attempts/${a.id}/submitted`
+                              : `/attempts/${a.id}/results`
+                        }
                         aria-label={`${a.status === 'completed' ? 'Review' : 'Resume'} ${a.test_title}, ${formatDate(a.started_at)}`}
                       >
                         {a.status === 'completed' ? 'Review' : 'Resume'}

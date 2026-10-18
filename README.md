@@ -14,6 +14,10 @@ Built for preparing for the Learn2Earn job-readiness assessment, covering techni
 - **AI coach.** One AI request per attempt grades written answers against a hiring rubric and produces strengths, weaknesses, a prioritised study plan and test-taking tips.
 - **Provider fallback.** OpenRouter, then Gemini, then local Ollama. If one is rate-limited or down, the next is tried. If all fail, the attempt is still scored and the report can be retried later.
 - **Accounts.** Email and password sign-up (with password confirmation), Argon2 password hashing, server-side sessions in an httpOnly cookie, and password reset by email (via Resend). Every attempt, score and stat belongs to its user, and the API enforces it: another user's attempt simply returns 404.
+- **Certification.** Every assessment can be taken as practice or for certification. Certification attempts are proctored, limited to one every 7 days per assessment, and earn a certificate at 75% (distinction at 90%). Each certificate has a public verification page (`/verify/EPR-XXXX-XXXX`) that employers can check and print.
+- **Proctoring.** Certification and company assessments run in full screen and record leaving the window (and for how long), exiting full screen, a second screen (Chrome and Edge), copying and pasting (which are blocked), and reloads. A clean or minor record issues the certificate automatically; serious flags send it to an admin for review. No camera or microphone is used.
+- **Company invitations.** Admins invite a candidate by email to a specific assessment for a named company. The candidate must use the invited email address, gets one proctored attempt, and doesn't see their score; the admin sees the results, the integrity report and a CSV export.
+- **Admin dashboard** (`/admin`): platform overview, user search with suspend and promote, every attempt with its integrity timeline, leaderboards by assessment and period, the certificate review queue, and company invitations. Admins are set with `ADMIN_EMAILS`.
 - **Progress tracking.** Score trend, per-skill accuracy across all attempts, a "recommended next" test, and full question review with explanations and reference solutions.
 
 ## Design
@@ -36,7 +40,10 @@ backend/   FastAPI + SQLAlchemy (SQLite locally, Postgres in production)
     services/grading.py     MCQ / SJT / code / written grading
     services/code_runner.py subprocess harness for candidate code
     services/feedback.py    the single AI prompt + response schema
-    services/auth.py        accounts, password hashing, sessions, resets, throttling
+    services/auth.py        accounts, password hashing, sessions, resets, throttling, admin roles
+    services/integrity.py   proctoring events and risk levels
+    services/certification.py  certificates, cooldowns, review, public verification
+    services/invites.py     company invitations
     services/email.py       Resend client + email templates
     services/ai/            provider clients + fallback chain
     routers/                HTTP API
@@ -117,6 +124,10 @@ After changing a model, create a migration from `backend/`:
 ```
 
 A test fails if the models and migrations ever drift apart.
+
+## Proctoring: what it can and can't do
+
+Browsers can reliably report leaving the tab or window, exiting full screen, copy and paste, and (in Chrome and Edge) a second screen. They **cannot** see or turn off browser extensions, other devices, or someone in the room, and no website can. That's why the pre-test checklist asks candidates to confirm these, and why flagged attempts go to a person rather than being failed automatically. Webcam snapshots would be the next step up, but they need explicit consent, secure storage and a retention policy (privacy law treats them as personal data), so they're left for later.
 
 ## Code runner security
 

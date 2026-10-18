@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import get_settings
 from app.db import SessionLocal, init_db
 from app.question_bank import get_bank
-from app.routers import attempts, auth, stats, tests
+from app.routers import admin, attempts, auth, certificates, invites, stats, tests
 from app.services.auth import secret_key
 from app.services.attempts import recover_interrupted_feedback
 
@@ -59,6 +59,9 @@ def create_app() -> FastAPI:
     app.include_router(tests.router)
     app.include_router(attempts.router)
     app.include_router(stats.router)
+    app.include_router(certificates.router)
+    app.include_router(invites.router)
+    app.include_router(admin.router)
 
     @app.get("/api/health", tags=["meta"])
     def health():

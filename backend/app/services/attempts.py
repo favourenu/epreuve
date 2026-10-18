@@ -1,6 +1,6 @@
 """Attempt lifecycle: start, answer one question at a time, finish, grade, feedback.
 
-Rules mirror real assessment platforms and are enforced server-side:
+Rules are enforced server-side:
 - the timer is the server's deadline, not the browser's;
 - questions are answered in order and cannot be revisited;
 - correct answers are never sent to the client before the attempt is completed.
@@ -15,7 +15,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.config import get_settings
-from app.models import Attempt, AttemptItem, AttemptStatus, FeedbackStatus, utcnow
+from app.models import Attempt, AttemptItem, AttemptMode, AttemptStatus, FeedbackStatus, utcnow
 from app.question_bank import CodeQuestion, QuestionBank, public_question, question_from_snapshot
 from app.services import grading
 from app.services.ai.service import AIService, AIUnavailableError
@@ -69,7 +69,7 @@ def close_expired(db: Session, user_id: str) -> list[Attempt]:
 
 
 def active_attempt(db: Session, user_id: str, test_id: str) -> Attempt | None:
-    """The user's in-progress attempt at a test. Call close_expired first."""
+    """The user's in-progress attempt at a test (any mode). Call close_expired first."""
     return db.scalar(
         select(Attempt)
         .where(Attempt.user_id == user_id, Attempt.test_id == test_id, Attempt.status == AttemptStatus.IN_PROGRESS)
@@ -78,20 +78,46 @@ def active_attempt(db: Session, user_id: str, test_id: str) -> Attempt | None:
     )
 
 
-def start_attempt(db: Session, bank: QuestionBank, test_id: str, user_id: str) -> tuple[Attempt, bool]:
-    """Start a test, or resume the one already running.
+MODE_NAMES = {AttemptMode.PRACTICE: "practice", AttemptMode.CERTIFICATION: "certification", AttemptMode.INVITE: "invited"}
 
+
+def start_attempt(
+    db: Session,
+    bank: QuestionBank,
+    test_id: str,
+    user_id: str,
+    mode: str = AttemptMode.PRACTICE,
+    invite_id: str | None = None,
+) -> tuple[Attempt, bool]:
+    """Start a test, or resume the one already running in the same mode.
+
+    Only one attempt per test can run at a time, so a practice attempt can't be
+    open next to a proctored one. Certification attempts have a cooldown.
     Returns (attempt, created)."""
+    from app.services.certification import next_certification_at
+
     test = bank.tests.get(test_id)
     if test is None:
         raise NotFoundError(f"Unknown test '{test_id}'")
     if existing := active_attempt(db, user_id, test_id):
-        return existing, False
+        if existing.mode == mode and existing.invite_id == invite_id:
+            return existing, False
+        raise ConflictError(
+            f"You already have a {MODE_NAMES.get(existing.mode, existing.mode)} attempt at {test.title} in progress. "
+            "Finish it first."
+        )
+    if mode == AttemptMode.CERTIFICATION and (available := next_certification_at(db, user_id, test_id)):
+        raise ConflictError(
+            f"You can take the {test.title} certification again on {available:%d %B %Y at %H:%M} UTC. "
+            "Keep practising in the meantime."
+        )
     now = utcnow()
     attempt = Attempt(
         user_id=user_id,
         test_id=test.id,
         test_title=test.title,
+        mode=mode,
+        invite_id=invite_id,
         started_at=now,
         deadline=now + timedelta(minutes=test.time_limit_minutes),
     )
@@ -207,6 +233,14 @@ def finish_attempt(db: Session, attempt: Attempt, timed_out: bool) -> None:
     recompute_score(attempt)
     attempt.feedback_status = FeedbackStatus.PENDING
     db.commit()
+    _score_final(db, attempt)
+
+
+def _score_final(db: Session, attempt: Attempt) -> None:
+    """Run what depends on a final score (certificates), once nothing awaits grading."""
+    from app.services.certification import evaluate
+
+    evaluate(db, attempt)
 
 
 async def generate_feedback(db: Session, attempt: Attempt, ai: AIService) -> None:
@@ -239,6 +273,7 @@ async def generate_feedback(db: Session, attempt: Attempt, ai: AIService) -> Non
     attempt.feedback_status = FeedbackStatus.READY
     attempt.feedback_error = None
     db.commit()
+    _score_final(db, attempt)
 
 
 def recover_interrupted_feedback(db: Session) -> int:

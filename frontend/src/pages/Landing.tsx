@@ -168,7 +168,9 @@ export function Landing() {
 
       <footer className="landing-footer">
         <Logo size={22} />
-        <span className="muted small">Épreuve is French for "test".</span>
+        <span className="muted small">
+          <Link to="/verify">Verify a certificate</Link> · Épreuve is French for "test".
+        </span>
       </footer>
     </div>
   )

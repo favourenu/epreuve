@@ -98,8 +98,11 @@ export function RequireAuth({ children }: { children: ReactNode }) {
 /** For pages only logged-out visitors should see (landing, log in, sign up). */
 export function GuestOnly({ children }: { children: ReactNode }) {
   const { user } = useAuth()
+  const location = useLocation()
   if (user === undefined) return <SessionCheck />
-  if (user) return <Navigate to="/dashboard" replace />
+  // Signing in re-renders this before the page's own redirect runs, so honour ?next= here
+  // too (e.g. back to an invitation), or the user would always land on the dashboard.
+  if (user) return <Navigate to={safeNext(new URLSearchParams(location.search).get('next'))} replace />
   return <>{children}</>
 }
 

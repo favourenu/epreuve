@@ -45,6 +45,11 @@ export function formatDate(iso: string): string {
   })
 }
 
+/** A calendar date with no time, e.g. "18 October 2026" (for certificates). */
+export function formatDay(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' })
+}
+
 export function scoreTone(percent: number | null | undefined): 'good' | 'ok' | 'bad' | 'none' {
   if (percent == null) return 'none'
   if (percent >= 75) return 'good'

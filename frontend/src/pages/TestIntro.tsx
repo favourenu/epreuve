@@ -1,31 +1,37 @@
 import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { api } from '../api'
+import { RulesModal } from '../components/Proctoring'
 import { Card, ErrorBox, ScoreBadge, Spinner } from '../components/ui'
+import { formatDate } from '../format'
 import { useAsync } from '../hooks'
 
 export function TestIntro() {
   const { testId = '' } = useParams()
   const navigate = useNavigate()
   const { data: test, error, loading, reload } = useAsync(() => api.test(testId), [testId])
-  const [starting, setStarting] = useState(false)
+  const [starting, setStarting] = useState<'practice' | 'certification' | null>(null)
   const [startError, setStartError] = useState<string | null>(null)
+  const [showRules, setShowRules] = useState(false)
 
   if (loading) return <Spinner />
   if (error) return <ErrorBox message={error} onRetry={reload} />
   if (!test) return null
 
-  async function start() {
-    setStarting(true)
+  async function start(mode: 'practice' | 'certification') {
+    setStarting(mode)
     setStartError(null)
     try {
-      const attempt = await api.start(testId)
+      const attempt = await api.start(testId, mode, mode === 'certification')
       navigate(`/attempts/${attempt.id}`)
     } catch (e) {
       setStartError((e as Error).message)
-      setStarting(false)
+      setStarting(null)
     }
   }
+
+  const cert = test.certificate
+  const cooldownUntil = test.certification_available_at
 
   return (
     <div className="narrow stack">
@@ -60,14 +66,61 @@ export function TestIntro() {
           <li>Questions are drawn at random from the bank, so each attempt is different.</li>
         </ul>
 
-        {startError && <ErrorBox message={startError} />}
-        <div className="actions">
-          <button className="btn btn-primary btn-lg" onClick={start} disabled={starting}>
-            {starting ? 'Starting...' : 'Start test'}
-          </button>
-          <span className="muted">The timer starts immediately.</span>
+        {startError && !showRules && <ErrorBox message={startError} />}
+
+        <div className="mode-grid">
+          <section className="mode-card" aria-labelledby="practice-title">
+            <h2 id="practice-title">Practice</h2>
+            <p className="muted">Take it as often as you like. You'll get a score, explanations and an AI study plan.</p>
+            <button className="btn btn-lg" onClick={() => start('practice')} disabled={starting !== null}>
+              {starting === 'practice' ? 'Starting...' : 'Start practice'}
+            </button>
+          </section>
+
+          <section className="mode-card mode-card-cert" aria-labelledby="cert-title">
+            <h2 id="cert-title">Certification</h2>
+            <p className="muted">
+              Proctored. Score {test.certification_pass_percent}% or more for a certificate, or{' '}
+              {test.certification_distinction_percent}% for a distinction, with a public link employers can verify.
+            </p>
+            {cert && (
+              <p className={`cert-held cert-${cert.status}`}>
+                {cert.status === 'issued'
+                  ? `You hold a ${cert.level === 'distinction' ? 'distinction' : 'pass'} certificate (${Math.round(cert.percent)}%).`
+                  : 'Your certificate is being reviewed.'}{' '}
+                <Link to="/certificates">View</Link>
+              </p>
+            )}
+            {cooldownUntil ? (
+              <p className="hint">
+                Next certification attempt available {formatDate(cooldownUntil)}. You can take one every{' '}
+                {test.certification_cooldown_days} days.
+              </p>
+            ) : null}
+            <button
+              className="btn btn-primary btn-lg"
+              onClick={() => setShowRules(true)}
+              disabled={starting !== null || !!cooldownUntil}
+            >
+              {cooldownUntil ? 'Not available yet' : 'Start certification'}
+            </button>
+          </section>
         </div>
+        <p className="muted small">The timer starts as soon as you begin.</p>
       </Card>
+
+      {showRules && (
+        <RulesModal
+          title={`${test.title} certification`}
+          busy={starting === 'certification'}
+          error={startError}
+          onCancel={() => {
+            setShowRules(false)
+            setStartError(null)
+          }}
+          onAgree={() => start('certification')}
+        />
+      )}
     </div>
   )
 }

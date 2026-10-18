@@ -8,10 +8,11 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.deps import get_ai_service, get_current_user, get_session_factory
-from app.models import Attempt, AttemptStatus, FeedbackStatus, User, utcnow
+from app.models import Attempt, AttemptMode, AttemptStatus, Certificate, FeedbackStatus, User, utcnow
 from app.question_bank import QuestionBank, get_bank
 from app.schemas import (
     AnswerRequest,
+    CertificateOut,
     AttemptListItem,
     AttemptReview,
     AttemptState,
@@ -21,6 +22,8 @@ from app.schemas import (
     StartAttemptRequest,
 )
 from app.services import attempts as svc
+from app.services import integrity
+from app.services.certification import certificate_out
 from app.services.ai.service import AIService
 
 log = logging.getLogger(__name__)
@@ -81,27 +84,39 @@ def _percent(a: Attempt) -> float | None:
     return round(100 * a.score / a.max_score, 1) if a.max_score and a.score is not None else None
 
 
-def _list_item(a: Attempt) -> AttemptListItem:
+def _hide_score(a: Attempt, as_admin: bool) -> bool:
+    """Candidates don't see the results of invited assessments; the company does."""
+    return a.mode == AttemptMode.INVITE and not as_admin
+
+
+def _list_item(a: Attempt, as_admin: bool = False) -> AttemptListItem:
+    hide = _hide_score(a, as_admin)
     return AttemptListItem(
         id=a.id,
         test_id=a.test_id,
         test_title=a.test_title,
+        mode=a.mode,
+        company=a.invite.company if a.invite else None,
         status=a.status,
         started_at=a.started_at,
         submitted_at=a.submitted_at,
         timed_out=a.timed_out,
-        score=a.score,
-        max_score=a.max_score,
-        percent=_percent(a),
-        feedback_status=a.feedback_status,
+        score=None if hide else a.score,
+        max_score=None if hide else a.max_score,
+        percent=None if hide else _percent(a),
+        feedback_status=None if hide else a.feedback_status,
     )
 
 
 def _state(a: Attempt) -> AttemptState:
+    hide = _hide_score(a, as_admin=False)
     return AttemptState(
         id=a.id,
         test_id=a.test_id,
         test_title=a.test_title,
+        mode=a.mode,
+        proctored=a.mode in AttemptMode.PROCTORED,
+        company=a.invite.company if a.invite else None,
         status=a.status,
         started_at=a.started_at,
         deadline=a.deadline,
@@ -112,10 +127,10 @@ def _state(a: Attempt) -> AttemptState:
         position=a.current_index,
         total_questions=len(a.items),
         question=svc.current_question(a),
-        score=a.score,
-        max_score=a.max_score,
-        percent=_percent(a),
-        feedback_status=a.feedback_status,
+        score=None if hide else a.score,
+        max_score=None if hide else a.max_score,
+        percent=None if hide else _percent(a),
+        feedback_status=None if hide else a.feedback_status,
     )
 
 
@@ -127,8 +142,10 @@ def _raise(exc: svc.AttemptError):
 def start(body: StartAttemptRequest, response: Response, ctx: _Ctx = Depends(), bank: QuestionBank = Depends(get_bank)):
     """Start a test. If one is already running for this test, it is resumed (200)."""
     ctx.close_expired()
+    if body.mode == AttemptMode.CERTIFICATION and not body.agree_to_rules:
+        raise HTTPException(400, "Please confirm the certification rules before starting.")
     try:
-        attempt, created = svc.start_attempt(ctx.db, bank, body.test_id, ctx.user.id)
+        attempt, created = svc.start_attempt(ctx.db, bank, body.test_id, ctx.user.id, mode=body.mode)
     except svc.AttemptError as exc:
         _raise(exc)
     if not created:
@@ -181,6 +198,18 @@ def run(attempt_id: str, body: RunCodeRequest, ctx: _Ctx = Depends()):
         _raise(exc)
 
 
+@router.post("/{attempt_id}/integrity", status_code=202)
+def report_integrity(attempt_id: str, body: integrity.EventsIn, ctx: _Ctx = Depends()):
+    """Events observed by the browser during a proctored attempt."""
+    attempt = ctx.attempt(attempt_id)
+    ctx.enforce_deadline(attempt)
+    try:
+        kept = integrity.record_events(ctx.db, attempt, body.events)
+    except integrity.IntegrityConflict as exc:
+        raise HTTPException(exc.status_code, str(exc)) from exc
+    return {"recorded": kept}
+
+
 @router.post("/{attempt_id}/finish", response_model=AttemptState)
 def finish(attempt_id: str, ctx: _Ctx = Depends()):
     """Submit now; unanswered questions score zero."""
@@ -213,7 +242,12 @@ def review(attempt_id: str, ctx: _Ctx = Depends()):
     ctx.enforce_deadline(attempt)
     if attempt.status != AttemptStatus.COMPLETED:
         raise HTTPException(409, "The review is available once the attempt is completed")
+    if _hide_score(attempt, as_admin=False):
+        raise HTTPException(403, f"Results for this assessment are shared with {attempt.invite.company}, not shown here.")
+    return build_review(ctx.db, attempt)
 
+
+def build_review(db: Session, attempt: Attempt, as_admin: bool = False) -> AttemptReview:
     cats: dict[str, list] = defaultdict(lambda: [0.0, 0.0, False])
     items: list[ReviewItem] = []
     previous = attempt.started_at
@@ -239,8 +273,10 @@ def review(attempt_id: str, ctx: _Ctx = Depends()):
             )
         )
 
+    cert = db.scalar(select(Certificate).where(Certificate.attempt_id == attempt.id))
     return AttemptReview(
-        attempt=_list_item(attempt),
+        attempt=_list_item(attempt, as_admin=as_admin),
+        certificate=CertificateOut(**certificate_out(cert)) if cert else None,
         duration_seconds=int((attempt.submitted_at - attempt.started_at).total_seconds())
         if attempt.submitted_at
         else None,

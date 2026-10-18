@@ -6,7 +6,7 @@ import { Markdown } from '../components/Markdown'
 import { Card, CategoryBars, DifficultyTag, EmptyState, ErrorBox, ScoreRing, Spinner } from '../components/ui'
 import { categoryLabel, formatDate, formatDuration, formatValue } from '../format'
 import { useAsync } from '../hooks'
-import type { AttemptReview, ReviewItem } from '../types'
+import type { AttemptReview, Certificate, ReviewItem } from '../types'
 
 const POLL_MS = 3000
 
@@ -71,6 +71,14 @@ export function Results() {
           </Link>
         </div>
       </Card>
+
+      {attempt.mode === 'certification' && (
+        <CertificationResult
+          testId={attempt.test_id}
+          certificate={review.certificate}
+          pending={review.items.some((i) => i.points == null)}
+        />
+      )}
 
       <div className="results-grid">
         <Card title="Score by skill">
@@ -322,6 +330,58 @@ function CodeReview({ item }: { item: ReviewItem }) {
           />
         </details>
       )}
+    </div>
+  )
+}
+
+function CertificationResult({
+  testId,
+  certificate,
+  pending,
+}: {
+  testId: string
+  certificate: Certificate | null
+  pending: boolean
+}) {
+  const { data: test } = useAsync(() => api.test(testId), [testId])
+  if (certificate?.status === 'issued') {
+    return (
+      <div className="banner banner-cert" role="status">
+        <span>
+          <strong>You earned a {certificate.level === 'distinction' ? 'distinction' : 'pass'} certificate.</strong> Share
+          its public link with employers so they can verify it.
+        </span>
+        <Link className="btn btn-primary btn-sm" to={`/verify/${certificate.code}`}>
+          View certificate
+        </Link>
+      </div>
+    )
+  }
+  if (certificate?.status === 'under_review') {
+    return (
+      <div className="banner banner-accent" role="status">
+        <span>
+          <strong>Your score qualifies for a certificate.</strong> This attempt had integrity flags, so a person will
+          review it before the certificate is issued. You will find it under Certificates.
+        </span>
+      </div>
+    )
+  }
+  if (pending) {
+    return (
+      <div className="banner" role="status">
+        <span>Your certificate will be decided once your written answers have been graded.</span>
+      </div>
+    )
+  }
+  return (
+    <div className="banner" role="status">
+      <span>
+        <strong>No certificate this time.</strong>{' '}
+        {test
+          ? `Certification needs ${test.certification_pass_percent}%. You can try again in ${test.certification_cooldown_days} days; keep practising in the meantime.`
+          : 'Keep practising and try again after the cooldown.'}
+      </span>
     </div>
   )
 }

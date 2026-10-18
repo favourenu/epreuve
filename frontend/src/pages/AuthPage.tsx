@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { safeNext, useAuth } from '../auth'
 import { AuthShell } from '../components/AuthShell'
 import { NewPasswordFields, newPasswordProblem } from '../components/PasswordFields'
@@ -13,7 +13,9 @@ export function AuthPage({ mode }: { mode: 'login' | 'signup' }) {
   const isSignup = mode === 'signup'
 
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  // Prefilled when arriving from an invitation (passed in router state, never the URL).
+  const prefill = (useLocation().state as { email?: string } | null)?.email
+  const [email, setEmail] = useState<string>(prefill ?? '')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [showPassword, setShowPassword] = useState(false)

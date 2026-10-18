@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.db import get_db
 from app.deps import get_ai_service, get_current_user
-from app.models import Attempt, AttemptStatus, User
+from app.models import Attempt, AttemptMode, AttemptStatus, User
 from app.routers.attempts import _list_item
 from app.schemas import AIStatus, CategoryStat, StatsResponse
 from app.services.ai.service import AIService
@@ -18,7 +18,8 @@ router = APIRouter(prefix="/api", tags=["stats"])
 def stats(db: Session = Depends(get_db), user: User = Depends(get_current_user)):
     attempts = db.scalars(
         select(Attempt)
-        .where(Attempt.user_id == user.id, Attempt.status == AttemptStatus.COMPLETED)
+        # Invited attempts belong to the inviting company, not the candidate's own stats.
+        .where(Attempt.user_id == user.id, Attempt.status == AttemptStatus.COMPLETED, Attempt.mode != AttemptMode.INVITE)
         .order_by(Attempt.started_at)
         .options(selectinload(Attempt.items))
     ).all()

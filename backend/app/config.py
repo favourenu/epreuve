@@ -36,6 +36,18 @@ class Settings(BaseSettings):
     # need no cross-site setup). Ignored if the folder has no index.html (e.g. in dev).
     frontend_dist_dir: str = str(BACKEND_DIR.parent / "frontend" / "dist")
 
+    # Accounts with these emails become admins when they sign up or log in.
+    admin_emails: list[str] = []
+
+    # Certification: proctored attempts scoring at least the pass mark earn a certificate.
+    certification_pass_percent: float = 75.0
+    certification_distinction_percent: float = 90.0
+    # Wait between certification attempts at the same test, so the question pool can't be farmed.
+    certification_cooldown_days: int = 7
+
+    # Company invitations to take an assessment
+    invite_valid_days: int = 14
+
     # Public URL of the web app, used to build links in emails (no trailing slash).
     app_base_url: str = "http://localhost:5173"
 

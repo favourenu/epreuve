@@ -109,3 +109,38 @@ def test_postgres_migrations_and_round_trip():
         db.commit()
         stored = db.query(UserSession).filter_by(user_id=user.id).one()
         assert stored.expires_at.tzinfo is not None
+
+
+def test_upgrading_keeps_every_row_in_child_tables():
+    """Regression: SQLite rebuilds tables during migrations; with foreign keys on, that
+    used to cascade-delete every saved answer (attempt_items) when going 0002 -> 0003."""
+    from alembic import command
+    from alembic.config import Config
+
+    from app.db import MIGRATIONS_DIR
+
+    engine = _fresh_sqlite()
+    with engine.begin() as conn:
+        cfg = Config()
+        cfg.set_main_option("script_location", str(MIGRATIONS_DIR))
+        cfg.attributes["connection"] = conn
+        command.upgrade(cfg, "0002")
+        conn.execute(text("INSERT INTO users (id, email, name, password_hash, created_at) VALUES ('u1', 'a@example.com', 'A', 'x', '2026-01-01')"))
+        conn.execute(text(
+            "INSERT INTO attempts (id, user_id, test_id, test_title, status, started_at, deadline, timed_out, current_index) "
+            "VALUES ('a1', 'u1', 't', 'T', 'completed', '2026-01-01', '2026-01-01', 0, 2)"
+        ))
+        for i in range(2):
+            conn.execute(text(
+                "INSERT INTO attempt_items (attempt_id, position, question_id, category, question_json, max_points) "
+                f"VALUES ('a1', {i}, 'q{i}', 'c', '{{}}', 1)"
+            ))
+        conn.execute(text("INSERT INTO sessions (user_id, token_hash, created_at, expires_at) VALUES ('u1', 'h', '2026-01-01', '2027-01-01')"))
+
+    migrate(engine)
+
+    with engine.connect() as conn:
+        assert conn.execute(text("SELECT count(*) FROM attempt_items")).scalar() == 2
+        assert conn.execute(text("SELECT count(*) FROM sessions")).scalar() == 1
+        assert conn.execute(text("SELECT mode FROM attempts")).scalar() == "practice"
+        assert conn.execute(text("PRAGMA foreign_keys")).scalar() == 1  # switched back on

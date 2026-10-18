@@ -6,6 +6,9 @@ import { Landing } from './pages/Landing'
 import { Logo } from './components/Logo'
 import { EmptyState } from './components/ui'
 import { History } from './pages/History'
+import { MyCertificates, VerifyCertificate, VerifyLookup } from './pages/CertificatePages'
+import { InvitePage, SubmittedPage } from './pages/InvitePages'
+import { AdminPage } from './pages/admin/AdminPage'
 import { ForgotPassword, ResetPassword } from './pages/PasswordPages'
 import { Results } from './pages/Results'
 import { TakeTest } from './pages/TakeTest'
@@ -26,6 +29,17 @@ function UserMenu() {
   )
 }
 
+function AdminLink() {
+  const { user } = useAuth()
+  return user?.role === 'admin' ? <NavLink to="/admin">Admin</NavLink> : null
+}
+
+function AdminOnly({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth()
+  if (user?.role !== 'admin') return <NotFound />
+  return <>{children}</>
+}
+
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="app">
@@ -36,6 +50,8 @@ function Layout({ children }: { children: React.ReactNode }) {
         <nav aria-label="Main">
           <NavLink to="/dashboard">Dashboard</NavLink>
           <NavLink to="/history">History</NavLink>
+          <NavLink to="/certificates">Certificates</NavLink>
+          <AdminLink />
         </nav>
         <UserMenu />
       </header>
@@ -86,6 +102,13 @@ export default function App() {
       <Route path="/history" element={authed(<History />)} />
       <Route path="/tests/:testId" element={authed(<TestIntro />)} />
       <Route path="/attempts/:attemptId/results" element={authed(<Results />)} />
+      <Route path="/attempts/:attemptId/submitted" element={authed(<SubmittedPage />, false)} />
+      <Route path="/certificates" element={authed(<MyCertificates />)} />
+      <Route path="/admin/*" element={authed(<AdminOnly><AdminPage /></AdminOnly>)} />
+      {/* Public pages: certificate verification and company invitations. */}
+      <Route path="/verify" element={<VerifyLookup />} />
+      <Route path="/verify/:code" element={<VerifyCertificate />} />
+      <Route path="/invite/:token" element={<InvitePage />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   )
