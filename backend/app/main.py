@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import docs
+from app import docs, keepalive
 from app.config import get_settings
 from app.db import SessionLocal, init_db
 from app.question_bank import get_bank
@@ -31,7 +31,10 @@ async def lifespan(_app: FastAPI):
     with SessionLocal() as db:
         if n := recover_interrupted_feedback(db):
             log.warning("Marked %d interrupted feedback job(s) as failed", n)
+    pinger = keepalive.start()
     yield
+    if pinger:
+        pinger.cancel()
 
 
 def create_app() -> FastAPI:

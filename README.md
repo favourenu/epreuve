@@ -154,7 +154,7 @@ Audit hooks raise the bar a lot but aren't a perfect boundary (CPython's docs sa
 3. **Domain:** add `epreuve.site` as a custom domain on the service and point your DNS at it as Render instructs.
 4. **Paystack:** in the Paystack dashboard, set the webhook URL to `https://epreuve.site/api/payments/paystack/webhook`. Test with an `sk_test_` key first; switch to the live key once your business is verified.
 
-Free Render services sleep after about 15 minutes without traffic, so the first request afterwards takes a little while.
+Free Render services sleep after about 15 minutes without traffic. To avoid slow first visits, the server pings its own public URL every 10 minutes (`KEEP_AWAKE=true`, set in render.yaml), and a GitHub Actions workflow ([keep-awake.yml](.github/workflows/keep-awake.yml)) pings it from outside as a backup. One always-on service uses about 744 of the 750 free instance hours Render gives each month, so keep only one free service running. GitHub pauses scheduled workflows after 60 days without commits; re-enable it from the Actions tab if that happens.
 
 ## Notes
 

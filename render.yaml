@@ -26,6 +26,9 @@ services:
         value: '["https://epreuve.site"]'
       - key: SESSION_COOKIE_SECURE
         value: "true"
+      # Ping our own URL every 10 minutes so the free service never sleeps (app/keepalive.py).
+      - key: KEEP_AWAKE
+        value: "true"
       - key: OLLAMA_ENABLED
         value: "false"
       - key: ADMIN_EMAILS

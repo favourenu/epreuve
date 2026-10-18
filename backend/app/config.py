@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     # need no cross-site setup). Ignored if the folder has no index.html (e.g. in dev).
     frontend_dist_dir: str = str(BACKEND_DIR.parent / "frontend" / "dist")
 
+    # Free Render services sleep after 15 minutes without requests. When true, the server
+    # requests its own public URL (RENDER_EXTERNAL_URL, else APP_BASE_URL) on this interval.
+    keep_awake: bool = False
+    keep_awake_minutes: float = 10
+
     # Accounts with these emails become admins when they sign up or log in.
     admin_emails: list[str] = []
 
